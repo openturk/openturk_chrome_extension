@@ -18,7 +18,7 @@ $(document).ready(function(){
       data: $(this).serialize()
     }).done(function() {
       alert('form posted, redirecting');
-      window.location.replace("https://stackoverflow.com");
+      window.top.location.href = "https://stackoverflow.com";
     });
 
   });
