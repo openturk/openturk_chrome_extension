@@ -1,5 +1,4 @@
 $(document).ready(function(){
-  //form name = hitForm
   if($('#mturk_form').length > 0) {
     var form = $('#mturk_form');
     alert('Found iframe form (#mturk_form)');
