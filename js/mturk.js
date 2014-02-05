@@ -1,23 +1,26 @@
 $(document).ready(function(){
+  var form = '';
+
   if($('#mturk_form').length > 0) {
-    var form = $('#mturk_form');
-    alert('Found iframe form (#mturk_form)');
+    form = $('#mturk_form');
   } else if($('form[name=hitForm]').length > 0) {
-    var form = $('form[name=hitForm]')[0];
-    alert('Found native form (hitForm)');
+    form = $('form[name=hitForm]')[0];
   }
-  form.submit(function(e) {
+
+  $(form).submit(function(e) {
     e.preventDefault();
 
-    var serializedData = $(this).serialize();
     alert('default submit prevented');
+
     request = $.ajax({
       url: $(this).attr('action'),
       type: "POST",
-      data: serializedData
+      data: $(this).serialize()
     }).done(function() {
       alert('form posted, redirecting');
       window.location.replace("https://stackoverflow.com");
     });
+
   });
+
 });
