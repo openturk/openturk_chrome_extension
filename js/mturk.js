@@ -23,11 +23,11 @@ $(document).ready(function(){
   } else if($('form[name=hitForm]').length > 0) {
     form = $('form[name=hitForm]')[0];
 
-    $('input[type=image]').click(function(e) {
+    $('input[name="/submit"]').click(function(e) {
       e.preventDefault();
 
       alert('default click prevented');
-/*
+
       request = $.ajax({
         url: $(form).attr('action'),
         type: "POST",
@@ -36,7 +36,7 @@ $(document).ready(function(){
         alert('form posted, redirecting');
         window.top.location.href = "https://www.mturk.com/mturk/preview?groupId=2KGW3K4F0OHO8JK8ZWBOAL97PHD01E";
       });
-*/
+
     });
 
 
