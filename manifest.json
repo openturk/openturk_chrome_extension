@@ -1,0 +1,16 @@
+{
+   "background": {
+      "scripts": [ "background.js" ]
+   },
+   "content_scripts": [ {
+      "all_frames": true,
+      "js": [ "js/jquery.js", "js/mturk.js"],
+      "matches": [ "\u003Call_urls\u003E" ],
+      "run_at": "document_end"
+   }],
+   "description": "Test",
+   "manifest_version": 2,
+   "name": "Test",
+   "permissions": [ "tabs" ],
+   "version": "0.0.1"
+}
