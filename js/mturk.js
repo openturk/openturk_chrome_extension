@@ -12,6 +12,7 @@ $(document).ready(function() {
     console.log(arg);
   });
 
+  /* usage : urlParams()['groupId'] */
   function getUrlParams() {
     var params = [],
       hash;
