@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(document).ready(function() {
 
   function getWorkerId(callback) {
     $.get('dashboard', {}, function(data) {
@@ -8,12 +8,25 @@ $(document).ready(function(){
       callback(workerId);
     });
   }
+  getWorkerId(function(arg) {
+    console.log(arg);
+  });
 
-  getWorkerId(function(arg) {console.log(arg);});
+  function getUrlParams() {
+    var params = [],
+      hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for (var i = 0; i < hashes.length; i++) {
+      hash = hashes[i].split('=');
+      params.push(hash[0]);
+      params[hash[0]] = hash[1];
+    }
+    return params;
+  }
 
   var form = '';
 
-  if($('#mturk_form').length > 0) {
+  if ($('#mturk_form').length > 0) {
 
     $('#mturk_form').submit(function(e) {
       e.preventDefault();
@@ -32,7 +45,7 @@ $(document).ready(function(){
     });
 
 
-  } else if($('form[name=hitForm]').length > 0) {
+  } else if ($('form[name=hitForm]').length > 0) {
     form = $('form[name=hitForm]')[0];
 
     $('input[name="/submit"]').click(function(e) {
