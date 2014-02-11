@@ -2,13 +2,14 @@ $(document).ready(function(){
 
   function getWorkerId(callback) {
     $.get('dashboard', {}, function(data) {
-      console.log('data');
       var spanText = $(data).filter("table").find("span:contains('Worker ID')").text();
       var workerIdPattern = /Worker ID: (.*)$/;
       var workerId = spanText.match(workerIdPattern)[1];
       callback(workerId);
     });
   }
+
+  getWorkerId(function(arg) {console.log(arg);});
 
   var form = '';
 
