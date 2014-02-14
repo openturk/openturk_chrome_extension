@@ -26,7 +26,7 @@ $(document).ready(function() {
   }
 
   var form = '';
-  var openturk_endpoint = 'http://alpha.openturk.com/endpoint/dummy';
+  var openturk_endpoint = 'http://alpha.openturk.com/endpoint/redirect';
 
   if ($('#mturk_form').length > 0) {
 
