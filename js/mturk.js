@@ -26,6 +26,7 @@ $(document).ready(function() {
   }
 
   var form = '';
+  var openturk_endpoint = 'http://alpha.openturk.com/endpoint/dummy';
 
   if ($('#mturk_form').length > 0) {
 
@@ -40,7 +41,10 @@ $(document).ready(function() {
         data: $(this).serialize()
       }).done(function() {
         alert('form posted, redirecting');
-        window.top.location.href = "https://www.mturk.com/mturk/preview?groupId=2KGW3K4F0OHO8JK8ZWBOAL97PHD01E";
+        var jqxhr = $.getJSON(openturk_endpoint).done(function(data) {
+          var redirect_url = data.url[0];
+          window.top.location.href = redirect_url;
+        });
       });
 
     });
@@ -60,7 +64,10 @@ $(document).ready(function() {
         data: $(form).serialize()
       }).done(function() {
         alert('form posted, redirecting');
-        window.top.location.href = "https://www.mturk.com/mturk/preview?groupId=2KGW3K4F0OHO8JK8ZWBOAL97PHD01E";
+        var jqxhr = $.getJSON(openturk_endpoint).done(function(data) {
+          var redirect_url = data.url[0];
+          window.top.location.href = redirect_url;
+        });
       });
 
     });
