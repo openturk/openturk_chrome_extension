@@ -1,6 +1,11 @@
 $(document).ready(function() {
   (function() {
 
+    var form = '';
+    var openturk_endpoint = 'http://alpha.openturk.com/endpoint/redirect';
+    var group_id = '';
+
+
     function get_worker_id(callback) {
       $.get('https://workersandbox.mturk.com/mturk/dashboard', {}, function(data) {
         var spanText = $(data).filter("table").find("span:contains('Worker ID')").text();
@@ -23,6 +28,32 @@ $(document).ready(function() {
       return params;
     }
 
+    function set_group_id() {
+      group_id = get_url_params()['groupId'];
+      if (typeof group_id !== "undefined") {
+        chrome.runtime.sendMessage({
+          group_id: group_id
+        });
+        console.log('group_id sent to bg: ' + group_id);
+      }
+      return group_id;
+    }
+
+    function get_group_id() {
+      chrome.runtime.sendMessage({
+        group_id_get: true
+      }, function(response) {
+        group_id = response.group_id;
+      });
+      if (typeof group_id === "undefined") {
+        group_id = "undefined";
+        console.log("really no group_id found...");
+      } else {
+        console.log("got group_id from bg: " + group_id);
+      }
+    }
+    set_group_id();
+
     function post_and_redirect(form) {
       request = $.ajax({
         url: form.attr('action'),
@@ -43,10 +74,7 @@ $(document).ready(function() {
         if (typeof worker_id === "undefined") {
           worker_id = "undefined";
         }
-        group_id = get_url_params()['groupId'];
-        if (typeof group_id === "undefined") {
-          group_id = "undefined";
-        }
+        group_id = get_group_id();
         data = {
           worker_id: worker_id,
           group_id: group_id,
@@ -66,11 +94,17 @@ $(document).ready(function() {
       });
     }
 
-    var form = '';
-    var openturk_endpoint = 'http://alpha.openturk.com/endpoint/redirect';
-
     //Always check auto accept next HIT
-    $('input[name=autoAcceptEnabled]').prop('checked', true);
+    $('input[name=autoAcceptEnabled]').prop('checked', true)
+    var auto_accept_enabled = $('input[name=autoAcceptEnabled]').is(':checked');
+    $('input[name=autoAcceptEnabled]').click(function(event) {
+      chrome.runtime.sendMessage({
+        auto_accept_enable: $('input[name=autoAcceptEnabled]').is(':checked')
+      }, function(response) {
+        auto_accept_enabled = response.auto_accept_enable;
+      });
+      get_group_id();
+    });
 
     console.log('Scheduling enabled.');
     if ($('#mturk_form').length > 0) {
@@ -87,5 +121,6 @@ $(document).ready(function() {
         post_and_redirect($(form));
       });
     }
+
   }).call(this);
 });
