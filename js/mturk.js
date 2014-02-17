@@ -51,6 +51,7 @@ $(document).ready(function() {
       } else {
         console.log("got group_id from bg: " + group_id);
       }
+      return group_id;
     }
     set_group_id();
 
@@ -60,7 +61,6 @@ $(document).ready(function() {
         type: "POST",
         data: form.serialize()
       }).done(function() {
-        alert('form posted, redirecting');
         var jqxhr = $.getJSON(openturk_endpoint).done(function(data) {
           log(false, false);
           var redirect_url = data.url[0];
@@ -103,7 +103,6 @@ $(document).ready(function() {
       }, function(response) {
         auto_accept_enabled = response.auto_accept_enable;
       });
-      get_group_id();
     });
 
     console.log('Scheduling enabled.');
@@ -111,6 +110,7 @@ $(document).ready(function() {
       console.log('iframe form detected');
       $('#mturk_form').submit(function(e) {
         e.preventDefault();
+        $($(this).find('input[type=submit]')[0]).prop('disabled', true);
         post_and_redirect($(this));
       });
     } else if ($('form[name=hitForm]').length > 0) {
@@ -118,9 +118,14 @@ $(document).ready(function() {
       form = $('form[name=hitForm]')[0];
       $('input[name="/submit"]').click(function(e) {
         e.preventDefault();
+        $(this).prop('disabled', true);
         post_and_redirect($(form));
       });
     }
+
+    // $("input[type='text']").keydown(function() {
+    //   console.log(get_group_id());
+    // });
 
   }).call(this);
 });
