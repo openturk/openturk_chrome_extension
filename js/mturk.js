@@ -70,7 +70,7 @@ $(document).ready(function() {
         autoaccept_get: true
       }, function(response) {
         autoaccept = response.autoaccept;
-        console.log('got autoaccept ' + autoaccept);
+        //console.log('got autoaccept ' + autoaccept);
         callback(autoaccept);
       });
     }
@@ -145,5 +145,14 @@ $(document).ready(function() {
     });
 
     $("input[type='text']").keydown(function() {});
+
+    //Add like and dislike buttons
+    var caps = $('.capsule_field_title');
+    for(var i = 0; i < caps.length; i++){
+      $(caps[i]).find("a:contains('Requester:')").after('<button>dislike</button>').after('<button>like</button>');
+    }
+    //Add I'm feeling lucky button
+    $('input[value="/searchbar"]').after('<br><button>I\'m feeling lucky</button>');
+
   }).call(this);
 });
