@@ -3,7 +3,6 @@ $(document).ready(function() {
 
     var form = '';
     var openturk_endpoint = 'http://alpha.openturk.com/endpoint/redirect';
-    var group_id = '';
 
 
     function get_worker_id(callback) {
@@ -29,7 +28,7 @@ $(document).ready(function() {
     }
 
     function set_group_id() {
-      group_id = get_url_params()['groupId'];
+      var group_id = get_url_params()['groupId'];
       if (typeof group_id !== "undefined") {
         chrome.runtime.sendMessage({
           group_id: group_id
@@ -38,6 +37,7 @@ $(document).ready(function() {
       }
       return group_id;
     }
+    set_group_id();
 
     function get_group_id() {
       chrome.runtime.sendMessage({
@@ -53,7 +53,6 @@ $(document).ready(function() {
       }
       return group_id;
     }
-    set_group_id();
 
     function post_and_redirect(form) {
       request = $.ajax({
@@ -123,9 +122,9 @@ $(document).ready(function() {
       });
     }
 
-    // $("input[type='text']").keydown(function() {
-    //   console.log(get_group_id());
-    // });
+    $("input[type='text']").keydown(function() {
+      console.log(get_group_id());
+    });
 
   }).call(this);
 });
