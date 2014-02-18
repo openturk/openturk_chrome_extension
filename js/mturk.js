@@ -4,7 +4,6 @@ $(document).ready(function() {
     var form = '';
     var openturk_endpoint = 'http://alpha.openturk.com/endpoint/redirect';
 
-
     function get_worker_id(callback) {
       $.get('https://workersandbox.mturk.com/mturk/dashboard', {}, function(data) {
         var spanText = $(data).filter("table").find("span:contains('Worker ID')").text();
@@ -32,8 +31,10 @@ $(document).ready(function() {
       if (typeof group_id !== "undefined") {
         chrome.runtime.sendMessage({
           group_id: group_id
+        }, function(response) {
+          // console.log('bg received: ' + response.group_id);
         });
-        console.log('group_id sent to bg: ' + group_id);
+        // console.log('group_id sent to bg: ' + group_id);
       }
       return group_id;
     }
@@ -47,9 +48,9 @@ $(document).ready(function() {
       });
       if (typeof group_id === "undefined") {
         group_id = "undefined";
-        console.log("really no group_id found...");
+        // console.log("really no group_id found...");
       } else {
-        console.log("got group_id from bg: " + group_id);
+        // console.log("got group_id from bg: " + group_id);
       }
       return group_id;
     }
@@ -80,51 +81,42 @@ $(document).ready(function() {
           hit_skipped: hit_skipped,
           batch_skipped: batch_skipped
         };
-        console.log(data);
         request = $.ajax({
           url: 'http://alpha.openturk.com/endpoint/log',
           type: "POST",
           data: data
         }).done(function() {
           console.log('Logged ' + worker_id + ' ' + group_id);
-        }).always(function(data) {
+        })
+        /*.always(function(data) {
           console.log(data);
-        });
+        })*/
+        ;
       });
     }
 
     //Always check auto accept next HIT
     $('input[name=autoAcceptEnabled]').prop('checked', true)
     var auto_accept_enabled = $('input[name=autoAcceptEnabled]').is(':checked');
-    $('input[name=autoAcceptEnabled]').click(function(event) {
-      chrome.runtime.sendMessage({
-        auto_accept_enable: $('input[name=autoAcceptEnabled]').is(':checked')
-      }, function(response) {
-        auto_accept_enabled = response.auto_accept_enable;
-      });
-    });
 
     console.log('Scheduling enabled.');
     if ($('#mturk_form').length > 0) {
-      console.log('iframe form detected');
       $('#mturk_form').submit(function(e) {
         e.preventDefault();
         $($(this).find('input[type=submit]')[0]).prop('disabled', true);
+        console.log(get_group_id());
         post_and_redirect($(this));
       });
     } else if ($('form[name=hitForm]').length > 0) {
-      console.log('native form detected');
       form = $('form[name=hitForm]')[0];
       $('input[name="/submit"]').click(function(e) {
         e.preventDefault();
         $(this).prop('disabled', true);
+        console.log(get_group_id());
         post_and_redirect($(form));
       });
     }
 
-    $("input[type='text']").keydown(function() {
-      console.log(get_group_id());
-    });
-
+    $("input[type='text']").keydown(function() {});
   }).call(this);
 });
