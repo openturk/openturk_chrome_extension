@@ -41,19 +41,19 @@ $(document).ready(function() {
     }
     set_group_id();
 
-    function get_group_id() {
+    function get_group_id(callback) {
       chrome.runtime.sendMessage({
         group_id_get: true
       }, function(response) {
         group_id = response.group_id;
+        if (typeof group_id === "undefined") {
+          group_id = "undefined";
+          // console.log("really no group_id found...");
+        } else {
+          // console.log("got group_id from bg: " + group_id);
+        }
+        callback(group_id);
       });
-      if (typeof group_id === "undefined") {
-        group_id = "undefined";
-        // console.log("really no group_id found...");
-      } else {
-        // console.log("got group_id from bg: " + group_id);
-      }
-      return group_id;
     }
 
     function set_autoaccept(autoaccept) {
@@ -65,14 +65,14 @@ $(document).ready(function() {
       }
     }
 
-    function get_autoaccept() {
+    function get_autoaccept(callback) {
       chrome.runtime.sendMessage({
         autoaccept_get: true
       }, function(response) {
         autoaccept = response.autoaccept;
+        console.log('got autoaccept ' + autoaccept);
+        callback(autoaccept);
       });
-      console.log('got autoaccept ' + autoaccept);
-      return autoaccept;
     }
 
     function post_and_redirect(form) {
@@ -94,24 +94,25 @@ $(document).ready(function() {
         if (typeof worker_id === "undefined") {
           worker_id = "undefined";
         }
-        group_id = get_group_id();
-        data = {
-          worker_id: worker_id,
-          group_id: group_id,
-          hit_skipped: hit_skipped,
-          batch_skipped: batch_skipped
-        };
-        request = $.ajax({
-          url: 'http://alpha.openturk.com/endpoint/log',
-          type: "POST",
-          data: data
-        }).done(function() {
-          console.log('Logged ' + worker_id + ' ' + group_id);
-        })
-        /*.always(function(data) {
+        get_group_id(function(group_id) {
+          data = {
+            worker_id: worker_id,
+            group_id: group_id,
+            hit_skipped: hit_skipped,
+            batch_skipped: batch_skipped
+          };
+          request = $.ajax({
+            url: 'http://alpha.openturk.com/endpoint/log',
+            type: "POST",
+            data: data
+          }).done(function() {
+            console.log('Logged ' + worker_id + ' ' + group_id);
+          })
+          /*.always(function(data) {
           console.log(data);
         })*/
-        ;
+          ;
+        });
       });
     }
 
@@ -122,30 +123,27 @@ $(document).ready(function() {
       set_autoaccept($('input[name=autoAcceptEnabled]').is(':checked'));
     });
 
-    if ($('#mturk_form').length > 0) {
-      $('#mturk_form').submit(function(e) {
-        if (get_autoaccept() === false) {
-          e.preventDefault();
-          $($(this).find('input[type=submit]')[0]).prop('disabled', true);
-          console.log(get_group_id());
-          post_and_redirect($(this));
-        }
-      });
-    } else if ($('form[name=hitForm]').length > 0) {
-      form = $('form[name=hitForm]')[0];
-      $('input[name="/submit"]').click(function(e) {
-        if (get_autoaccept() === false) {
-          e.preventDefault();
-          $(this).prop('disabled', true);
-          console.log(get_group_id());
-          post_and_redirect($(form));
-        }
-      });
-    }
-
-    $("input[type='text']").keydown(function() {
-      //console.log(get_autoaccept());
-      console.log(get_group_id());
+    get_autoaccept(function(autoaccept) {
+      if ($('#mturk_form').length > 0) {
+        $('#mturk_form').submit(function(e) {
+          if (autoaccept) {
+            e.preventDefault();
+            $($(this).find('input[type=submit]')[0]).prop('disabled', true);
+            post_and_redirect($(this));
+          }
+        });
+      } else if ($('form[name=hitForm]').length > 0) {
+        form = $('form[name=hitForm]')[0];
+        $('input[name="/submit"]').click(function(e) {
+          if (autoaccept) {
+            e.preventDefault();
+            $(this).prop('disabled', true);
+            post_and_redirect($(form));
+          }
+        });
+      }
     });
+
+    $("input[type='text']").keydown(function() {});
   }).call(this);
 });
