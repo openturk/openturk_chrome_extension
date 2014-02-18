@@ -3,6 +3,7 @@ $(document).ready(function() {
 
     var form = '';
     var openturk_endpoint = 'http://alpha.openturk.com/endpoint/redirect';
+    var autoaccept = true;
 
     function get_worker_id(callback) {
       $.get('https://workersandbox.mturk.com/mturk/dashboard', {}, function(data) {
@@ -55,6 +56,25 @@ $(document).ready(function() {
       return group_id;
     }
 
+    function set_autoaccept(autoaccept) {
+      if ($('input[name=autoAcceptEnabled]').length > 0) {
+        chrome.runtime.sendMessage({
+          autoaccept: autoaccept
+        });
+        console.log('sent autoaccept ' + autoaccept);
+      }
+    }
+
+    function get_autoaccept() {
+      chrome.runtime.sendMessage({
+        autoaccept_get: true
+      }, function(response) {
+        autoaccept = response.autoaccept;
+      });
+      console.log('got autoaccept ' + autoaccept);
+      return autoaccept;
+    }
+
     function post_and_redirect(form) {
       request = $.ajax({
         url: form.attr('action'),
@@ -96,27 +116,36 @@ $(document).ready(function() {
     }
 
     //Always check auto accept next HIT
-    $('input[name=autoAcceptEnabled]').prop('checked', true)
-    var auto_accept_enabled = $('input[name=autoAcceptEnabled]').is(':checked');
+    $('input[name=autoAcceptEnabled]').prop('checked', true);
+    set_autoaccept(true);
+    $('input[name=autoAcceptEnabled]').click(function(event) {
+      set_autoaccept($('input[name=autoAcceptEnabled]').is(':checked'));
+    });
 
-    console.log('Scheduling enabled.');
     if ($('#mturk_form').length > 0) {
       $('#mturk_form').submit(function(e) {
-        e.preventDefault();
-        $($(this).find('input[type=submit]')[0]).prop('disabled', true);
-        console.log(get_group_id());
-        post_and_redirect($(this));
+        if (get_autoaccept() === false) {
+          e.preventDefault();
+          $($(this).find('input[type=submit]')[0]).prop('disabled', true);
+          console.log(get_group_id());
+          post_and_redirect($(this));
+        }
       });
     } else if ($('form[name=hitForm]').length > 0) {
       form = $('form[name=hitForm]')[0];
       $('input[name="/submit"]').click(function(e) {
-        e.preventDefault();
-        $(this).prop('disabled', true);
-        console.log(get_group_id());
-        post_and_redirect($(form));
+        if (get_autoaccept() === false) {
+          e.preventDefault();
+          $(this).prop('disabled', true);
+          console.log(get_group_id());
+          post_and_redirect($(form));
+        }
       });
     }
 
-    $("input[type='text']").keydown(function() {});
+    $("input[type='text']").keydown(function() {
+      //console.log(get_autoaccept());
+      console.log(get_group_id());
+    });
   }).call(this);
 });

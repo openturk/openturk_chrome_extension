@@ -1,4 +1,5 @@
 var group_id;
+var autoaccept;
 
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
@@ -14,6 +15,17 @@ chrome.runtime.onMessage.addListener(
     if (request.group_id_get) {
       sendResponse({
         group_id: group_id
+      });
+    }
+
+    if (typeof request.autoaccept !== undefined) {
+      if (typeof request.autoaccept !== "undefined") {
+        autoaccept = request.autoaccept;
+      }
+    }
+    if (request.autoaccept_get) {
+      sendResponse({
+        autoaccept: autoaccept
       });
     }
   }
