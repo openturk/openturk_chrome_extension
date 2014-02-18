@@ -69,9 +69,8 @@ $(document).ready(function() {
       chrome.runtime.sendMessage({
         autoaccept_get: true
       }, function(response) {
-        autoaccept = response.autoaccept;
-        //console.log('got autoaccept ' + autoaccept);
-        callback(autoaccept);
+        console.log('got autoaccept ' + response.autoaccept);
+        callback(response.autoaccept);
       });
     }
 
@@ -81,11 +80,15 @@ $(document).ready(function() {
         type: "POST",
         data: form.serialize()
       }).done(function() {
-        var jqxhr = $.getJSON(openturk_endpoint).done(function(data) {
-          log(false, false);
-          var redirect_url = data.url[0];
-          //window.top.location.href = redirect_url;
-        });
+        log(false, false);
+        redirect();
+      });
+    }
+
+    function redirect() {
+      var jqxhr = $.getJSON(openturk_endpoint).done(function(data) {
+        var redirect_url = data.url[0];
+        window.top.location.href = redirect_url;
       });
     }
 
@@ -123,36 +126,43 @@ $(document).ready(function() {
       set_autoaccept($('input[name=autoAcceptEnabled]').is(':checked'));
     });
 
-    get_autoaccept(function(autoaccept) {
-      if ($('#mturk_form').length > 0) {
-        $('#mturk_form').submit(function(e) {
-          if (autoaccept) {
-            e.preventDefault();
+    if ($('#mturk_form').length > 0) {
+      $('#mturk_form').submit(function(e) {
+        e.preventDefault();
+        get_autoaccept(function(autoaccept) {
+          if (!autoaccept) {
             $($(this).find('input[type=submit]')[0]).prop('disabled', true);
             post_and_redirect($(this));
           }
         });
-      } else if ($('form[name=hitForm]').length > 0) {
-        form = $('form[name=hitForm]')[0];
-        $('input[name="/submit"]').click(function(e) {
+      });
+    } else if ($('form[name=hitForm]').length > 0) {
+      form = $('form[name=hitForm]')[0];
+      $('input[name="/submit"]').click(function(e) {
+        get_autoaccept(function(autoaccept) {
           if (autoaccept) {
-            e.preventDefault();
+            console.log('Autoaccept is on : scheduling disabled');
+          } else {
             $(this).prop('disabled', true);
             post_and_redirect($(form));
           }
         });
-      }
-    });
+      });
+    }
 
     $("input[type='text']").keydown(function() {});
 
     //Add like and dislike buttons
     var caps = $('.capsule_field_title');
-    for(var i = 0; i < caps.length; i++){
+    for (var i = 0; i < caps.length; i++) {
       $(caps[i]).find("a:contains('Requester:')").after('<button>dislike</button>').after('<button>like</button>');
     }
     //Add I'm feeling lucky button
-    $('input[value="/searchbar"]').after('<br><button>I\'m feeling lucky</button>');
+    $('input[value="/searchbar"]').after('<br><button id="lucky">I\'m feeling lucky</button>');
+    $('#lucky').click(function(e) {
+      e.preventDefault();
+      redirect();
+    });
 
   }).call(this);
 });
