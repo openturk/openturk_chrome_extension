@@ -1,0 +1,33 @@
+html{font-size:100%;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;width: 340px;}
+
+header.sub {
+  background: #7f7f7f;
+  background: -webkit-gradient(linear, left top, left bottom, from(#ececec), to(#dbdbdb));
+  background: -moz-linear-gradient(center top, #ececec 0%, #dbdbdb 100%);
+  background: -moz-gradient(center top, #ececec 0%, #dbdbdb 100%);
+  padding: 6px 8px 4px;
+  color: #999999;
+  font: bold 12px Consolas, Menlo, "Courier New", monospace;
+  text-shadow: 0 1px 0 #FFF;
+  line-height: 13px;
+  text-align: center;
+  }
+  header.sub a {
+    text-decoration: underline;
+  }
+  a img  {  
+    border: none;  
+  }
+  header.sub.success a, header.sub.error a {
+    color: #fff;
+  }
+header.sub.success {
+	color:#dff0d8;
+	background:#468847;
+	text-shadow: none;
+}
+header.sub.error {
+	color: #F2DEDE;
+	background: #B94A48;
+	text-shadow: none;
+}
