@@ -1,6 +1,3 @@
-var text = "2";
-chrome.browserAction.setBadgeText({text:text});
-
 var OT = {
 	init: function() {
 		OT.status.container = $('header.sub');
@@ -145,38 +142,72 @@ var OT = {
 
 // Actual extension logic
 var storage = chrome.storage.local;
-var $urls_list = $('#urls');
 var myUrls = 'url';
-var obj= {};
-obj[myUrls] = [{"name":"CrowdSource","id":"A2SUM2D7EOAK1T"},{"name":"Roman","id":"A165LMPFHNTKFG"}];
-storage.set(obj);
+var urls = "";
+// obj[myUrls] = [{"name":"CrowdSource","id":"A2SUM2D7EOAK1T","numtask":0},{"name":"Roman","id":"A165LMPFHNTKFG","numtask":0}];
+// storage.set(obj);
 
-function initRequesters() {
-    storage.get(myUrls, function(items) {
-        // $urls.empty();
-        console.log(myUrls,items);
-        items.url.forEach(function(url) {
-            plusUrl(url);
+function initRequesters(urls) {
+    urls = storage.get(myUrls, function(items) {
+        urls = items.url;
+        urls.forEach(function(url) {
+            appendRequester(url);
         });
+        return urls;
     });
+    console.log(urls);
 }
 function save() {
-    console.log($urls.find('.url'));
-    var urls = $urls.find('.url').map(function(i, el) {
-        return el.textContent;
-    }).get();
-    console.log(urls);
     storage.set({myUrls: urls}, function() {
         alert('saved');
     });
 }
-function plusUrl(url) {
+function appendRequester(url) {
     var $li = $('<li><a href="https://workersandbox.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&requesterId=' 
-    	+ url['id']+ '&qualifiedFor=on"> <span class="url">' + url['name']+ '</span></a> <a href class="delete"> [delete]</a></li>');
+    	+ url['id']+ '&qualifiedFor=on"> <span class="url">' + url['name']+ ' = ' +url['numtask']+ '</span></a> <a href class="delete"> [delete]</a></li>');
     $('#urls').append($li);
 }
+
+function getNewTasks() {
+	urls.forEach(function(url) {
+        scrapForTasks(url);
+    });
+}
+
+function setBadge(text) {
+	chrome.browserAction.setBadgeText({text:text});
+}
+
+function updateCurrentStatus(status, message) {
+	getNewTasks();
+	console.log('After update: ' + urls);
+	// setTimeout(function(){
+	// 	setBadge();
+	// }, 5000)
+}
+
+function scrapForTasks(url) {	
+		$.ajax({
+        url:    'https://workersandbox.mturk.com/mturk/searchbar'
+                  + '?selectedSearchType=hitgroups'
+                  + '&qualifiedFor=on' 
+                  + '&requesterId=' + url['id'],
+        success: function(result) {
+	                var spanText = $(result).find("td:contains('Results')").text();
+				    var resPattern = /of (.*) Results/;
+				    var res = spanText.match(resPattern)[1];
+				    url['numtask'] = res;
+				    console.log(url['name'] + ':'  + url['numtask']);
+                 },
+        error:   function(xhr, status) {
+					// do something
+				 }
+        });  
+	}
 
 $(document).ready(function(){
 	OT.init();
 	initRequesters();
+	console.log(urls);
+	getNewTasks();
 });

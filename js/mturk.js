@@ -127,26 +127,35 @@ $(document).ready(function() {
     });
 
     if ($('#mturk_form').length > 0) {
-      $('#mturk_form').submit(function(e) {
-        e.preventDefault();
-        get_autoaccept(function(autoaccept) {
-          if (!autoaccept) {
-            $($(this).find('input[type=submit]')[0]).prop('disabled', true);
-            post_and_redirect($(this));
-          }
-        });
+      $('#mturk_form').on("submit", function(e, hint) {
+        if(typeof hint == "undefined")
+        { 
+          e.preventDefault();
+          get_autoaccept(function(autoaccept) {
+            if (autoaccept) {
+              $('#mturk_form').trigger("submit", true);
+            } else {
+              $($(this).find('input[type=submit]')[0]).prop('disabled', true);
+              post_and_redirect($(this));
+            }
+          });
+        }
       });
     } else if ($('form[name=hitForm]').length > 0) {
       form = $('form[name=hitForm]')[0];
-      $('input[name="/submit"]').click(function(e) {
-        get_autoaccept(function(autoaccept) {
-          if (autoaccept) {
-            console.log('Autoaccept is on : scheduling disabled');
-          } else {
-            $(this).prop('disabled', true);
-            post_and_redirect($(form));
-          }
-        });
+      $('input[name="/submit"]').on("click", function(e,hint) {
+        if(typeof hint == "undefined")
+        { 
+          e.preventDefault();
+          get_autoaccept(function(autoaccept) {
+            if (autoaccept) {
+              $('input[name="/submit"]').trigger("submit", true);
+            } else {
+              $(this).prop('disabled', true);
+              post_and_redirect($(form));
+            }
+          });
+        }
       });
     }
 
