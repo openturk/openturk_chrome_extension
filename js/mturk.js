@@ -128,7 +128,7 @@ $(document).ready(function() {
 
     if ($('#mturk_form').length > 0) {
       $('#mturk_form').on("submit", function(e, hint) {
-        if (typeof hint == "undefined") {
+        if (typeof hint === "undefined") {
           e.preventDefault();
           get_autoaccept(function(autoaccept) {
             if (autoaccept) {
@@ -143,7 +143,7 @@ $(document).ready(function() {
     } else if ($('form[name=hitForm]').length > 0) {
       form = $('form[name=hitForm]')[0];
       $('input[name="/submit"]').on("click", function(e, hint) {
-        if (typeof hint == "undefined") {
+        if (typeof hint === "undefined") {
           e.preventDefault();
           get_autoaccept(function(autoaccept) {
             if (autoaccept) {
@@ -156,8 +156,6 @@ $(document).ready(function() {
         }
       });
     }
-
-    $("input[type='text']").keydown(function() {});
 
     //Add like and dislike buttons
     var caps = $('.capsule_field_title');

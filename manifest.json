@@ -8,7 +8,7 @@
    },
    "content_scripts": [ {
       "all_frames": true,
-      "js": ["pages/scripts/jquery-2.0.3.min.js","js/mturk.js"],
+      "js": ["pages/scripts/jquery-2.0.3.min.js", "js/mturk.js"],
       "matches": [ "\u003Call_urls\u003E" ],
       "run_at": "document_end"
    }],

@@ -77,16 +77,20 @@ loadRequesters();
 
 function getNewBatchs() {
   storage.get('requesters', function(items) {
-    items.requesters.forEach(function(url) {
-      scrapForBatchs(url);
-    });
+    if (typeof items.requesters !== "undefined") {
+      items.requesters.forEach(function(url) {
+        scrapForBatchs(url);
+      });
+    }
   });
 }
 
 function printTasks() {
-  obj.requesters.forEach(function(url) {
-    console.log(url['name'] + ':' + url['numtask']);
-  });
+  if (typeof obj.requesters !== "undefined") {
+    obj.requesters.forEach(function(url) {
+      console.log(url['name'] + ':' + url['numtask']);
+    });
+  }
 }
 
 function scrapForBatchs(url) {
