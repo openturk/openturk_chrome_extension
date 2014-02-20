@@ -180,7 +180,8 @@ function startRequest(params) {
   if (params && params.showLoadingAnimation)
     loadingAnimation.start();
 
-  updateUnreadCount(3);
+  console.log('updating the count icon');
+  updateUnreadCount(Math.random());
 }
 
 // Beautyfication
@@ -191,7 +192,7 @@ function ease(x) {
 
 function animateFlip() {
   rotation += 1 / animationFrames;
-  drawIconAtRotation();
+  //drawIconAtRotation();
 
   if (rotation <= 1) {
     setTimeout(animateFlip, animationSpeed);
@@ -226,6 +227,7 @@ function updateUnreadCount(count) {
 }
 
 function updateIcon() {
+  console.log('updateIcon function is called ' + localStorage.unreadCount);
   if (!localStorage.hasOwnProperty('unreadCount')) {
     chrome.browserAction.setIcon({
       path: "icons/browser_action_disabled.png"
