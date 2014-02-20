@@ -144,6 +144,7 @@ function scheduleRequest() {
   var multiplier = Math.max(randomness * exponent, 1);
   var delay = Math.min(multiplier * pollIntervalMin, pollIntervalMax);
   delay = Math.round(delay);
+  delay = 1 ; // 1 minutes for tests
   console.log('Scheduling for (in minutes): ' + delay);
 
   if (oldChromeVersion) {
