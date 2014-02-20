@@ -176,6 +176,5 @@ $(document).ready(function(){
 	OT.init();
 	console.log('loading stuff');
 	loadUIRequesters();
-	localStorage.unreadCount = 0;
 	chrome.extension.sendMessage({read: "resetIcon"});
 });

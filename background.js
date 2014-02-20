@@ -247,7 +247,7 @@ function updateIcon() {
     });
   } else {
     chrome.browserAction.setIcon({
-      path: "icons/openturk.png"
+      path: "icons/icon19.png"
     });
     chrome.browserAction.setBadgeBackgroundColor({
       color: [208, 0, 24, 255]
