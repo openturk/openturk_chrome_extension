@@ -32,10 +32,7 @@ $(document).ready(function() {
       if (typeof group_id !== "undefined") {
         chrome.runtime.sendMessage({
           group_id: group_id
-        }, function(response) {
-          // console.log('bg received: ' + response.group_id);
-        });
-        // console.log('group_id sent to bg: ' + group_id);
+        }, function(response) {});
       }
       return group_id;
     }
@@ -48,10 +45,7 @@ $(document).ready(function() {
         group_id = response.group_id;
         if (typeof group_id === "undefined") {
           group_id = "undefined";
-          // console.log("really no group_id found...");
-        } else {
-          // console.log("got group_id from bg: " + group_id);
-        }
+        } else {}
         callback(group_id);
       });
     }
@@ -61,7 +55,6 @@ $(document).ready(function() {
         chrome.runtime.sendMessage({
           autoaccept: autoaccept
         });
-        console.log('sent autoaccept ' + autoaccept);
       }
     }
 
@@ -69,7 +62,6 @@ $(document).ready(function() {
       chrome.runtime.sendMessage({
         autoaccept_get: true
       }, function(response) {
-        console.log('got autoaccept ' + response.autoaccept);
         callback(response.autoaccept);
       });
     }
@@ -80,8 +72,7 @@ $(document).ready(function() {
         type: "POST",
         data: form.serialize()
       }).done(function() {
-        log(false, false);
-        redirect();
+        log(redirect, false, false);
       });
     }
 
@@ -92,7 +83,7 @@ $(document).ready(function() {
       });
     }
 
-    function log(hit_skipped, batch_skipped) {
+    function log(callback, hit_skipped, batch_skipped) {
       get_worker_id(function(worker_id) {
         if (typeof worker_id === "undefined") {
           worker_id = "undefined";
@@ -108,13 +99,9 @@ $(document).ready(function() {
             url: 'http://alpha.openturk.com/endpoint/log',
             type: "POST",
             data: data
-          }).done(function() {
-            console.log('Logged ' + worker_id + ' ' + group_id);
-          })
-          /*.always(function(data) {
-          console.log(data);
-        })*/
-          ;
+          }).always(function() {
+            callback();
+          });
         });
       });
     }
@@ -132,7 +119,9 @@ $(document).ready(function() {
           e.preventDefault();
           get_autoaccept(function(autoaccept) {
             if (autoaccept) {
-              $('#mturk_form').trigger("submit", true);
+              log(function() {
+                $('#mturk_form').trigger("submit", true);
+              }, false, false);
             } else {
               $($(this).find('input[type=submit]')[0]).prop('disabled', true);
               post_and_redirect($(this));
@@ -147,7 +136,9 @@ $(document).ready(function() {
           e.preventDefault();
           get_autoaccept(function(autoaccept) {
             if (autoaccept) {
-              $('input[name="/submit"]').trigger("submit", true);
+              log(function() {
+                $('input[name="/submit"]').trigger("submit", true);
+              }, false, false);
             } else {
               $(this).prop('disabled', true);
               post_and_redirect($(form));
