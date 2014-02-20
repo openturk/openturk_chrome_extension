@@ -1,8 +1,10 @@
 var OT = {
   init: function() {
     OT.status.container = $('header.sub');
+    OT.status.container2 = $('header.sub2');
 
     OT.get_worker_id();
+    OT.get_openturk_username();
 
     $('#creds button.save').click(function(e) {
       e.preventDefault();
@@ -98,6 +100,18 @@ var OT = {
     }
   },
 
+  message2: {
+    set: function(status, message) {
+      var bar = OT.status.container2;
+
+      bar.removeClass('error success');
+      if (status != null) {
+        bar.addClass(status);
+      }
+      bar.html(message);
+    }
+  },
+
   switch_content: function() {
     $('#content').show();
     $('#login').hide();
@@ -136,8 +150,22 @@ var OT = {
     });
   },
 
+  get_openturk_username: function() {
+    var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
+      if (typeof result.username !== "undefined") {
+        OT.status.openturk_username = result.username;
+        OT.message2.set('success', 'Welcome ' + result.username);
+        OT.switch_content();
+      } else {
+        OT.message2.set('error', 'Please log in on <a href="http://alpha.openturk.com/accounts/login/">OpenTurk.com</a>');
+        OT.switch_login();
+      }
+    });
+  },
+
   status: {
     workerId: '',
+    openturk_username: '',
     container: {}
   }
 };
@@ -156,7 +184,7 @@ function loadUIRequesters() {
   chrome.storage.sync.get('requesters', function(items) {
     obj = items;
     obj.requesters.forEach(function(url) {
-      console.log(url);
+      //console.log(url);
       appendRequester(url);
     });
     indexRequesters();
@@ -172,7 +200,7 @@ function indexRequesters() {
 
 $(document).ready(function() {
   OT.init();
-  console.log('loading stuff');
+  //console.log('loading stuff');
   loadUIRequesters();
   chrome.extension.sendMessage({
     read: "resetIcon"
