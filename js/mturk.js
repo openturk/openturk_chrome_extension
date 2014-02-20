@@ -151,8 +151,12 @@ $(document).ready(function() {
     //Add like and dislike buttons
     var caps = $('.capsule_field_title');
     for (var i = 0; i < caps.length; i++) {
-      $(caps[i]).find("a:contains('Requester:')").after('<button>dislike</button>').after('<button>like</button>');
+      $(caps[i]).find("a:contains('Requester:')").after('<button id="dislike">dislike</button>').after('<button id="like">like</button>');
     }
+    $('#dislike,#like').click(function(e) {
+      e.preventDefault();
+      alert('Not yet implemented');
+    });
     //Add I'm feeling lucky button
     $('input[value="/searchbar"]').after('<br><button id="lucky">I\'m feeling lucky</button>');
     $('#lucky').click(function(e) {
