@@ -8,12 +8,14 @@ var oldChromeVersion = !chrome.runtime;
 var requestTimerId;
 
 // More Vars
-var animationSpeed = 10; // ms
 var animationFrames = 36;
 var animationSpeed = 10; // ms
-var pollIntervalMin = 1; // 1 minute
-var pollIntervalMax = 60; // 1 hour
-var requestTimeout = 1000 * 2; // 2 seconds
+var canvas = document.getElementById('canvas');
+var loggedInImage = document.getElementById('logged_in');
+var canvasContext = canvas.getContext('2d');
+var pollIntervalMin = 1;  // 1 minute
+var pollIntervalMax = 60;  // 1 hour
+var requestTimeout = 1000 * 2;  // 2 seconds
 var rotation = 0;
 var loadingAnimation = new LoadingAnimation();
 
@@ -49,6 +51,11 @@ chrome.runtime.onMessage.addListener(
       sendResponse({
         autoaccept: autoaccept
       });
+    }
+
+    if( request.read === "resetIcon" )
+    {
+        updateUnreadCount(0);     
     }
   }
 );
@@ -101,11 +108,12 @@ function scrapForBatchs(url) {
       var resPattern = /of (.*) Results/;
       var res = spanText.match(resPattern)[1];
       id = url['id'];
-      // if(res != index[id].numtask ) {
-      console.log('doing some update');
-      index[id].numtask = res;
-      save();
-      // }
+      if(res != index[id].numtask ) {
+        console.log('doing some update');
+        index[id].numtask = res;
+        save();
+
+      }
     },
     error: function(xhr, status) {
       // do something when it's wrong
@@ -129,7 +137,8 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
       namespace,
       storageChange.oldValue,
       storageChange.newValue);
-    setBadge(storageChange.newValue.length.toString());
+    //This is disgusting ...
+    updateUnreadCount(1);
   }
 });
 
@@ -140,7 +149,6 @@ function setBadge(text) {
 }
 
 // Setting an alarm scheduler
-
 function scheduleRequest() {
   console.log('scheduleRequest');
   var randomness = Math.random() * 2;
@@ -180,8 +188,8 @@ function startRequest(params) {
   if (params && params.showLoadingAnimation)
     loadingAnimation.start();
 
-  console.log('updating the count icon');
-  updateUnreadCount(Math.random());
+  stopLoadingAnimation();
+  getNewBatchs();
 }
 
 // Beautyfication
@@ -191,8 +199,8 @@ function ease(x) {
 }
 
 function animateFlip() {
-  rotation += 1 / animationFrames;
-  //drawIconAtRotation();
+  rotation += 1/animationFrames;
+  drawIconAtRotation();
 
   if (rotation <= 1) {
     setTimeout(animateFlip, animationSpeed);
@@ -227,7 +235,6 @@ function updateUnreadCount(count) {
 }
 
 function updateIcon() {
-  console.log('updateIcon function is called ' + localStorage.unreadCount);
   if (!localStorage.hasOwnProperty('unreadCount')) {
     chrome.browserAction.setIcon({
       path: "icons/browser_action_disabled.png"
@@ -240,7 +247,7 @@ function updateIcon() {
     });
   } else {
     chrome.browserAction.setIcon({
-      path: "icons/icon128.png"
+      path: "icons/openturk.png"
     });
     chrome.browserAction.setBadgeBackgroundColor({
       color: [208, 0, 24, 255]
@@ -347,4 +354,23 @@ if (oldChromeVersion) {
 } else {
   chrome.runtime.onInstalled.addListener(onInit);
   chrome.alarms.onAlarm.addListener(onAlarm);
+}
+
+
+if (chrome.runtime && chrome.runtime.onStartup) {
+  chrome.runtime.onStartup.addListener(function() {
+    console.log('Starting browser... updating icon.');
+    startRequest({scheduleRequest:false, showLoadingAnimation:false});
+    updateIcon();
+  });
+} else {
+  // This hack is needed because Chrome 22 does not persist browserAction icon
+  // state, and also doesn't expose onStartup. So the icon always starts out in
+  // wrong state. We don't actually use onStartup except as a clue that we're
+  // in a version of Chrome that has this problem.
+  chrome.windows.onCreated.addListener(function() {
+    console.log('Window created... updating icon.');
+    startRequest({scheduleRequest:false, showLoadingAnimation:false});
+    updateIcon();
+  });
 }

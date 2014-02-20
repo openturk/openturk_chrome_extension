@@ -1,6 +1,7 @@
 {
    "background": {
-      "scripts": [ "pages/scripts/jquery-2.0.3.min.js", "background.js"]
+     "persistent": false,
+     "page": "background.html"
    },
    "browser_action": {
       "default_icon": "icons/openturk.png",
