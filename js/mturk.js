@@ -164,5 +164,13 @@ $(document).ready(function() {
       redirect();
     });
 
+    //Add the star
+    $('td[colspan=11]')
+      .after('<span id="star" style="font-size: 36px; color: orange; cursor: pointer">★</span>')
+      .after('<div id="modal" style="background-color:#fff;display:none;width:350px;padding:15px;text-align:left;border:2px solid #333;opacity:0.8;-moz-border-radius:6px;-webkit-border-radius:6px;-moz-box-shadow: 0 0 50px #ccc;-webkit-box-shadow: 0 0 50px #ccc;"><h2>Post a message</h2><textarea>Some text</textarea><input type="submit"></div>');
+    $('#star').click(function(e) {
+      $('#modal').toggle();
+    });
+
   }).call(this);
 });
