@@ -164,5 +164,36 @@ $(document).ready(function() {
       redirect();
     });
 
+    //Add the star
+    get_group_id(function(group_id) {
+      var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
+        if (typeof result.username !== "undefined") {
+          $('td[colspan=11]')
+            .after('<span id="star" style="font-size: 36px; color: orange; cursor: pointer">★</span>')
+            .after('<div id="modal" style="display:none;position:absolute;background-color:#fff;width:350px;padding:15px;text-align:left;border:2px solid #333;opacity:1;-moz-border-radius:6px;-webkit-border-radius:6px;-moz-box-shadow: 0 0 50px #ccc;-webkit-box-shadow: 0 0 50px #ccc;"><h2>We will post the following message on mturkforum.com</h2><textarea style="width: 340px; height: 100px" disabled>OpenTurk user ' + (result.username) + ' recommended the following task: ' + group_id + '</textarea><br /><input id="modal_submit" type="submit" value="ok"><input id="modal_cancel" type="submit" value="cancel"></div>');
+        } else {
+          $('td[colspan=11]')
+            .after('<span id="star" style="font-size: 36px; color: orange; cursor: pointer">★</span>')
+            .after('<div id="modal" style="display:none;position:absolute;background-color:#fff;width:350px;padding:15px;text-align:left;border:2px solid #333;opacity:1;-moz-border-radius:6px;-webkit-border-radius:6px;-moz-box-shadow: 0 0 50px #ccc;-webkit-box-shadow: 0 0 50px #ccc;"><h2>Please log in on <a href="http://alpha.openturk.com/accounts/login/">OpenTurk.com</a></h2></div>');
+        }
+        $('#star').click(function(e) {
+          var left = Math.max($(window).width() - $('#modal').outerWidth(), 0) / 2;
+          $('#modal').css({
+            left: left + $(window).scrollLeft()
+          });
+          $('#modal').toggle();
+        });
+        $('#modal_cancel').click(function(e) {
+          e.preventDefault();
+          $('#modal').toggle();
+        });
+        $('#modal_submit').click(function(e) {
+          e.preventDefault();
+          $('#modal').toggle();
+          alert('Not implemented yet.');
+        });
+      });
+    });
+
   }).call(this);
 });
