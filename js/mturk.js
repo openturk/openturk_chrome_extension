@@ -106,6 +106,27 @@ $(document).ready(function() {
       });
     }
 
+    function star(callback) {
+      get_worker_id(function(worker_id) {
+        if (typeof worker_id === "undefined") {
+          worker_id = "undefined";
+        }
+        get_group_id(function(group_id) {
+          data = {
+            worker_id: worker_id,
+            group_id: group_id,
+          };
+          request = $.ajax({
+            url: 'http://alpha.openturk.com/endpoint/star',
+            type: "POST",
+            data: data
+          }).always(function() {
+            callback();
+          });
+        });
+      });
+    }
+
     //Always check auto accept next HIT
     $('input[name=autoAcceptEnabled]').prop('checked', true);
     set_autoaccept(true);
@@ -190,7 +211,7 @@ $(document).ready(function() {
         $('#modal_submit').click(function(e) {
           e.preventDefault();
           $('#modal').toggle();
-          alert('Not implemented yet.');
+          star(function() {});
         });
       });
     });
