@@ -20,7 +20,7 @@ body {
 
 a {text-decoration:none; color:#000; outline: none;}
 a:hover {text-decoration:underline;}
-#container, #spinner,#sign,#login { background:#fffbf1;}
+#container, #spinner,#sign,#login,#balancer { background:#fffbf1;}
 #header {height:26px; background: #dd6e00; color:white; border-bottom:2px #a15037 solid;}
 #header img { float:left; margin:5px;}
 #header a, #header span, #header h1 { color:white; float:left; margin:5px 2px 0 5px; }

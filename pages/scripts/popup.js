@@ -15,7 +15,8 @@ var OT = {
     })
     $('#balance').click(function(e) {
       e.preventDefault();
-      OT.show_balance();
+      OT.switch_spinner();
+      OT.get_worker_stats();
     })
     $('header.sub a').on('click', function() {
       chrome.windows.getCurrent(null, function(window) {
@@ -97,24 +98,35 @@ var OT = {
     $('#login').hide();
     $('#sign').hide();
     $('#spinner').hide();
+    $('#balancer').hide();
   },
   switch_login: function() {
     $('#container').hide();
     $('#login').show();
     $('#sign').hide();
     $('#spinner').hide();
+    $('#balancer').hide();
   },
   switch_sign: function() {
     $('#container').hide();
     $('#login').hide();
     $('#sign').show();
     $('#spinner').hide();
+    $('#balancer').hide();
   },
   switch_spinner: function() {
     $('#container').hide();
     $('#login').hide();
     $('#sign').hide();
     $('#spinner').show();
+    $('#balancer').hide();
+  },
+  switch_balance: function() {
+    $('#container').hide();
+    $('#login').hide();
+    $('#sign').hide();
+    $('#spinner').hide();
+    $('#balancer').show();
   },
 
   get_worker_id: function() {
@@ -170,9 +182,14 @@ var OT = {
         approval_rate: approval_rate
       }
       localStorage.setItem('balance', balance);
+      $("#approved_hits").html(balance['approved_hits']);
+      $("#bonuses").html(balance['bonuses']);
+      $("#total_earnings").html(balance['total_earnings']);
+      $("#approval_rate").html(balance['approval_rate']);
+      console.log(balance);
       OT.switch_balance();
     });
-  }
+  },
 
   status: {
     workerId: '',

@@ -12,7 +12,7 @@
         <base target="_blank" />
         <style>
           body {overflow: hidden;}
-          #container, #spinner, #sign, #login {width:400px;}
+          #container, #spinner, #sign, #login, #balancer {width:400px;}
         </style>
     </head>
     <body>
@@ -76,5 +76,39 @@
                 
             </form>
         </div>
+        <div id="balancer" style="display: none;">
+            <div id="header">
+                <img src="/icons/icon48.png">
+                
+                <div class="right">
+                    <a id="recommended" href="">Favorites</a>
+                    <span>|</span>
+                    <a id="tasks" href="">Tasks</a>
+                    <span>|</span>
+                    <a id="balance" href="">Balance</a>
+                    <span>|</span>
+                    <a id="settings" href="">Settings</a>
+                </div>
+            </div>
+            <table id="feed" cellspacing="3" cellpadding="0">
+                <tr class="link">
+                    <td>Approved Hits:</td><td> <label id="approved_hits"></label></td>
+                </tr>
+                <tr class="link">
+                    <td>Bonus:</td><td> <label id="bonuses"></label></td>
+                </tr>
+                <tr class="link">
+                    <td>Total Earnings:</td><td> <label id="total_earnings"></label></td>
+                </tr>
+                <tr class="link">
+                    <td>Approval Rate:</td><td> <label id="approval_rate"></label></td>
+                </tr>
+            </table>
+        </div>
+                    <div id="footer">
+                <div class="right">
+                    <a href="http://mturk.com" id="mturkusername">MT: </a> | <a href="http://alpha.openturk.com" id="openturkuser">Connect to openturk</a> | <a href="#" id="suggestion">Suggestions?</a> | <a href="#" id="logout">Logout</a>
+                </div>
+            </div>
     </body>
 </html>
