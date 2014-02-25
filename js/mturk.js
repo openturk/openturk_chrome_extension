@@ -1,6 +1,7 @@
 $(document).ready(function() {
   (function() {
 
+    var storage = chrome.storage.local;
     var form = '';
     var openturk_endpoint = 'http://alpha.openturk.com/endpoint/redirect';
     var autoaccept = true;
@@ -15,10 +16,13 @@ $(document).ready(function() {
     }
 
     /* usage : get_url_params()['groupId'] */
-    function get_url_params() {
+    function get_url_params(link) {
+      if (typeof link === 'undefined') {
+        link = window.location.href;
+      }
       var params = [],
         hash;
-      var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+      var hashes = link.slice(window.location.href.indexOf('?') + 1).split('&');
       for (var i = 0; i < hashes.length; i++) {
         hash = hashes[i].split('=');
         params.push(hash[0]);
@@ -170,13 +174,31 @@ $(document).ready(function() {
     }
 
     //Add like and dislike buttons
-    var caps = $('.capsule_field_title');
-    for (var i = 0; i < caps.length; i++) {
-      $(caps[i]).find("a:contains('Requester:')").after('<button id="dislike">dislike</button>').after('<button id="like">like</button>');
+    var tasks = $('div > table > tbody > tr > td > table');
+    for (var i = 0; i < tasks.length; i += 2) {
+      var task = $(tasks[i]);
+      var tr = $(task.find('tbody > tr > td > table > tbody > tr > td > table > tbody > tr')[0]);
+      var requester = $(tr.find('td > a')[1]);
+      var requester_id = get_url_params(requester.attr('href'))['requesterId'];
+      var requester_name = requester.html();
+      var insert_after = $(tr.find('td > a')[0]);
+      storage.get('requesters', function(items) {
+        obj = items;
+        console.log(obj)
+      });
+
+      insert_after.after('<button id="dislike" data-id="' + requester_id + '" data-name="' + requester_name + '">dislike</button>');
+      insert_after.after('<button id="like" data-id="' + requester_id + '" data-name="' + requester_name + '">like</button>');
     }
-    $('#dislike,#like').click(function(e) {
+    $('#like').click(function(e) {
       e.preventDefault();
-      alert('Not yet implemented');
+      chrome.runtime.sendMessage({
+        addRequester: {
+          "name": $(this).attr('data-name'),
+          "id": $(this).attr('data-id'),
+          "numtask": 0
+        }
+      }, function(response) {});
     });
     //Add I'm feeling lucky button
     $('input[value="/searchbar"]').after('<br><button id="lucky">I\'m feeling lucky</button>');

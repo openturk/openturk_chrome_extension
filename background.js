@@ -57,7 +57,7 @@ chrome.runtime.onMessage.addListener(
       updateUnreadCount(0);
     }
     if (request.addRequester) {
-      console.log('adding');
+      console.log('adding: ' + request.addRequester);
       addRequester(request.addRequester);
     }
     if (request.deleteRequester) {
@@ -68,6 +68,7 @@ chrome.runtime.onMessage.addListener(
 );
 
 function addRequester(req) {
+  console.log('saving');
   obj.requesters.push(req);
   save();
   indexRequesters();
