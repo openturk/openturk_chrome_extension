@@ -86,25 +86,25 @@ function plusSearchTerm(url) {
 
 function restoreOptions() {
   initVariables();
-  var reqInterval = localStorage["RequestInterval"];
-  for (var i=0; i<selectReqInterval.children.length; i++) {
-    if (selectReqInterval[i].value == reqInterval) {
-      selectReqInterval[i].selected = "true";
-      break;
-    }
-  }
-  var notifications = localStorage["Notifications"];
-  for (var i=0; i<radioNotifications.length; i++) {
-    if (radioNotifications[i].value == notifications) {
-      radioNotifications[i].checked = "true";
-    }
-  }
-  var backgroundTabs = localStorage["BackgroundTabs"];
-  for (var i=0; i<radioBackgroundTabs.length; i++) {
-    if (radioBackgroundTabs[i].value == backgroundTabs) {
-      radioBackgroundTabs[i].checked = "true";
-    }
-  }
+  // var reqInterval = localStorage["RequestInterval"];
+  // for (var i=0; i<selectReqInterval.children.length; i++) {
+  //   if (selectReqInterval[i].value == reqInterval) {
+  //     selectReqInterval[i].selected = "true";
+  //     break;
+  //   }
+  // }
+  // var notifications = localStorage["Notifications"];
+  // for (var i=0; i<radioNotifications.length; i++) {
+  //   if (radioNotifications[i].value == notifications) {
+  //     radioNotifications[i].checked = "true";
+  //   }
+  // }
+  // var backgroundTabs = localStorage["BackgroundTabs"];
+  // for (var i=0; i<radioBackgroundTabs.length; i++) {
+  //   if (radioBackgroundTabs[i].value == backgroundTabs) {
+  //     radioBackgroundTabs[i].checked = "true";
+  //   }
+  // }
 }
 
 function saveOptions() {

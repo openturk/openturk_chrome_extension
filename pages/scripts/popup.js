@@ -18,12 +18,10 @@ var OT = {
       OT.switch_spinner();
       OT.get_worker_stats();
     })
-    $('header.sub a').on('click', function() {
-      chrome.windows.getCurrent(null, function(window) {
-        if (window.type == 'popup') {
-          chrome.windows.remove(window.id);
-        }
-      });
+    $('a#options').click(function(e){
+      e.preventDefault();
+      var optionsUrl = chrome.extension.getURL('pages/options.html');
+      chrome.tabs.create({url: optionsUrl});
     });
     $('.hint a').click(function(e) {
       e.preventDefault();
@@ -247,25 +245,10 @@ function indexRequesters() {
   });
 }
 
-function setupEvents() {
-  $('a#settings').click(function() {
-    openSettings();
-  });
-}
-
-function openSettings() {
-  var settingsUrl = chrome.extension.getURL('/pages/settings.html');
-  console.log('going to ' + settingsUrl);
-  chrome.tabs.create({
-    url: settingsUrl
-  });
-}
-
 $(document).ready(function() {
   OT.init();
   //console.log('loading stuff');
   loadUIRequesters();
-  setupEvents();
   chrome.extension.sendMessage({
     read: "resetIcon"
   });
