@@ -4,6 +4,7 @@ $(function() {
   var $btnAdd = $('#add'),
       $url = $('#url'),
       $urls = $('#searchterms');
+      $unsubscribe = $('#unsubscribe');
 
   console.log('this is ' + $btnAdd);
 
@@ -25,6 +26,21 @@ $(function() {
       $url.val(url);
       $btnAdd.addClass('edit-mode');
       $li.remove();
+  });
+
+  $("#unsubscribe").on('click', function(e) {
+      e.preventDefault();
+      console.log("clicked");
+      // chrome.runtime.sendMessage({
+      //   deleteRequester: {
+      //     "name": $(this).attr('data-name'),
+      //     "id": $(this).attr('data-id'),
+      //     "numtask": 0
+      //   }
+      // }, function(response) {});
+      // var $a = $(this),
+      //     $li = $a.closest('li');
+      // $li.remove();
   });
 
   $urls.on('click', 'a.delete', function(e) {
@@ -75,7 +91,8 @@ function initVariables() {
 }
 
 function plusRequester(requester) {
-    var $li = $('<li><img src="http://www.gravatar.com/avatar.php?gravatar_id=' + md5(requester['id']) + '&r=PG&s=15&default=identicon"/> <span class="requester">' + requester['name'] + '</span> <a href class="Delete">unsubscribe <span class="fa fa-trash-o"></span></a></li>');
+  console.log(requester['id']);
+    var $li = $('<li><img src="http://www.gravatar.com/avatar.php?gravatar_id=' + md5(requester['id']) + '&r=PG&s=15&default=identicon"/> <span class="requester">' + requester['name'] + '</span> <a href="#" id="unsubscribe" class="Delete" data-id="'+requester['id']+'"> unsubscribe</a></li>');
     $('#requesters').append($li);
 }
 

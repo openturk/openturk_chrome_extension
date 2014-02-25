@@ -188,10 +188,11 @@ $(document).ready(function() {
       });
 
       insert_after.after('<button id="dislike" data-id="' + requester_id + '" data-name="' + requester_name + '">dislike</button>');
-      insert_after.after('<button id="like" data-id="' + requester_id + '" data-name="' + requester_name + '">like</button>');
+      insert_after.after('<button class="like" data-id="' + requester_id + '" data-name="' + requester_name + '">like</button>');
     }
-    $('#like').click(function(e) {
+    $('.like').click(function(e) {
       e.preventDefault();
+      console.log("clicked");
       chrome.runtime.sendMessage({
         addRequester: {
           "name": $(this).attr('data-name'),
@@ -199,6 +200,7 @@ $(document).ready(function() {
           "numtask": 0
         }
       }, function(response) {});
+      console.log($(this).attr('data-name'));
     });
     //Add I'm feeling lucky button
     $('input[value="/searchbar"]').after('<br><button id="lucky">I\'m feeling lucky</button>');
