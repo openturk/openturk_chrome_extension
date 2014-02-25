@@ -5,6 +5,7 @@
    },
    "browser_action": {
       "default_icon": "icons/icon19.png",
+      "default_title": "OpenTurk",
       "default_popup": "pages/popup.html"
    },
    "content_scripts": [ {

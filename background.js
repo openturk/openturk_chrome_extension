@@ -57,9 +57,31 @@ chrome.runtime.onMessage.addListener(
     {
         updateUnreadCount(0);     
     }
+    if( request.addRequester)
+    {
+        console.log('adding');
+        addRequester(request.addRequester);     
+    }
+    if( request.deleteRequester)
+    {
+        console.log('deleting');
+        deleteRequester(request.deleteRequester);     
+    }
   }
 );
 
+function addRequester(req) {
+  obj.requesters.push(req);
+  save();
+  indexRequesters();
+}
+
+function deleteRequester(req) {
+  console.log(req);
+  obj.requesters = obj.requesters.filter(function(el){ return el.id != req.id; });
+  save();
+  indexRequesters();
+}
 
 function loadRequesters() {
   storage.get('requesters', function(items) {

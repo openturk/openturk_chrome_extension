@@ -1,43 +1,83 @@
-<!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title>Openturk</title>
-		<link rel="stylesheet" href="styles/main.css">
-		<script src="scripts/jquery-2.0.3.min.js"></script>
-		<script src="scripts/popup.js"></script>
-		<base target="_blank" />
-	</head>
-	<body class="detail editing">
-		<header class="sub">
-			Connecting ..
-		</header>
-		<header class="sub2">
-			Connecting ..
-		</header>
-		<header id="load">
-			<div style="padding:10px;">
-				<img src="images/spin.gif" style="display:block;margin:auto;">
-			</div>
-		</header>
-		<header id="login" style="display:none;">
-			<div style="padding:10px;">
-				<a href="https://www.amazon.com/gp/aws/ssop/index.html?awscbctx=&awscbid=urn%3Aaws%3Asid%3A0N1A8324EEG1142T9G02&awscredential=&awsnoclientpipeline=true&awsstrict=false&awsturknosubway=true&wa=wsignin1.0&wctx=&wreply=https%3A%2F%2Fworkersandbox.mturk.com%3A443%2Fmturk%2Fendsignin&wtrealm=urn%3Aaws%3Asid%3A0N1A8324EEG1142T9G02&awssig=UlH2xRjIlr69pdR3kpZEtiCTN1I%3D" id="lnkFindHitsNow"><img src="images/amt-sign.gif" style="display:block;margin:auto;"></a>
-			</div>
-		</header>
-		<div id="content" style="display:none;">
-			<div class="container">
-				<label for="code">Tasks from your favorite requesters</label>
-				<section class="code">
-				<ul id="urls">
-				</ul>
-				</section>
-				<div class="actions">
-					<button class="btn btn-success">Get a Task</button>
-					<button class="btn btn-success">Edit Requesters</button>
-					<button class="btn btn-danger">Refresh</button>
-				</div>
-			</div>
-		</div>
-	</body>
+    <head>
+        <meta charset="utf-8">
+        <title>Openturk</title>
+        <link rel="stylesheet" href="styles/font-awesome/css/font-awesome.min.css">
+        <link rel="stylesheet" href="styles/app.css">
+<!--         <link rel="stylesheet" href="styles/bootstrap.css"> -->
+        <script src="scripts/jquery-2.0.3.min.js"></script>
+        <script src="scripts/md5.js"></script>
+        <script src="scripts/popup.js"></script>
+        <script src="scripts/bootstrap.min.js"></script>
+        <base target="_blank" />
+        <style>
+          body {overflow: hidden;}
+          #container, #spinner, #sign, #login {width:400px;}
+        </style>
+    </head>
+    <body>
+        <div id="spinner">
+            <img src="images/spin.gif">
+        </div>
+        <div id="container" class="popup-container"  style="display: none;">
+            <div id="header">
+                <img src="/icons/icon48.png">
+                
+                <div class="right">
+                    <a id="recommended" href="">Favorites</a>
+                    <span>|</span>
+                    <a id="tasks" href="">Tasks</a>
+                    <span>|</span>
+                    <a id="balance" href="">Balance</a>
+                    <span>|</span>
+                    <a id="settings" href="">Settings</a>
+                </div>
+            </div>
+            <table id="feed" cellspacing="3" cellpadding="0">
+            </table>
+            <div id="footer">
+                <div class="left">
+                    <a href="#" id="mturkuser" class="little_id"></a>
+                </div>
+                <div class="right">
+                    <a href="http://www.openturk.com" id="openturkuser">connect to openturk</a> | <a href="#" id="suggestion">Suggestions?</a> | <a href="#" id="logout">Logout</a>
+                </div>
+            </div>
+        </div>
+        <div id="sign" style="display: none;">
+            <form>
+                <div class="row">
+                    <img src="/icons/icon48.png">
+                </div>
+                <div class="tight-row">
+                    <p class="text-warning text-center">
+                        Please, first login to your Mturk account to load this extension.
+                    </p>
+                </div>
+                <div style="padding:10px;">
+                    <a class="btn btn-primary" href="https://www.amazon.com/gp/aws/ssop/index.html?awscbctx=&awscbid=urn%3Aaws%3Asid%3A0N1A8324EEG1142T9G02&awscredential=&awsnoclientpipeline=true&awsstrict=false&awsturknosubway=true&wa=wsignin1.0&wctx=&wreply=https%3A%2F%2Fworkersandbox.mturk.com%3A443%2Fmturk%2Fendsignin&wtrealm=urn%3Aaws%3Asid%3A0N1A8324EEG1142T9G02&awssig=UlH2xRjIlr69pdR3kpZEtiCTN1I%3D">Login</a>
+                </div>
+            </form>
+        </div>
+        <div id="login" style="display: none;">
+            <form>
+                <div class="row">
+                    <img src="/icons/icon48.png">
+                </div>
+                <div class="tight-row">
+                    <p class="text-warning text-center">
+                        You are logged in mTurk as:
+                    </p>
+                    <p id="mturkusername">
+                        
+                    </p>
+                </div>
+                <div style="padding:10px;">
+                    <a class="btn btn-success" id="save" href="#">save</a>
+                    <a class="btn btn-primary" id="signout" href="https://workersandbox.mturk.com/mturk/beginsignout">logout</a>
+                </div>
+                
+            </form>
+        </div>
+    </body>
 </html>

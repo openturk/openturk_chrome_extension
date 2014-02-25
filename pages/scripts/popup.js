@@ -1,16 +1,15 @@
 var OT = {
   init: function() {
-    OT.status.container = $('header.sub');
-    OT.status.container2 = $('header.sub2');
+    OT.status.container = $('header.footer');
 
     OT.get_worker_id();
-    OT.get_openturk_username();
+    // OT.get_openturk_username();
 
-    $('#creds button.save').click(function(e) {
+    $('#save').click(function(e) {
       e.preventDefault();
       OT.creds.save();
     })
-    $('#creds button.remove').click(function(e) {
+    $('#logout').click(function(e) {
       e.preventDefault();
       OT.creds.remove();
     })
@@ -53,38 +52,19 @@ var OT = {
     },
 
     remove: function() {
-      localStorage.removeItem('username');
-      localStorage.removeItem('api_key');
+      localStorage.removeItem('workerId');
+      localStorage.removeItem('openturk_username');
       localStorage.setItem('validated', 'false');
-      $('form #username').val('');
-      $('form #key').val('');
-      OT.message.set('success', 'Credentials removed');
+      $('mturkusername').val('');
+      $('mturkuser').val('');
+      OT.get_worker_id();
     },
 
     save: function() {
-      var username = $('#username').val();
-      var api_key = $('#key').val();
-
-      var url = OT.api.base_url + '?username=' + username + '&api_key=' + api_key
-
-      $.ajax({
-        type: 'GET',
-        url: url,
-        dataType: 'jsonp',
-        success: function(data) {
-          localStorage.setItem('username', username);
-          localStorage.setItem('api_key', api_key);
-          localStorage.setItem('validated', 'true');
-          OT.message.set('success', 'Credentials saved');
-          OT.switch_content();
-        },
-        error: function(xhr, status) {
-          localStorage.removeItem('username');
-          localStorage.removeItem('api_key');
-          localStorage.setItem('validated', 'false');
-          OT.message.set('error', 'Bad credentials');
-        }
-      });
+      var username = $('#mturkusername').val();
+      localStorage.setItem('workerId', username);
+      localStorage.setItem('validated', 'true');
+      OT.switch_content();
     },
   },
 
@@ -113,19 +93,28 @@ var OT = {
   },
 
   switch_content: function() {
-    $('#content').show();
+    $('#container').show();
     $('#login').hide();
-    $('#load').hide();
+    $('#sign').hide();
+    $('#spinner').hide();
   },
   switch_login: function() {
-    $('#content').hide();
+    $('#container').hide();
     $('#login').show();
-    $('#load').hide();
+    $('#sign').hide();
+    $('#spinner').hide();
   },
-  switch_loading: function() {
-    $('#content').hide();
+  switch_sign: function() {
+    $('#container').hide();
     $('#login').hide();
-    $('#load').show();
+    $('#sign').show();
+    $('#spinner').hide();
+  },
+  switch_spinner: function() {
+    $('#container').hide();
+    $('#login').hide();
+    $('#sign').hide();
+    $('#spinner').show();
   },
 
   get_worker_id: function() {
@@ -134,34 +123,43 @@ var OT = {
       success: function(result) {
         var spanText = $(result).filter("table").find("span:contains('Worker ID')").text();
         var workerIdPattern = /Worker ID: (.*)$/;
-        var workerId = spanText.match(workerIdPattern)[1];
-        OT.status.workerId = workerId;
-        localStorage.setItem('workerId', workerId);
-        localStorage.setItem('validated', 'true');
-        OT.message.set('success', 'Welcome ' + workerId);
-        OT.switch_content();
+        var workerId = spanText.match(workerIdPattern);
+        if(workerId == null){
+          OT.switch_sign();
+        } else {
+          workerId = workerId[1];
+          console.log('adfa');
+          OT.status.workerId = workerId;
+          $('#mturkusername').html(workerId);
+          $('#mturkuser').html(workerId);
+          if(localStorage.getItem('validated') == 'true') {
+            OT.switch_content();
+          } else {
+            OT.switch_login();
+          }
+        }
       },
       error: function(xhr, status) {
+        console.log('you are not logged in MTURK');
         localStorage.removeItem('workerId');
         localStorage.setItem('validated', 'false');
-        OT.message.set('error', 'You are not logged in Amazon Mechanical Turk');
-        OT.switch_login();
+        OT.switch_sign();
       }
     });
   },
 
-  get_openturk_username: function() {
-    var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
-      if (typeof result.username !== "undefined") {
-        OT.status.openturk_username = result.username;
-        OT.message2.set('success', 'Welcome ' + result.username);
-        OT.switch_content();
-      } else {
-        OT.message2.set('error', 'Please log in on <a href="http://alpha.openturk.com/accounts/login/">OpenTurk.com</a>');
-        OT.switch_login();
-      }
-    });
-  },
+  // get_openturk_username: function() {
+  //   var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
+  //     if (typeof result.username !== "undefined") {
+  //       OT.status.openturk_username = result.username;
+  //       OT.message2.set('success', 'Welcome ' + result.username);
+  //       OT.switch_content();
+  //     } else {
+  //       OT.message2.set('error', 'Please log in on <a href="http://alpha.openturk.com/accounts/login/">OpenTurk.com</a>');
+  //       OT.switch_login();
+  //     }
+  //   });
+  // },
 
   status: {
     workerId: '',
@@ -173,8 +171,30 @@ var OT = {
 
 
 function appendRequester(url) {
-  var $li = $('<li><a href="https://workersandbox.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&requesterId=' + url['id'] + '&qualifiedFor=on"> <span class="url">' + url['name'] + '</span></a> <span>' + url['numtask'] + '</span></li>');
-  $('#urls').append($li);
+	var feed = document.getElementById("feed");
+    var row = document.createElement("tr");
+    row.className = "link";
+    var link_col = document.createElement("td");
+    var identicon = document.createElement("td");
+    var im = document.createElement("img");
+    	im.src = 'http://www.gravatar.com/avatar.php?gravatar_id=' + md5(url['id']) + '&r=PG&s=15&default=identicon';
+    	im.width = 15;
+    	im.height = 15;
+    console.log(md5(url['id']));
+    var title = document.createElement("a");
+      title.className = "link_title";
+      title.innerText = url['name'];
+      title.href = 'https://workersandbox.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&requesterId=' + url['id'] + '&qualifiedFor=on';
+    var batchs = document.createElement("a");
+      batchs.className = "batchs";
+      batchs.innerText = "("+url['numtask']+" batchs)";
+      batchs.href = url['numtask'];
+    identicon.appendChild(im);
+    link_col.appendChild(title);
+    link_col.appendChild(batchs);
+    row.appendChild(identicon);
+    row.appendChild(link_col)
+    feed.appendChild(row);
 }
 
 var obj = {};
@@ -189,7 +209,6 @@ function loadUIRequesters() {
     });
     indexRequesters();
   });
-
 }
 
 function indexRequesters() {
@@ -198,10 +217,23 @@ function indexRequesters() {
   });
 }
 
+function setupEvents() {
+  $('a#settings').click(function(){
+    openSettings();
+  });
+}
+
+function openSettings() {
+  var settingsUrl = chrome.extension.getURL('/pages/settings.html');
+  console.log('going to ' + settingsUrl);
+  chrome.tabs.create({url: settingsUrl});
+}
+
 $(document).ready(function() {
   OT.init();
   //console.log('loading stuff');
   loadUIRequesters();
+  setupEvents();
   chrome.extension.sendMessage({
     read: "resetIcon"
   });
