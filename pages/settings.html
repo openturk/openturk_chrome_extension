@@ -20,7 +20,7 @@
 		</div>
 		<div id="feed">
 			<br>
-			<label for="RequestInterval">Check for tasks every:</label>
+			<p>:: Check for tasks every</p>
 			<select id="RequestInterval" name="RequestInterval">
 				<option value="1">1 minutes</option>
 				<option value="5">5 minutes</option>
@@ -32,8 +32,7 @@
 				<option value="60">1 hour</option>
 			</select><br/><br>
 			<hr>
-
-			<label>Edit Search Keywords (max 5):</label><br>
+			<p>:: Edit Search Keywords (max 5)</p>
 			<input id="url" />
 			<button id="add">
 		        <span class="adding">Add</span>
@@ -44,12 +43,16 @@
 			</ul>
 
 			<hr>
-			<label>Edit Favorite Requesters:</label><br>
+			<p>:: Edit Favorite Requesters</p>
+			<input id="requester" />
+			<button id="add-requester">
+		        <span class="adding-requester">Add</span>
+		    </button>
 			<ul id="requesters">
 			    <li><img src="images/spin.gif"></li>
 			</ul>
 			<hr>
-			<label for="BackgroundTabs">Use mTurk Sandbox?</label><br/>
+			<p>:: Use mTurk Sandbox?</p>
 			<input type="radio" class='background-tabs-radio' name="BackgroundTabs" value="true"> Yes
 			<input type="radio" class="second-radio background-tabs-radio" name="BackgroundTabs" value="false"> No<br/>
 			<p class='right'>

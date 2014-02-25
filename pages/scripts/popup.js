@@ -13,9 +13,9 @@ var OT = {
       e.preventDefault();
       OT.creds.remove();
     })
-    $('#post button').click(function(e) {
+    $('#balance').click(function(e) {
       e.preventDefault();
-      OT.api.post();
+      OT.show_balance();
     })
     $('header.sub a').on('click', function() {
       chrome.windows.getCurrent(null, function(window) {
@@ -154,7 +154,7 @@ var OT = {
         OT.status.openturk_username = result.username;
         $('#openturkuser').html('OT:'+OT.status.openturk_username);
       } else {
-        $('#openturkuser').html('connect to openturk');
+        $('#openturkuser').html('Connect to openturk');
       }
     });
   },
