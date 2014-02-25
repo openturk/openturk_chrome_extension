@@ -159,6 +159,21 @@ var OT = {
     });
   },
 
+  get_worker_stats: function() {
+      $.get('https://workersandbox.mturk.com/mturk/dashboard', {}, function(data) {
+      var rewards = $(data).find('.reward');
+      var approval_rate = $(data).filter("table").find("td.metrics-table-first-value:contains('... Approved')").next().next().text();
+      var balance = {
+        approved_hits: $(rewards[0]).html(),
+        bonuses: $(rewards[1]).html(),
+        total_earnings: $(rewards[2]).html(),
+        approval_rate: approval_rate
+      }
+      localStorage.setItem('balance', balance);
+      OT.switch_balance();
+    });
+  }
+
   status: {
     workerId: '',
     openturk_username: '',
@@ -228,22 +243,6 @@ function openSettings() {
     url: settingsUrl
   });
 }
-
-function get_worker_stats(callback) {
-  $.get('https://workersandbox.mturk.com/mturk/dashboard', {}, function(data) {
-    var rewards = $(data).find('.reward');
-    var approval_rate = $(data).filter("table").find("td.metrics-table-first-value:contains('... Approved')").next().next().text();
-    var balance = {
-      approved_hits: $(rewards[0]).html(),
-      bonuses: $(rewards[1]).html(),
-      total_earnings: $(rewards[2]).html(),
-      approval_rate: approval_rate
-    }
-    localStorage.setItem('balance', balance);
-    callback(balance);
-  });
-}
-get_worker_stats(function() {});
 
 $(document).ready(function() {
   OT.init();
