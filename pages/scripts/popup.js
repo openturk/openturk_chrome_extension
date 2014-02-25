@@ -45,8 +45,7 @@ var OT = {
   creds: {
     populate: function() {
       if (localStorage.getItem('validated') == 'true') {
-        $('form #username').val(localStorage.getItem('username'));
-        $('form #key').val(localStorage.getItem('api_key'));
+        OT.status.workerId = localStorage.getItem('workerId');
       }
     },
 
@@ -134,7 +133,7 @@ var OT = {
         var spanText = $(result).filter("table").find("span:contains('Worker ID')").text();
         var workerIdPattern = /Worker ID: (.*)$/;
         var workerId = spanText.match(workerIdPattern);
-        if (workerId == null) {
+        if (OT.status.workerId == null || workerId == null) {
           OT.switch_sign();
         } else {
           workerId = workerId[1];
@@ -232,8 +231,10 @@ function loadUIRequesters() {
   chrome.storage.sync.get('requesters', function(items) {
     obj = items;
     obj.requesters.forEach(function(url) {
-      //console.log(url);
-      appendRequester(url);
+      console.log(url);
+      if(url['numtask']) {
+        appendRequester(url);
+      }
     });
     indexRequesters();
   });

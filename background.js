@@ -1,5 +1,5 @@
 // Variables for the task management
-var storage = chrome.storage.local;
+var storage = chrome.storage.sync;
 var obj = {};
 var index = {};
 

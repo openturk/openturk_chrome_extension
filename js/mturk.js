@@ -1,7 +1,7 @@
 $(document).ready(function() {
   (function() {
 
-    var storage = chrome.storage.local;
+    var storage = chrome.storage.sync;
     var form = '';
     var openturk_endpoint = 'http://alpha.openturk.com/endpoint/redirect';
     var autoaccept = true;
@@ -194,19 +194,19 @@ $(document).ready(function() {
           insert_after.after('<button class="like" data-id="' + requester_id + '" data-name="' + requester_name + '">like</button>');
         }
       }
+      $('.like').click(function(e) {
+        e.preventDefault();
+        chrome.runtime.sendMessage({
+          addRequester: {
+            "name": $(this).attr('data-name'),
+            "id": $(this).attr('data-id'),
+            "numtask": 0
+          }
+        }, function(response) {});
+        $('.like[data-id='+ $(this).attr('data-id') +']').hide();
+      });
     });
-    $('.like').click(function(e) {
-      e.preventDefault();
-      console.log("clicked");
-      chrome.runtime.sendMessage({
-        addRequester: {
-          "name": $(this).attr('data-name'),
-          "id": $(this).attr('data-id'),
-          "numtask": 0
-        }
-      }, function(response) {});
-      console.log($(this).attr('data-name'));
-    });
+
     //Add I'm feeling lucky button
     $('input[value="/searchbar"]').after('<br><button id="lucky">I\'m feeling lucky</button>');
     $('#lucky').click(function(e) {
