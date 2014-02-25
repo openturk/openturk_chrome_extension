@@ -3,7 +3,7 @@ var OT = {
     OT.status.container = $('header.footer');
 
     OT.get_worker_id();
-    // OT.get_openturk_username();
+    OT.get_openturk_username();
 
     $('#save').click(function(e) {
       e.preventDefault();
@@ -130,8 +130,8 @@ var OT = {
           workerId = workerId[1];
           console.log('adfa');
           OT.status.workerId = workerId;
-          $('#mturkusername').html(workerId);
-          $('#mturkuser').html(workerId);
+          $('#mturkusername').html('MT:'+workerId);
+          $('#mturkusername').html('MT:'+workerId);
           if (localStorage.getItem('validated') == 'true') {
             OT.switch_content();
           } else {
@@ -148,18 +148,16 @@ var OT = {
     });
   },
 
-  // get_openturk_username: function() {
-  //   var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
-  //     if (typeof result.username !== "undefined") {
-  //       OT.status.openturk_username = result.username;
-  //       OT.message2.set('success', 'Welcome ' + result.username);
-  //       OT.switch_content();
-  //     } else {
-  //       OT.message2.set('error', 'Please log in on <a href="http://alpha.openturk.com/accounts/login/">OpenTurk.com</a>');
-  //       OT.switch_login();
-  //     }
-  //   });
-  // },
+  get_openturk_username: function() {
+    var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
+      if (typeof result.username !== "undefined") {
+        OT.status.openturk_username = result.username;
+        $('#openturkuser').html('OT:'+OT.status.openturk_username);
+      } else {
+        $('#openturkuser').html('connect to openturk');
+      }
+    });
+  },
 
   status: {
     workerId: '',
