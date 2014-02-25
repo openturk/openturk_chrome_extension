@@ -34,7 +34,7 @@ a:hover {text-decoration:underline;}
 .batchs { font-size:7pt; margin-left:5px; }
 .little_id { font-size:7pt;padding-top:20px;}
 .error {white-space: nowrap;color: red;}
-#footer {font-size:11px;}
+#footer {font-size:10px;}
 .left {float:left;}
 .right {float:right;}
 #spinner {height:50px; text-align:center; padding-top:20px;}
@@ -44,7 +44,7 @@ a:hover {text-decoration:underline;}
 #searchbutton {font-family:courier;}
 
 #OptionsPage #header {margin-bottom:20px;}
-#OptionsPage #container {width:85%; margin:auto;}
+#OptionsPage #container {margin:auto;}
 #OptionsPage label {margin-right:10px;}
 #OptionsPage .second-radio {margin-left:10px;}
 #OptionsPage p { color:#828282;}
