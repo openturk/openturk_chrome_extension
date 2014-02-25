@@ -13,9 +13,9 @@ var animationSpeed = 10; // ms
 var canvas = document.getElementById('canvas');
 var loggedInImage = document.getElementById('logged_in');
 var canvasContext = canvas.getContext('2d');
-var pollIntervalMin = 1;  // 1 minute
-var pollIntervalMax = 60;  // 1 hour
-var requestTimeout = 1000 * 2;  // 2 seconds
+var pollIntervalMin = 1; // 1 minute
+var pollIntervalMax = 60; // 1 hour
+var requestTimeout = 1000 * 2; // 2 seconds
 var rotation = 0;
 var loadingAnimation = new LoadingAnimation();
 
@@ -53,19 +53,16 @@ chrome.runtime.onMessage.addListener(
       });
     }
 
-    if( request.read === "resetIcon" )
-    {
-        updateUnreadCount(0);     
+    if (request.read === "resetIcon") {
+      updateUnreadCount(0);
     }
-    if( request.addRequester)
-    {
-        console.log('adding');
-        addRequester(request.addRequester);     
+    if (request.addRequester) {
+      console.log('adding');
+      addRequester(request.addRequester);
     }
-    if( request.deleteRequester)
-    {
-        console.log('deleting');
-        deleteRequester(request.deleteRequester);     
+    if (request.deleteRequester) {
+      console.log('deleting');
+      deleteRequester(request.deleteRequester);
     }
   }
 );
@@ -78,7 +75,9 @@ function addRequester(req) {
 
 function deleteRequester(req) {
   console.log(req);
-  obj.requesters = obj.requesters.filter(function(el){ return el.id != req.id; });
+  obj.requesters = obj.requesters.filter(function(el) {
+    return el.id != req.id;
+  });
   save();
   indexRequesters();
 }
@@ -130,7 +129,7 @@ function scrapForBatchs(url) {
       var resPattern = /of (.*) Results/;
       var res = spanText.match(resPattern)[1];
       id = url['id'];
-      if(res != index[id].numtask ) {
+      if (res != index[id].numtask) {
         console.log('doing some update');
         index[id].numtask = res;
         save();
@@ -178,7 +177,7 @@ function scheduleRequest() {
   var multiplier = Math.max(randomness * exponent, 1);
   var delay = Math.min(multiplier * pollIntervalMin, pollIntervalMax);
   delay = Math.round(delay);
-  delay = 1 ; // 1 minutes for tests
+  delay = 1; // 1 minutes for tests
   console.log('Scheduling for (in minutes): ' + delay);
 
   if (oldChromeVersion) {
@@ -221,7 +220,7 @@ function ease(x) {
 }
 
 function animateFlip() {
-  rotation += 1/animationFrames;
+  rotation += 1 / animationFrames;
   drawIconAtRotation();
 
   if (rotation <= 1) {
@@ -382,7 +381,10 @@ if (oldChromeVersion) {
 if (chrome.runtime && chrome.runtime.onStartup) {
   chrome.runtime.onStartup.addListener(function() {
     console.log('Starting browser... updating icon.');
-    startRequest({scheduleRequest:false, showLoadingAnimation:false});
+    startRequest({
+      scheduleRequest: false,
+      showLoadingAnimation: false
+    });
     updateIcon();
   });
 } else {
@@ -392,7 +394,10 @@ if (chrome.runtime && chrome.runtime.onStartup) {
   // in a version of Chrome that has this problem.
   chrome.windows.onCreated.addListener(function() {
     console.log('Window created... updating icon.');
-    startRequest({scheduleRequest:false, showLoadingAnimation:false});
+    startRequest({
+      scheduleRequest: false,
+      showLoadingAnimation: false
+    });
     updateIcon();
   });
 }

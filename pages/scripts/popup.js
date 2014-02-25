@@ -124,7 +124,7 @@ var OT = {
         var spanText = $(result).filter("table").find("span:contains('Worker ID')").text();
         var workerIdPattern = /Worker ID: (.*)$/;
         var workerId = spanText.match(workerIdPattern);
-        if(workerId == null){
+        if (workerId == null) {
           OT.switch_sign();
         } else {
           workerId = workerId[1];
@@ -132,7 +132,7 @@ var OT = {
           OT.status.workerId = workerId;
           $('#mturkusername').html(workerId);
           $('#mturkuser').html(workerId);
-          if(localStorage.getItem('validated') == 'true') {
+          if (localStorage.getItem('validated') == 'true') {
             OT.switch_content();
           } else {
             OT.switch_login();
@@ -171,30 +171,30 @@ var OT = {
 
 
 function appendRequester(url) {
-	var feed = document.getElementById("feed");
-    var row = document.createElement("tr");
-    row.className = "link";
-    var link_col = document.createElement("td");
-    var identicon = document.createElement("td");
-    var im = document.createElement("img");
-    	im.src = 'http://www.gravatar.com/avatar.php?gravatar_id=' + md5(url['id']) + '&r=PG&s=15&default=identicon';
-    	im.width = 15;
-    	im.height = 15;
-    console.log(md5(url['id']));
-    var title = document.createElement("a");
-      title.className = "link_title";
-      title.innerText = url['name'];
-      title.href = 'https://workersandbox.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&requesterId=' + url['id'] + '&qualifiedFor=on';
-    var batchs = document.createElement("a");
-      batchs.className = "batchs";
-      batchs.innerText = "("+url['numtask']+" batchs)";
-      batchs.href = url['numtask'];
-    identicon.appendChild(im);
-    link_col.appendChild(title);
-    link_col.appendChild(batchs);
-    row.appendChild(identicon);
-    row.appendChild(link_col)
-    feed.appendChild(row);
+  var feed = document.getElementById("feed");
+  var row = document.createElement("tr");
+  row.className = "link";
+  var link_col = document.createElement("td");
+  var identicon = document.createElement("td");
+  var im = document.createElement("img");
+  im.src = 'http://www.gravatar.com/avatar.php?gravatar_id=' + md5(url['id']) + '&r=PG&s=15&default=identicon';
+  im.width = 15;
+  im.height = 15;
+  console.log(md5(url['id']));
+  var title = document.createElement("a");
+  title.className = "link_title";
+  title.innerText = url['name'];
+  title.href = 'https://workersandbox.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&requesterId=' + url['id'] + '&qualifiedFor=on';
+  var batchs = document.createElement("a");
+  batchs.className = "batchs";
+  batchs.innerText = "(" + url['numtask'] + " batchs)";
+  batchs.href = url['numtask'];
+  identicon.appendChild(im);
+  link_col.appendChild(title);
+  link_col.appendChild(batchs);
+  row.appendChild(identicon);
+  row.appendChild(link_col)
+  feed.appendChild(row);
 }
 
 var obj = {};
@@ -218,7 +218,7 @@ function indexRequesters() {
 }
 
 function setupEvents() {
-  $('a#settings').click(function(){
+  $('a#settings').click(function() {
     openSettings();
   });
 }
@@ -226,7 +226,9 @@ function setupEvents() {
 function openSettings() {
   var settingsUrl = chrome.extension.getURL('/pages/settings.html');
   console.log('going to ' + settingsUrl);
-  chrome.tabs.create({url: settingsUrl});
+  chrome.tabs.create({
+    url: settingsUrl
+  });
 }
 
 function get_worker_stats(callback) {
@@ -243,7 +245,7 @@ function get_worker_stats(callback) {
     callback(balance);
   });
 }
-get_worker_stats(function(){});
+get_worker_stats(function() {});
 
 $(document).ready(function() {
   OT.init();
