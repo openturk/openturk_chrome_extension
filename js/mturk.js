@@ -177,34 +177,36 @@ $(document).ready(function() {
     storage.get('requesters', function(items) {
       var obj = items;
       var already = {};
-      for (var j = 0; j < obj.requesters.length; j++) {
-        already[obj.requesters[j].id] = true;
-      }
-      var tasks = $('div > table > tbody > tr > td > table');
-      for (var i = 0; i < tasks.length; i += 2) {
-        var task = $(tasks[i]);
-        var tr = $(task.find('tbody > tr > td > table > tbody > tr > td > table > tbody > tr')[0]);
-        var requester = $(tr.find('td > a')[1]);
-        var requester_id = get_url_params('lala?' + requester.attr('href'))['requesterId'];
-        var requester_name = requester.html();
-        var insert_after = $(tr.find('td > a')[0]);
-
-        if (requester_id in already) {} else {
-          insert_after.after('<button class="dislike" data-id="' + requester_id + '" data-name="' + requester_name + '">dislike</button>');
-          insert_after.after('<button class="like" data-id="' + requester_id + '" data-name="' + requester_name + '">like</button>');
+      if(obj.requesters){
+        for (var j = 0; j < obj.requesters.length; j++) {
+          already[obj.requesters[j].id] = true;
         }
-      }
-      $('.like').click(function(e) {
-        e.preventDefault();
-        chrome.runtime.sendMessage({
-          addRequester: {
-            "name": $(this).attr('data-name'),
-            "id": $(this).attr('data-id'),
-            "numtask": 0
+        var tasks = $('div > table > tbody > tr > td > table');
+        for (var i = 0; i < tasks.length; i += 2) {
+          var task = $(tasks[i]);
+          var tr = $(task.find('tbody > tr > td > table > tbody > tr > td > table > tbody > tr')[0]);
+          var requester = $(tr.find('td > a')[1]);
+          var requester_id = get_url_params('lala?' + requester.attr('href'))['requesterId'];
+          var requester_name = requester.html();
+          var insert_after = $(tr.find('td > a')[0]);
+
+          if (requester_id in already) {} else {
+            insert_after.after('<button class="dislike" data-id="' + requester_id + '" data-name="' + requester_name + '">dislike</button>');
+            insert_after.after('<button class="like" data-id="' + requester_id + '" data-name="' + requester_name + '">like</button>');
           }
-        }, function(response) {});
-        $('.like[data-id='+ $(this).attr('data-id') +']').hide();
-      });
+        }
+        $('.like').click(function(e) {
+          e.preventDefault();
+          chrome.runtime.sendMessage({
+            addRequester: {
+              "name": $(this).attr('data-name'),
+              "id": $(this).attr('data-id'),
+              "numtask": 0
+            }
+          }, function(response) {});
+          $('.like[data-id='+ $(this).attr('data-id') +']').hide();
+        });
+      }
     });
 
     //Add I'm feeling lucky button
