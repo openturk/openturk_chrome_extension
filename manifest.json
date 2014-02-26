@@ -22,7 +22,8 @@
    },
    "manifest_version": 2,
    "name": "Openturk",
+   "web_accessible_resources": ["pages/scripts/jquery-2.0.3.min.map"],
    "description": "OpenTurk",
    "permissions": [ "alarms", "tabs", "\u003Call_urls\u003E", "storage" ],
-   "version": "0.0.4"
+   "version": "0.0.5"
 }
