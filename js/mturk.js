@@ -173,7 +173,7 @@ $(document).ready(function() {
       });
     }
 
-    //Add like and dislike buttons
+    //Add subscribe buttons
     storage.get('requesters', function(items) {
       var obj = items;
       var already = {};
@@ -181,32 +181,33 @@ $(document).ready(function() {
         for (var j = 0; j < obj.requesters.length; j++) {
           already[obj.requesters[j].id] = true;
         }
-        var tasks = $('div > table > tbody > tr > td > table');
-        for (var i = 0; i < tasks.length; i += 2) {
-          var task = $(tasks[i]);
-          var tr = $(task.find('tbody > tr > td > table > tbody > tr > td > table > tbody > tr')[0]);
-          var requester = $(tr.find('td > a')[1]);
-          var requester_id = get_url_params('lala?' + requester.attr('href'))['requesterId'];
-          var requester_name = requester.html();
-          var insert_after = $(tr.find('td > a')[0]);
-
-          if (requester_id in already) {} else {
-            insert_after.after('<button class="dislike" data-id="' + requester_id + '" data-name="' + requester_name + '">dislike</button>');
-            insert_after.after('<button class="like" data-id="' + requester_id + '" data-name="' + requester_name + '">like</button>');
-          }
-        }
-        $('.like').click(function(e) {
-          e.preventDefault();
-          chrome.runtime.sendMessage({
-            addRequester: {
-              "name": $(this).attr('data-name'),
-              "id": $(this).attr('data-id'),
-              "numtask": 0
-            }
-          }, function(response) {});
-          $('.like[data-id='+ $(this).attr('data-id') +']').hide();
-        });
       }
+      var tasks = $('div > table > tbody > tr > td > table');
+      for (var i = 0; i < tasks.length; i += 2) {
+        var task = $(tasks[i]);
+        var tr = $(task.find('tbody > tr > td > table > tbody > tr > td > table > tbody > tr')[0]);
+        var requester = $(tr.find('td > a')[1]);
+        var requester_id = get_url_params('lala?' + requester.attr('href'))['requesterId'];
+        var requester_name = requester.html();
+        var insert_after = $(tr.find('td > a')[0]);
+
+        if (requester_id in already) {
+          // insert_after.after('<button class="btn btn-icon" data-id="' + requester_id + '" data-name="' + requester_name + '"><span class="icon-cancel"></span></button>');
+        } else {
+          insert_after.after('<button class="subscribe btn btn-icon" data-id="' + requester_id + '" data-name="' + requester_name + '"><span class="icon-alarm-clock"></button>');
+        }
+      }
+      $('.subscribe').click(function(e) {
+        e.preventDefault();
+        chrome.runtime.sendMessage({
+          addRequester: {
+            "name": $(this).attr('data-name'),
+            "id": $(this).attr('data-id'),
+            "numtask": 0
+          }
+        }, function(response) {});
+        $('.subscribe[data-id='+ $(this).attr('data-id') +']').hide();
+      });
     });
 
     //Add I'm feeling lucky button
@@ -221,11 +222,11 @@ $(document).ready(function() {
       var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
         if (typeof result.username !== "undefined") {
           $('td[colspan=11]')
-            .after('<span id="star" style="font-size: 36px; color: orange; cursor: pointer">★</span>')
+            .after('<button class="btn btn-icon"><span id="star" class="icon-share"></span></button>')
             .after('<div id="modal" style="display:none;position:absolute;background-color:#fff;width:350px;padding:15px;text-align:left;border:2px solid #333;opacity:1;-moz-border-radius:6px;-webkit-border-radius:6px;-moz-box-shadow: 0 0 50px #ccc;-webkit-box-shadow: 0 0 50px #ccc;"><h2>We will post the following message on mturkforum.com</h2><textarea style="width: 340px; height: 100px" disabled>OpenTurk user ' + (result.username) + ' recommended the following task: ' + group_id + '</textarea><br /><input id="modal_submit" type="submit" value="ok"><input id="modal_cancel" type="submit" value="cancel"></div>');
         } else {
           $('td[colspan=11]')
-            .after('<span id="star" style="font-size: 36px; color: orange; cursor: pointer">★</span>')
+            .after('<button class="btn btn-icon"><span id="star" class="icon-share"></span></button>')
             .after('<div id="modal" style="display:none;position:absolute;background-color:#fff;width:350px;padding:15px;text-align:left;border:2px solid #333;opacity:1;-moz-border-radius:6px;-webkit-border-radius:6px;-moz-box-shadow: 0 0 50px #ccc;-webkit-box-shadow: 0 0 50px #ccc;"><h2>Please log in on <a href="http://alpha.openturk.com/accounts/login/">OpenTurk.com</a></h2></div>');
         }
         $('#star').click(function(e) {

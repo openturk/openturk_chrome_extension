@@ -69,6 +69,9 @@ chrome.runtime.onMessage.addListener(
 
 function addRequester(req) {
   console.log('saving');
+  if(!obj.requesters){
+    obj['requesters'] = []
+  }
   obj.requesters.push(req);
   save();
   indexRequesters();
