@@ -4,44 +4,51 @@
         <title>Openturk</title>
         <link rel="stylesheet" href="styles/font-awesome/css/font-awesome.min.css">
         <link rel="stylesheet" href="styles/app.css">
-<!--         <link rel="stylesheet" href="styles/bootstrap.css"> -->
         <script src="scripts/jquery-2.0.3.min.js"></script>
         <script src="scripts/md5.js"></script>
         <script src="scripts/popup.js"></script>
         <script src="scripts/bootstrap.min.js"></script>
         <base target="_blank" />
-        <style>
-          body {overflow: hidden;}
-          #container, #spinner, #sign, #login, #balancer {width:400px;}
-        </style>
     </head>
     <body>
-        <div id="spinner">
+        <div id="header">
+            <img src="/icons/icon19.png">
+            
+            <div class="right">
+                <a id="favorites" href="">Favorites</a>
+                <span>|</span>
+                <a id="search" href="">Search</a>
+                <span>|</span>
+                <a id="balance" href="">Balance</a>
+                <span>|</span>
+                <a href="#" id="options">Options</a>
+            </div>
+        </div>
+        <div class="container" id="spinner">
             <img src="images/spin.gif">
         </div>
-        <div id="container" class="popup-container"  style="display: none;">
-            <div id="header">
-                <img src="/icons/icon48.png">
-                
-                <div class="right">
-                    <a id="recommended" href="">Favorites</a>
-                    <span>|</span>
-                    <a id="tasks" href="">Tasks</a>
-                    <span>|</span>
-                    <a id="balance" href="">Balance</a>
-                    <span>|</span>
-                    <a href="#" id="options">Options</a>
-                </div>
-            </div>
+        <div class="container" id="content" style="display: none;">
             <table id="feed" cellspacing="3" cellpadding="0">
             </table>
-            <div id="footer">
-                <div class="right">
-                    <a href="http://mturk.com" id="mturkusername">MT: </a> | <a href="http://alpha.openturk.com" id="openturkuser">Connect to openturk</a> | <a href="#" id="suggestion">Suggestions?</a> | <a href="#" id="logout">Logout</a>
-                </div>
-            </div>
         </div>
-        <div id="sign" style="display: none;">
+        <div class="container" id="balancer" style="display: none;">
+            <table id="feed" cellspacing="3" cellpadding="0">
+                <tr class="link">
+                    <td>Approved Hits:</td><td> <label id="approved_hits"></label></td>
+                </tr>
+                <tr class="link">
+                    <td>Bonus:</td><td> <label id="bonuses"></label></td>
+                </tr>
+                <tr class="link">
+                    <td>Total Earnings:</td><td> <label id="total_earnings"></label></td>
+                </tr>
+                <tr class="link">
+                    <td>Approval Rate:</td><td> <label id="approval_rate"></label></td>
+                </tr>
+            </table>
+        </div>
+
+        <div id="sign" class="login" style="display: none;">
             <form>
                 <div class="row">
                     <img src="/icons/icon48.png">
@@ -56,7 +63,7 @@
                 </div>
             </form>
         </div>
-        <div id="login" style="display: none;">
+        <div id="login" class="login" style="display: none;">
             <form>
                 <div class="row">
                     <img src="/icons/icon48.png">
@@ -76,38 +83,9 @@
                 
             </form>
         </div>
-        <div id="balancer" style="display: none;">
-            <div id="header">
-                <img src="/icons/icon48.png">
-                
-                <div class="right">
-                    <a id="recommended" href="">Favorites</a>
-                    <span>|</span>
-                    <a id="tasks" href="">Tasks</a>
-                    <span>|</span>
-                    <a id="balance" href="">Balance</a>
-                    <span>|</span>
-                    <a id="settings1" href="#">Settings</a>
-                </div>
-            </div>
-            <table id="feed" cellspacing="3" cellpadding="0">
-                <tr class="link">
-                    <td>Approved Hits:</td><td> <label id="approved_hits"></label></td>
-                </tr>
-                <tr class="link">
-                    <td>Bonus:</td><td> <label id="bonuses"></label></td>
-                </tr>
-                <tr class="link">
-                    <td>Total Earnings:</td><td> <label id="total_earnings"></label></td>
-                </tr>
-                <tr class="link">
-                    <td>Approval Rate:</td><td> <label id="approval_rate"></label></td>
-                </tr>
-            </table>
-            <div id="footer">
-                <div class="right">
-                    <a href="http://mturk.com" id="mturkusername">MT: </a> | <a href="http://alpha.openturk.com" id="openturkuser">Connect to openturk</a> | <a href="#" id="suggestion">Suggestions?</a> | <a href="#" id="logout">Logout</a>
-                </div>
+        <div id="footer">
+            <div class="right">
+                <a href="http://mturk.com" id="mturkusername">MT: </a> | <a href="http://alpha.openturk.com" id="openturkuser">Connect to openturk</a> | <a href="#" id="suggestion">Suggestions?</a> | <a href="#" id="logout">Logout</a>
             </div>
         </div>
     </body>

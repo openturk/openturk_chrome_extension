@@ -12,12 +12,21 @@ var OT = {
     $('#logout').click(function(e) {
       e.preventDefault();
       OT.creds.remove();
-    })
+    });
     $('#balance').click(function(e) {
       e.preventDefault();
       OT.switch_spinner();
       OT.get_worker_stats();
-    })
+    });
+    $('#favorites').click(function(e) {
+      e.preventDefault();
+      OT.switch_spinner();
+      OT.switch_content();
+    });
+    $('#search').click(function(e) {
+      e.preventDefault();
+      // not yet implemented
+    });
     $('a#options').click(function(e){
       e.preventDefault();
       var optionsUrl = chrome.extension.getURL('pages/options.html');
@@ -91,39 +100,49 @@ var OT = {
   },
 
   switch_content: function() {
-    $('#container').show();
+    $('#content').show();
     $('#login').hide();
     $('#sign').hide();
     $('#spinner').hide();
     $('#balancer').hide();
-  },
-  switch_login: function() {
-    $('#container').hide();
-    $('#login').show();
-    $('#sign').hide();
-    $('#spinner').hide();
-    $('#balancer').hide();
-  },
-  switch_sign: function() {
-    $('#container').hide();
-    $('#login').hide();
-    $('#sign').show();
-    $('#spinner').hide();
-    $('#balancer').hide();
+    $('#header').show();
+    $('#footer').show();
   },
   switch_spinner: function() {
-    $('#container').hide();
+    $('#content').hide();
     $('#login').hide();
     $('#sign').hide();
     $('#spinner').show();
     $('#balancer').hide();
+    $('#header').show();
+    $('#footer').show();
   },
   switch_balance: function() {
-    $('#container').hide();
+    $('#content').hide();
     $('#login').hide();
     $('#sign').hide();
     $('#spinner').hide();
     $('#balancer').show();
+    $('#header').show();
+    $('#footer').show();
+  },
+  switch_login: function() {
+    $('#content').hide();
+    $('#login').show();
+    $('#sign').hide();
+    $('#spinner').hide();
+    $('#balancer').hide();
+    $('#header').hide();
+    $('#footer').hide();
+  },
+  switch_sign: function() {
+    $('#content').hide();
+    $('#login').hide();
+    $('#sign').show();
+    $('#spinner').hide();
+    $('#balancer').hide();
+    $('#header').hide();
+    $('#footer').hide();
   },
 
   get_worker_id: function() {
