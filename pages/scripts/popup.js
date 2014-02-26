@@ -13,6 +13,11 @@ var OT = {
       e.preventDefault();
       OT.creds.remove();
     });
+    $('#recos').click(function(e) {
+      e.preventDefault();
+      OT.switch_spinner();
+      OT.get_recommendation();
+    });
     $('#balance').click(function(e) {
       e.preventDefault();
       OT.switch_spinner();
@@ -105,6 +110,7 @@ var OT = {
     $('#sign').hide();
     $('#spinner').hide();
     $('#balancer').hide();
+    $('#recommendation').hide();
     $('#header').show();
     $('#footer').show();
   },
@@ -114,6 +120,7 @@ var OT = {
     $('#sign').hide();
     $('#spinner').show();
     $('#balancer').hide();
+    $('#recommendation').hide();
     $('#header').show();
     $('#footer').show();
   },
@@ -123,6 +130,17 @@ var OT = {
     $('#sign').hide();
     $('#spinner').hide();
     $('#balancer').show();
+    $('#recommendation').hide();
+    $('#header').show();
+    $('#footer').show();
+  },
+  switch_recommendation: function() {
+    $('#content').hide();
+    $('#login').hide();
+    $('#sign').hide();
+    $('#spinner').hide();
+    $('#balancer').hide();
+    $('#recommendation').show();
     $('#header').show();
     $('#footer').show();
   },
@@ -132,6 +150,7 @@ var OT = {
     $('#sign').hide();
     $('#spinner').hide();
     $('#balancer').hide();
+    $('#recommendation').hide();
     $('#header').hide();
     $('#footer').hide();
   },
@@ -141,6 +160,7 @@ var OT = {
     $('#sign').show();
     $('#spinner').hide();
     $('#balancer').hide();
+    $('#recommendation').hide();
     $('#header').hide();
     $('#footer').hide();
   },
@@ -159,7 +179,7 @@ var OT = {
           console.log('adfa');
           OT.status.workerId = workerId;
           $('#mturkusername').html('MT:'+workerId);
-          $('#mturkusername').html('MT:'+workerId);
+          $('#mturkuser').html('MT:'+workerId);
           if (localStorage.getItem('validated') == 'true') {
             OT.switch_content();
           } else {
@@ -176,11 +196,20 @@ var OT = {
     });
   },
 
+  get_recommendation: function() {
+    if(OT.status.openturk_username){
+      $("#rec-msg").html('Good you are logged in .. but not yet implemented');
+    } else {
+      $("#rec-msg").html('Login to openturk to get recommendations from your peers');
+    }
+    OT.switch_recommendation();
+  },
+
   get_openturk_username: function() {
     var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
       if (typeof result.username !== "undefined") {
         OT.status.openturk_username = result.username;
-        $('#openturkuser').html('OT:'+OT.status.openturk_username);
+        $('#openturkuser').html('OT:'+OT.status.openturk_username);        
       } else {
         $('#openturkuser').html('Connect to openturk');
       }

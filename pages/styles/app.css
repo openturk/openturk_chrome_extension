@@ -25,19 +25,19 @@ body {
 }
 
 .login { 
-  width:400px;
-  background:#fffbf1;
-  height:260px; 
+  width:500px;
+  height:260px;
+  background:#fffbf1; 
   text-align:center; 
   padding-top:40px;
 }
 
 .container {
+  width:500px;
   height: 257px;
+  background:#fffbf1;
   overflow-y: scroll;
   overflow-x: hidden;
-  width:400px;
-  background:#fffbf1;
 }
 
 ::-webkit-scrollbar {

@@ -12,10 +12,10 @@
     </head>
     <body>
         <div id="header">
-            <img src="/icons/icon19.png">
-            
             <div class="right">
                 <a id="favorites" href="">Favorites</a>
+                <span>|</span>
+                <a id="recos" href="">Recommendation</a>
                 <span>|</span>
                 <a id="search" href="">Search</a>
                 <span>|</span>
@@ -30,6 +30,9 @@
         <div class="container" id="content" style="display: none;">
             <table id="feed" cellspacing="3" cellpadding="0">
             </table>
+        </div>
+        <div class="container" id="recommendation" style="display: none;">
+            <p id="rec-msg"> </p>
         </div>
         <div class="container" id="balancer" style="display: none;">
             <table id="feed" cellspacing="3" cellpadding="0">
@@ -77,15 +80,15 @@
                     </p>
                 </div>
                 <div style="padding:10px;">
-                    <a class="btn btn-success" id="save" href="#">save</a>
-                    <a class="btn btn-primary" id="signout" href="https://workersandbox.mturk.com/mturk/beginsignout">logout</a>
+                    <a class="btn btn-success" id="save" href="#">Use Openturk</a>
+                    <a class="btn btn-primary" id="signout" href="https://workersandbox.mturk.com/mturk/beginsignout">Sign Out Mturk</a>
                 </div>
                 
             </form>
         </div>
         <div id="footer">
             <div class="right">
-                <a href="http://mturk.com" id="mturkusername">MT: </a> | <a href="http://alpha.openturk.com" id="openturkuser">Connect to openturk</a> | <a href="#" id="suggestion">Suggestions?</a> | <a href="#" id="logout">Logout</a>
+                <a href="http://mturk.com" id="mturkuser">MT: </a> | <a href="http://alpha.openturk.com" id="openturkuser">Connect to openturk</a> | <a href="#" id="suggestion">Suggestions?</a> | <a href="#" id="logout">Logout</a>
             </div>
         </div>
     </body>
