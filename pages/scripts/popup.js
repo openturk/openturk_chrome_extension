@@ -32,10 +32,12 @@ var OT = {
       e.preventDefault();
       // not yet implemented
     });
-    $('a#options').click(function(e){
+    $('a#options').click(function(e) {
       e.preventDefault();
       var optionsUrl = chrome.extension.getURL('pages/options.html');
-      chrome.tabs.create({url: optionsUrl});
+      chrome.tabs.create({
+        url: optionsUrl
+      });
     });
     $('.hint a').click(function(e) {
       e.preventDefault();
@@ -176,10 +178,9 @@ var OT = {
           OT.switch_sign();
         } else {
           workerId = workerId[1];
-          console.log('adfa');
           OT.status.workerId = workerId;
-          $('#mturkusername').html('MT:'+workerId);
-          $('#mturkuser').html('MT:'+workerId);
+          $('#mturkusername').html('MT:' + workerId);
+          $('#mturkuser').html('MT:' + workerId);
           if (localStorage.getItem('validated') == 'true') {
             OT.switch_content();
           } else {
@@ -197,8 +198,19 @@ var OT = {
   },
 
   get_recommendation: function() {
-    if(OT.status.openturk_username){
-      $("#rec-msg").html('Good you are logged in .. but not yet implemented');
+    if (OT.status.openturk_username) {
+      $("#rec-msg").html('<ul id="list"></ul>');
+      var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/recommendations').done(function(result) {
+        for(var i = 0; i < result.stars.length; i++) {
+          var url = 'https://workersandbox.mturk.com/mturk/preview?groupId=' + result.stars[i];
+          $.get(url, {}, function(data) {
+            var title = $(data).find('.capsulelink_bold');
+            if (title.length > 0) {
+              $("#list").append('<li><a href="' + url + '">' + $(title[0]).text() + '</a></li>');
+            }
+          });
+        }
+      });
     } else {
       $("#rec-msg").html('Login to openturk to get recommendations from your peers');
     }
@@ -209,7 +221,7 @@ var OT = {
     var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
       if (typeof result.username !== "undefined") {
         OT.status.openturk_username = result.username;
-        $('#openturkuser').html('OT:'+OT.status.openturk_username);        
+        $('#openturkuser').html('OT:' + OT.status.openturk_username);
       } else {
         $('#openturkuser').html('Connect to openturk');
       }
@@ -217,7 +229,7 @@ var OT = {
   },
 
   get_worker_stats: function() {
-      $.get('https://workersandbox.mturk.com/mturk/dashboard', {}, function(data) {
+    $.get('https://workersandbox.mturk.com/mturk/dashboard', {}, function(data) {
       var rewards = $(data).find('.reward');
       var approval_rate = $(data).filter("table").find("td.metrics-table-first-value:contains('... Approved')").next().next().text();
       var balance = {
@@ -280,7 +292,7 @@ function loadUIRequesters() {
     obj = items;
     obj.requesters.forEach(function(url) {
       console.log(url);
-      if(url['numtask']) {
+      if (url['numtask']) {
         appendRequester(url);
       }
     });
