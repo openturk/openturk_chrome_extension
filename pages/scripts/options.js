@@ -10,9 +10,10 @@ $(function() {
   function save() {
       console.log($('#searchterms').find('.url'));
       var terms = $('#searchterms').find('.url').map(function(i, el) {
-          return el.textContent;
+          var phrase = el.textContent.replace(/ /g, '+');
+          return {'phrase':phrase, 'numtask': 0};
       }).get();
-      chrome.storage.local.set({'searchterms': terms}, function() {
+      chrome.storage.sync.set({'searchterms': terms}, function() {
       });
   }
 
@@ -79,10 +80,10 @@ function initVariables() {
         $li.remove();
       });
   });
-  chrome.storage.local.get('searchterms', function(items) {
+  chrome.storage.sync.get('searchterms', function(items) {
       $('#searchterms').empty();
       items.searchterms.forEach(function(searchterm) {
-          plusSearchTerm(searchterm);
+          plusSearchTerm(searchterm['phrase']);
       });
   });
   selectReqInterval = document.getElementById("RequestInterval");
@@ -96,7 +97,7 @@ function plusRequester(requester) {
 }
 
 function plusSearchTerm(url) {
-    var $li = $('<li><span class="url">' + url + '</span> <a href class="edit">edit</a> <a href class="delete">delete</a></li>');
+    var $li = $('<li><span class="url">' + url.replace('+',' ') + '</span> <a href class="edit">edit</a> <a href class="delete">delete</a></li>');
     $('#searchterms').append($li);
 }
 

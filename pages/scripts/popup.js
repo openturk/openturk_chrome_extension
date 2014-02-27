@@ -30,8 +30,12 @@ var OT = {
     });
     $('#search').click(function(e) {
       e.preventDefault();
-      // not yet implemented
+      OT.switch_spinner();
+      OT.switch_search();
     });
+    $('#searchbox').keypress(searchOnEnter);
+    var searchButton = document.getElementById("searchbutton");
+    searchButton.addEventListener("click", search);
     $('a#options').click(function(e) {
       e.preventDefault();
       var optionsUrl = chrome.extension.getURL('pages/options.html');
@@ -113,6 +117,7 @@ var OT = {
     $('#spinner').hide();
     $('#balancer').hide();
     $('#recommendation').hide();
+    $('#search-container').hide();
     $('#header').show();
     $('#footer').show();
   },
@@ -123,6 +128,7 @@ var OT = {
     $('#spinner').show();
     $('#balancer').hide();
     $('#recommendation').hide();
+    $('#search-container').hide();
     $('#header').show();
     $('#footer').show();
   },
@@ -133,6 +139,7 @@ var OT = {
     $('#spinner').hide();
     $('#balancer').show();
     $('#recommendation').hide();
+    $('#search-container').hide();    
     $('#header').show();
     $('#footer').show();
   },
@@ -143,6 +150,18 @@ var OT = {
     $('#spinner').hide();
     $('#balancer').hide();
     $('#recommendation').show();
+    $('#search-container').hide();
+    $('#header').show();
+    $('#footer').show();
+  },
+  switch_search: function() {
+    $('#content').hide();
+    $('#login').hide();
+    $('#sign').hide();
+    $('#spinner').hide();
+    $('#balancer').hide();
+    $('#recommendation').hide();
+    $('#search-container').show();
     $('#header').show();
     $('#footer').show();
   },
@@ -153,6 +172,7 @@ var OT = {
     $('#spinner').hide();
     $('#balancer').hide();
     $('#recommendation').hide();
+    $('#search-container').hide();
     $('#header').hide();
     $('#footer').hide();
   },
@@ -163,6 +183,7 @@ var OT = {
     $('#spinner').hide();
     $('#balancer').hide();
     $('#recommendation').hide();
+    $('#search-container').hide();
     $('#header').hide();
     $('#footer').hide();
   },
@@ -304,6 +325,30 @@ function indexRequesters() {
   $(obj.requesters).each(function() {
     index[this.id] = this;
   });
+}
+
+function searchOnEnter(e) {
+  if (e.keyCode == 13) {
+    search();
+  }
+}
+
+function search() {
+  var searchBox = document.getElementById("searchbox");
+  var keywords = searchBox.value;
+  if (keywords.length > 0) {
+    var search_url = "https://workersandbox.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&searchWords=" + keywords.replace(" ", "+");
+    openUrl(search_url, true);
+  }
+}
+
+// Show |url| in a new tab.
+function openUrl(url, take_focus) {
+  // Only allow http and https URLs.
+  if (url.indexOf("http:") != 0 && url.indexOf("https:") != 0) {
+    return;
+  }
+  chrome.tabs.create({url: url, selected: take_focus});
 }
 
 $(document).ready(function() {

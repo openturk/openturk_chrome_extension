@@ -125,6 +125,16 @@ function getNewBatchs() {
   });
 }
 
+function getNewSearch() {
+  storage.get('searchterms', function(items) {
+    if (typeof items.searchterms !== "undefined") {
+      items.searchterms.forEach(function(phrase) {
+        scrapForSearch(phrase);
+      });
+    }
+  });
+}
+
 function printTasks() {
   if (typeof obj.requesters !== "undefined") {
     obj.requesters.forEach(function(url) {
@@ -146,6 +156,28 @@ function scrapForBatchs(url) {
         index[id].numtask = res;
         save();
 
+      }
+    },
+    error: function(xhr, status) {
+      // do something when it's wrong
+    }
+  });
+}
+
+function scrapForSearch(phrase) {
+  $.ajax({
+    url: 'https://workersandbox.mturk.com/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&searchWords=' + phrase['phrase'],
+    success: function(result) {
+      var spanText = $(result).find("td:contains('Results')").text();
+      var resPattern = /of (.*) Results/;
+      console.log('https://workersandbox.mturk.com/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&searchWords=' + phrase['phrase']);
+      var res = spanText.match(resPattern)[1];
+      console.log('searchgin for : ' +  phrase['phrase'] + ' ' +res);
+      if (res != phrase['numtask']) {
+        console.log('changed number of tasks: ' + phrase['numtask']);
+        phrase['numtask']= res;
+        save();
+        console.log('changed number of tasks after: ' + phrase['numtask']);
       }
     },
     error: function(xhr, status) {
@@ -189,7 +221,7 @@ function scheduleRequest() {
   // var multiplier = Math.max(randomness * exponent, 1);
   // var delay = Math.min(multiplier * pollIntervalMin, pollIntervalMax);
   // delay = Math.round(delay);
-  delay = localStorage['RequestInterval'];
+  delay = parseInt(localStorage['RequestInterval']);
   console.log('Scheduling for (in minutes): ' + delay);
 
   if (oldChromeVersion) {
@@ -223,6 +255,7 @@ function startRequest(params) {
 
   stopLoadingAnimation();
   getNewBatchs();
+  getNewSearch();
 }
 
 // Beautyfication

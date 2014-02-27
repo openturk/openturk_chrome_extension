@@ -16,7 +16,7 @@
             <div class="right">
                 <a id="favorites" href="">Favorites</a>
                 <span>|</span>
-                <a id="recos" href="">Recommendation</a>
+                <a id="recos" href="">Recommended</a>
                 <span>|</span>
                 <a id="search" href="">Search</a>
                 <span>|</span>
@@ -29,6 +29,14 @@
             <img src="images/spin.gif">
         </div>
         <div class="container" id="content" style="display: none;">
+            <table id="feed" cellspacing="3" cellpadding="0">
+            </table>
+        </div>
+        <div class="container" id="search-container" style="display: none;">
+            <div id="searchdiv">
+              <input type="text" id="searchbox" name="searchbox" placeholder="search mturk..." />
+              <input type="submit" id="searchbutton" value="search" />
+            </div>
             <table id="feed" cellspacing="3" cellpadding="0">
             </table>
         </div>
