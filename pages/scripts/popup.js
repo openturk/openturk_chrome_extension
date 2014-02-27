@@ -211,7 +211,7 @@ var OT = {
               $("#list").append('<td><a href="' + url + '">' + $(title[0]).text() + '</a><td>');
             }
           });
-          $("#list").append('<td>$' + group_id + '</td>');
+          $("#list").append('<td>$' + reward + '</td>');
         }
       });
     } else {
