@@ -19,6 +19,14 @@ var requestTimeout = 1000 * 2; // 2 seconds
 var rotation = 0;
 var loadingAnimation = new LoadingAnimation();
 
+SetInitialOption("RequestInterval", 1);
+SetInitialOption("Sandbox", false);
+function SetInitialOption(key, value) {
+  if (localStorage[key] == null) {
+    localStorage[key] = value;
+  }
+}
+
 // Some random init for test
 // storage.clear();
 // obj['requesters'] = [{"name":"CrowdSource","id":"A2SUM2D7EOAK1T","numtask":0},{"name":"Philippe Cudre-Mauroux","id":"A28PIN9Y6KHR3H","numtask":0},{"name":"Roman","id":"A165LMPFHNTKFG","numtask":0}];
@@ -176,12 +184,12 @@ function setBadge(text) {
 // Setting an alarm scheduler
 function scheduleRequest() {
   console.log('scheduleRequest');
-  var randomness = Math.random() * 2;
-  var exponent = Math.pow(2, localStorage.requestFailureCount || 0);
-  var multiplier = Math.max(randomness * exponent, 1);
-  var delay = Math.min(multiplier * pollIntervalMin, pollIntervalMax);
-  delay = Math.round(delay);
-  delay = 1; // 1 minutes for tests
+  // var randomness = Math.random() * 2;
+  // var exponent = Math.pow(2, localStorage.requestFailureCount || 0);
+  // var multiplier = Math.max(randomness * exponent, 1);
+  // var delay = Math.min(multiplier * pollIntervalMin, pollIntervalMax);
+  // delay = Math.round(delay);
+  delay = localStorage['RequestInterval'];
   console.log('Scheduling for (in minutes): ' + delay);
 
   if (oldChromeVersion) {
