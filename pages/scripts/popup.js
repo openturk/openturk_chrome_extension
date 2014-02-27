@@ -220,16 +220,19 @@ var OT = {
 
   get_recommendation: function() {
     if (OT.status.openturk_username) {
-      $("#rec-msg").html('<ul id="list"></ul>');
+      $("#rec-msg").html('<table id="list"></table>');
       var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/recommendations').done(function(result) {
-        for(var i = 0; i < result.stars.length; i++) {
-          var url = 'https://workersandbox.mturk.com/mturk/preview?groupId=' + result.stars[i];
+        for (var i = 0; i < result.stars.length; i++) {
+          var group_id = result.stars[i][0];
+          var reward = result.stars[i][1];
+          var url = 'https://workersandbox.mturk.com/mturk/preview?groupId=' + group_id;
           $.get(url, {}, function(data) {
             var title = $(data).find('.capsulelink_bold');
             if (title.length > 0) {
-              $("#list").append('<li><a href="' + url + '">' + $(title[0]).text() + '</a></li>');
+              $("#list").append('<td><a href="' + url + '">' + $(title[0]).text() + '</a><td>');
             }
           });
+          $("#list").append('<td>$' + group_id + '</td>');
         }
       });
     } else {
