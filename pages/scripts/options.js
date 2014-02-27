@@ -50,42 +50,43 @@ $(function() {
       }
   });
   restoreOptions();
-  // $('.notifications-radio, .background-tabs-radio, #RequestInterval').change(function(){
-  //   saveOptions();
-  // });
+  $('.sandbox-tabs-radio, #RequestInterval').change(function(){
+    saveOptions();
+  });
 });
 
 var selectReqInterval;
-var radioNotifications;
-var radioBackgroundTabs;
+var radioSandbox;
 
 function initVariables() {
-    chrome.storage.sync.get('requesters', function(items) {
-        $('#requesters').empty();
-        items.requesters.forEach(function(requester) {
-            plusRequester(requester);
-        });
-        $('.requester-delete').click(function(e) {
-          e.preventDefault();
-          console.log("clicked");
-          chrome.runtime.sendMessage({
-            deleteRequester: {
-              "name": $(this).attr('data-name'),
-              "id": $(this).attr('data-id'),
-              "numtask": 0
-            }
-          }, function(response) {});
-          var $a = $(this),
-              $li = $a.closest('li');
-          $li.remove();
-        });
-    });
-    chrome.storage.local.get('searchterms', function(items) {
-        $('#searchterms').empty();
-        items.searchterms.forEach(function(searchterm) {
-            plusSearchTerm(searchterm);
-        });
-    });
+  chrome.storage.sync.get('requesters', function(items) {
+      $('#requesters').empty();
+      items.requesters.forEach(function(requester) {
+          plusRequester(requester);
+      });
+      $('.requester-delete').click(function(e) {
+        e.preventDefault();
+        console.log("clicked");
+        chrome.runtime.sendMessage({
+          deleteRequester: {
+            "name": $(this).attr('data-name'),
+            "id": $(this).attr('data-id'),
+            "numtask": 0
+          }
+        }, function(response) {});
+        var $a = $(this),
+            $li = $a.closest('li');
+        $li.remove();
+      });
+  });
+  chrome.storage.local.get('searchterms', function(items) {
+      $('#searchterms').empty();
+      items.searchterms.forEach(function(searchterm) {
+          plusSearchTerm(searchterm);
+      });
+  });
+  selectReqInterval = document.getElementById("RequestInterval");
+  radioSandbox = document.getElementsByName("Sandbox");
 }
 
 function plusRequester(requester) {
@@ -101,25 +102,19 @@ function plusSearchTerm(url) {
 
 function restoreOptions() {
   initVariables();
-  // var reqInterval = localStorage["RequestInterval"];
-  // for (var i=0; i<selectReqInterval.children.length; i++) {
-  //   if (selectReqInterval[i].value == reqInterval) {
-  //     selectReqInterval[i].selected = "true";
-  //     break;
-  //   }
-  // }
-  // var notifications = localStorage["Notifications"];
-  // for (var i=0; i<radioNotifications.length; i++) {
-  //   if (radioNotifications[i].value == notifications) {
-  //     radioNotifications[i].checked = "true";
-  //   }
-  // }
-  // var backgroundTabs = localStorage["BackgroundTabs"];
-  // for (var i=0; i<radioBackgroundTabs.length; i++) {
-  //   if (radioBackgroundTabs[i].value == backgroundTabs) {
-  //     radioBackgroundTabs[i].checked = "true";
-  //   }
-  // }
+  var reqInterval = localStorage["RequestInterval"];
+  for (var i=0; i<selectReqInterval.children.length; i++) {
+    if (selectReqInterval[i].value == reqInterval) {
+      selectReqInterval[i].selected = "true";
+      break;
+    }
+  }
+  var sandboxTabs = localStorage["Sandbox"];
+  for (var i=0; i<radioSandbox.length; i++) {
+    if (radioSandbox[i].value == sandboxTabs) {
+      radioSandbox[i].checked = "true";
+    }
+  }
 }
 
 function attachEvent() {
@@ -128,18 +123,11 @@ function attachEvent() {
 
 function saveOptions() {
   var interval = selectReqInterval.children[selectReqInterval.selectedIndex].value;
-  localStorage["HN.RequestInterval"] = interval;
+  localStorage["RequestInterval"] = interval;
 
-  for (var i=0; i<radioNotifications.length; i++) {
-    if (radioNotifications[i].checked) {
-      localStorage["HN.Notifications"] = radioNotifications[i].value;
-      break;
-    }
-  }
-
-  for (var i=0; i<radioBackgroundTabs.length; i++) {
-    if (radioBackgroundTabs[i].checked) {
-      localStorage["HN.BackgroundTabs"] = radioBackgroundTabs[i].value;
+  for (var i=0; i<radioSandbox.length; i++) {
+    if (radioSandbox[i].checked) {
+      localStorage["Sandbox"] = radioSandbox[i].value;
       break;
     }
   }

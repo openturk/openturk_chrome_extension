@@ -189,12 +189,12 @@ $(document).ready(function() {
         var requester = $(tr.find('td > a')[1]);
         var requester_id = get_url_params('lala?' + requester.attr('href'))['requesterId'];
         var requester_name = requester.html();
-        var insert_after = $(tr.find('td > a')[0]);
+        var insert_after = $(tr.find('td')[1]);
 
         if (requester_id in already) {
           // insert_after.after('<button class="btn btn-icon" data-id="' + requester_id + '" data-name="' + requester_name + '"><span class="icon-cancel"></span></button>');
         } else {
-          insert_after.after('<button class="subscribe btn btn-icon" data-id="' + requester_id + '" data-name="' + requester_name + '"><span class="icon-alarm-clock"></button>');
+          insert_after.after('<td><button class="subscribe btn btn-icon" data-id="' + requester_id + '" data-name="' + requester_name + '"><span class="icon-star3"></button></td>');
         }
       }
       $('.subscribe').click(function(e) {
