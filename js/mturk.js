@@ -194,7 +194,7 @@ $(document).ready(function() {
         if (requester_id in already) {
           // insert_after.after('<button class="btn btn-icon" data-id="' + requester_id + '" data-name="' + requester_name + '"><span class="icon-cancel"></span></button>');
         } else {
-          insert_after.after('<td><button class="subscribe btn btn-icon" data-id="' + requester_id + '" data-name="' + requester_name + '"><span class="icon-star3"></button></td>');
+          insert_after.after('<td><span class="subscribe btn btn-icon" data-id="' + requester_id + '" data-name="' + requester_name + '"><span class="icon-star3"></span></td>');
         }
       }
       $('.subscribe').click(function(e) {
