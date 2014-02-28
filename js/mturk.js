@@ -234,7 +234,7 @@ $(document).ready(function() {
       var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
         if (typeof result.username !== "undefined") {
           $('td[colspan=11]')
-            .after('<span class="btn btn-icon"><span id="star" class="icon-share"></span></span>')
+            .after('<span id="star" class="btn btn-icon icon-share"></span>')
             .after('<div id="modal" style="display:none;position:absolute;background-color:#fff;width:350px;padding:15px;text-align:left;border:2px solid #333;opacity:1;-moz-border-radius:6px;-webkit-border-radius:6px;-moz-box-shadow: 0 0 50px #ccc;-webkit-box-shadow: 0 0 50px #ccc;"><h2>We will post the following message on mturkforum.com</h2><textarea id="star_message" style="width: 340px; height: 100px">OpenTurk user ' + (result.username) + ' recommended the following task: ' + group_id + '</textarea><br /><input id="modal_submit" type="submit" value="ok"><input id="modal_cancel" type="submit" value="cancel"></div>');
         } else {
           $('td[colspan=11]')
