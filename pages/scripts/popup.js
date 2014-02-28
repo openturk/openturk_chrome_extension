@@ -269,6 +269,21 @@ var OT = {
     });
   },
 
+
+  get_worker_stats2: function() {
+    $.get('https://workersandbox.mturk.com/mturk/dashboard', {}, function(data) {
+      var rewards = $(data).find('.reward');
+      var hit_submitted = $(data).filter("table").find("td.metrics-table-first-value:contains('HITs Submitted')").next().text();
+
+      var balance = {
+        total_earnings: $(rewards[2]).html(),
+        hit_submitted: hit_submitted
+      };
+      console.log(balance);
+    });
+  },
+
+
   status: {
     workerId: '',
     openturk_username: '',
