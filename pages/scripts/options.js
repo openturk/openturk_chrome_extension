@@ -50,6 +50,12 @@ $(function() {
         }
       }
   });
+  $url.keyup(function(event) {
+    if(event.keyCode == 13)
+    {
+      $btnAdd.click();
+    }
+  });
   restoreOptions();
   $('.sandbox-tabs-radio, #RequestInterval').change(function(){
     saveOptions();
@@ -62,6 +68,9 @@ var radioSandbox;
 function initVariables() {
   chrome.storage.sync.get('requesters', function(items) {
       $('#requesters').empty();
+      if(!items.requesters){
+        items['requesters'] = [];
+      }
       items.requesters.forEach(function(requester) {
           plusRequester(requester);
       });
@@ -82,6 +91,9 @@ function initVariables() {
   });
   chrome.storage.sync.get('searchterms', function(items) {
       $('#searchterms').empty();
+      if(!items.searchterms){
+        items['searchterms'] = [];
+      }
       items.searchterms.forEach(function(searchterm) {
           plusSearchTerm(searchterm['phrase']);
       });

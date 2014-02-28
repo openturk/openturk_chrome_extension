@@ -94,10 +94,25 @@ function deleteRequester(req) {
   indexRequesters();
 }
 
-function loadRequesters() {
+function loadData() {
+  obj={};
+  index = {};
   storage.get('requesters', function(items) {
-    obj = items;
+    if(!obj.requesters){
+      obj['requesters'] = [];
+    }
+    $(items.requesters).each(function() {
+      obj.requesters.push(this);
+    })
     indexRequesters();
+  });
+  storage.get('searchterms', function(items) {
+    if(!obj.searchterms){
+      obj['searchterms'] = [];
+    }
+    $(items.searchterms).each(function() {
+      obj.searchterms.push(this);
+    })
   });
 }
 
@@ -107,13 +122,23 @@ function indexRequesters() {
   });
 }
 
+function modifyCount(phrase, count) {
+  $(obj.searchterms).each(function() {
+    if(this.phrase == phrase)
+    { 
+      console.log('changing ..');
+      this.numtask = count;
+    }
+  });
+}
+
 function save() {
   console.log('saving ... ');
   chrome.storage.sync.set(obj);
 }
 
 
-loadRequesters();
+loadData();
 
 function getNewBatchs() {
   storage.get('requesters', function(items) {
@@ -149,13 +174,16 @@ function scrapForBatchs(url) {
     success: function(result) {
       var spanText = $(result).find("td:contains('Results')").text();
       var resPattern = /of (.*) Results/;
-      var res = spanText.match(resPattern)[1];
-      id = url['id'];
-      if (res != index[id].numtask) {
-        console.log('doing some update');
-        index[id].numtask = res;
-        save();
+      var res = spanText.match(resPattern);
+      if(res) {
+        res = res[1];
+        id = url['id'];
+        if (res != index[id].numtask) {
+          console.log('doing some update');
+          index[id].numtask = res;
+          save();
 
+        }
       }
     },
     error: function(xhr, status) {
@@ -171,13 +199,17 @@ function scrapForSearch(phrase) {
       var spanText = $(result).find("td:contains('Results')").text();
       var resPattern = /of (.*) Results/;
       console.log('https://workersandbox.mturk.com/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&searchWords=' + phrase['phrase']);
-      var res = spanText.match(resPattern)[1];
-      console.log('searchgin for : ' +  phrase['phrase'] + ' ' +res);
-      if (res != phrase['numtask']) {
-        console.log('changed number of tasks: ' + phrase['numtask']);
-        phrase['numtask']= res;
-        save();
-        console.log('changed number of tasks after: ' + phrase['numtask']);
+      var res = spanText.match(resPattern);
+      if(res) {
+        res = res[1];
+        console.log('searchgin for : ' +  phrase['phrase'] + ' ' +res);
+        if (res != phrase['numtask']) {
+          console.log('changed number of tasks: ' + phrase['numtask']);
+          phrase['numtask']= res;
+          modifyCount(phrase['phrase'],res);
+          save();
+          console.log('changed number of tasks after: ' + phrase['numtask']);
+        }
       }
     },
     error: function(xhr, status) {

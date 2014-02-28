@@ -307,20 +307,59 @@ function appendRequester(url) {
   row.appendChild(link_col)
   feed.appendChild(row);
 }
+function appendSearch(url) {
+  var feed = document.getElementById("keywordsearch");
+  var row = document.createElement("tr");
+  row.className = "link";
+  var link_col = document.createElement("td");
+  var identicon = document.createElement("td");
+  var im = document.createElement("img");
+  im.src = 'http://www.gravatar.com/avatar.php?gravatar_id=' + md5(url['phrase']) + '&r=PG&s=15&default=identicon';
+  im.width = 15;
+  im.height = 15;
+  var title = document.createElement("a");
+  title.className = "link_title";
+  title.innerText = url['phrase'].replace('+',' ');
+  title.href = 'https://workersandbox.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&qualifiedFor=on&searchWords=' + url['phrase'];
+  var batchs = document.createElement("a");
+  batchs.className = "batchs";
+  batchs.innerText = "(" + url['numtask'] + " batchs)";
+  batchs.href = url['numtask'];
+  identicon.appendChild(im);
+  link_col.appendChild(title);
+  link_col.appendChild(batchs);
+  row.appendChild(identicon);
+  row.appendChild(link_col)
+  feed.appendChild(row);
+}
 
 var obj = {};
 var index = {};
 
 function loadUIRequesters() {
   chrome.storage.sync.get('requesters', function(items) {
-    obj = items;
-    obj.requesters.forEach(function(url) {
-      console.log(url);
-      if (url['numtask']) {
-        appendRequester(url);
+    if(!obj.requesters){
+      obj['requesters'] = [];
+    }
+    $(items.requesters).each(function() {
+      obj.requesters.push(this);
+      console.log(this);
+      if (this['numtask']) {
+        appendRequester(this);
       }
     });
     indexRequesters();
+  });
+  chrome.storage.sync.get('searchterms', function(items) {
+    if(!obj.searchterms){
+      obj['searchterms'] = [];
+    }
+    $(items.searchterms).each(function() {
+      obj.searchterms.push(this);
+      if (this['numtask']) {
+        appendSearch(this);
+      }
+    })
   });
 }
 
