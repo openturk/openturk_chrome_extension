@@ -55,6 +55,7 @@ chrome.runtime.onMessage.addListener(
     if (typeof request.autoaccept !== "undefined") {
       autoaccept = request.autoaccept;
     }
+    
     if (request.autoaccept_get) {
       sendResponse({
         autoaccept: autoaccept
@@ -62,15 +63,20 @@ chrome.runtime.onMessage.addListener(
     }
 
     if (request.read === "resetIcon") {
+      console.log('msg: reset the icon');
       updateUnreadCount(0);
     }
     if (request.addRequester) {
-      console.log('adding: ' + request.addRequester);
+      console.log('msg: adding requester ' + request.addRequester);
       addRequester(request.addRequester);
     }
     if (request.deleteRequester) {
-      console.log('deleting');
+      console.log('msg: deleting requester' + request.deleteRequester);
       deleteRequester(request.deleteRequester);
+    }
+    if (request.loadSearchTerms) {
+      console.log('msg: Reloading searchterms');
+      loadSearchTerms();
     }
   }
 );
@@ -94,9 +100,7 @@ function deleteRequester(req) {
   indexRequesters();
 }
 
-function loadData() {
-  obj={};
-  index = {};
+function loadRequesters() {
   storage.get('requesters', function(items) {
     if(!obj.requesters){
       obj['requesters'] = [];
@@ -106,6 +110,8 @@ function loadData() {
     })
     indexRequesters();
   });
+}
+function loadSearchTerms() {
   storage.get('searchterms', function(items) {
     if(!obj.searchterms){
       obj['searchterms'] = [];
@@ -138,7 +144,8 @@ function save() {
 }
 
 
-loadData();
+loadRequesters();
+loadSearchTerms();
 
 function getNewBatchs() {
   storage.get('requesters', function(items) {

@@ -219,23 +219,17 @@ var OT = {
   },
 
   get_recommendation: function() {
+    $('#recommendation-feed').empty();
     if (OT.status.openturk_username) {
-      $("#rec-msg").html('<table id="list"></table>');
-      var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/recommendations').done(function(result) {
-        for (var i = 0; i < result.stars.length; i++) {
-          var group_id = result.stars[i][0];
-          var reward = result.stars[i][1];
-          var url = 'https://workersandbox.mturk.com/mturk/preview?groupId=' + group_id;
-          $.get(url, {}, function(data) {
-            var title = $(data).find('.capsulelink_bold');
-            if (title.length > 0) {
-              $("#list").append('<td><a href="' + url + '">' + $(title[0]).text() + '</a><td>');
-            }
-          });
-          $("#list").append('<td>$' + reward + '</td>');
+      var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/recommendations').done(function(results) {
+        if(results.stars) {
+          appendRecommendation(results);
+        } else {
+          $("#rec-msg").html('There is currently 0 recommendations.');
         }
       });
     } else {
+      // TODO: login button somewhere ..
       $("#rec-msg").html('Login to openturk to get recommendations from your peers');
     }
     OT.switch_recommendation();
@@ -297,7 +291,7 @@ function appendRequester(url) {
   title.innerText = url['name'];
   title.href = 'https://workersandbox.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&requesterId=' + url['id'] + '&qualifiedFor=on';
   var batchs = document.createElement("a");
-  batchs.className = "batchs";
+  batchs.className = "hint";
   batchs.innerText = "(" + url['numtask'] + " batchs)";
   batchs.href = url['numtask'];
   identicon.appendChild(im);
@@ -307,6 +301,7 @@ function appendRequester(url) {
   row.appendChild(link_col)
   feed.appendChild(row);
 }
+
 function appendSearch(url) {
   var feed = document.getElementById("keywordsearch");
   var row = document.createElement("tr");
@@ -322,7 +317,7 @@ function appendSearch(url) {
   title.innerText = url['phrase'].replace('+',' ');
   title.href = 'https://workersandbox.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&qualifiedFor=on&searchWords=' + url['phrase'];
   var batchs = document.createElement("a");
-  batchs.className = "batchs";
+  batchs.className = "hint";
   batchs.innerText = "(" + url['numtask'] + " batchs)";
   batchs.href = url['numtask'];
   identicon.appendChild(im);
@@ -331,6 +326,39 @@ function appendSearch(url) {
   row.appendChild(identicon);
   row.appendChild(link_col)
   feed.appendChild(row);
+}
+
+function appendRecommendation(results) {
+  var feed = document.getElementById("recommendation-feed");
+  for (var i = 0; i < results.stars.length; i++) {
+    var group_id = results.stars[i][0];
+    var value = results.stars[i][1];
+    var url = 'https://workersandbox.mturk.com/mturk/preview?groupId=' + group_id;
+    $.get(url, {}, function(data) {
+      var title = $(data).find('.capsulelink_bold');
+      if (title.length > 0) {
+
+        var row = document.createElement("tr");
+        row.className = "link";
+        var link_col = document.createElement("td");
+        var task = document.createElement("a");
+        task.className = "link_title";
+        task.innerText = $(title).text().trim();
+        task.href = url;
+
+        var reward = document.createElement("a");
+        reward.className = "hint";
+        reward.innerText = "($" + value + ")";
+        reward.href = "";
+        
+        link_col.appendChild(task);
+        link_col.appendChild(reward);
+
+        row.appendChild(link_col)
+        feed.appendChild(row);
+      }
+    });
+  }
 }
 
 var obj = {};
