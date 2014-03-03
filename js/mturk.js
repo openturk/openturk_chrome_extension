@@ -115,9 +115,6 @@ $(document).ready(function() {
     }
 
     function star(callback) {
-      chrome.runtime.sendMessage({
-        get_new_batchs: true
-      });
 
       get_worker_id(function(worker_id) {
         if (typeof worker_id === "undefined") {

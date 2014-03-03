@@ -53,10 +53,6 @@ chrome.runtime.onMessage.addListener(
       });
     }
 
-    if (request.get_new_batchs) {
-      getNewBatchs();
-    }
-
     if (request.get_mturk_host) {
       sendResponse({
         mturk_host: (localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com"
@@ -99,6 +95,7 @@ function addRequester(req) {
   }
   obj.requesters.push(req);
   save();
+  getNewBatchs();
   indexRequesters();
 }
 
@@ -213,7 +210,7 @@ function printTasks() {
 
 function scrapForBatchs(url) {
   $.ajax({
-    url: 'https://'+(localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com"+'/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&requesterId=' + url['id'],
+    url: 'https://'+((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com")+'/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&requesterId=' + url['id'],
     success: function(result) {
       var spanText = $(result).find("td:contains('Results')").text();
       var resPattern = /of (.*) Results/;
