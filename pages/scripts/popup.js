@@ -2,13 +2,12 @@ var OT = {
   init: function() {
     OT.status.container = $('header.footer');
 
-    if (localStorage['Sandbox'] == "true")
-    {
-      $('#login_mturk').attr('href','https://www.amazon.com/gp/aws/ssop/index.html?awscbctx=&awscbid=urn%3Aaws%3Asid%3A0N1A8324EEG1142T9G02&awscredential=&awsnoclientpipeline=true&awsstrict=false&awsturknosubway=true&wa=wsignin1.0&wctx=&wreply=https%3A%2F%2Fworkersandbox.mturk.com%3A443%2Fmturk%2Fendsignin&wtrealm=urn%3Aaws%3Asid%3A0N1A8324EEG1142T9G02&awssig=UlH2xRjIlr69pdR3kpZEtiCTN1I%3D');
-      $('#signout').attr('href','https://workersandbox.mturk.com/mturk/beginsignout');
+    if (localStorage['Sandbox'] == "true") {
+      $('#login_mturk').attr('href', 'https://www.amazon.com/gp/aws/ssop/index.html?awscbctx=&awscbid=urn%3Aaws%3Asid%3A0N1A8324EEG1142T9G02&awscredential=&awsnoclientpipeline=true&awsstrict=false&awsturknosubway=true&wa=wsignin1.0&wctx=&wreply=https%3A%2F%2Fworkersandbox.mturk.com%3A443%2Fmturk%2Fendsignin&wtrealm=urn%3Aaws%3Asid%3A0N1A8324EEG1142T9G02&awssig=UlH2xRjIlr69pdR3kpZEtiCTN1I%3D');
+      $('#signout').attr('href', 'https://workersandbox.mturk.com/mturk/beginsignout');
     } else {
-      $('#login_mturk').attr('href','https://www.amazon.com/gp/aws/ssop/index.html?awscbctx=&awscbid=urn%3Aaws%3Asid%3A027Y0TCSPRG5XHFYJSR2&awscredential=&awsnoclientpipeline=true&awsstrict=false&awsturknosubway=true&wa=wsignin1.0&wctx=&wreply=https%3A%2F%2Fwww.mturk.com%2Fmturk%2Fendsignin&wtrealm=urn%3Aaws%3Asid%3A027Y0TCSPRG5XHFYJSR2&awssig=B%2BG7QiQm8L9a0G5RMeOrw0IHASk%3D');
-      $('#signout').attr('href','https://www.mturk.com/mturk/beginsignout');
+      $('#login_mturk').attr('href', 'https://www.amazon.com/gp/aws/ssop/index.html?awscbctx=&awscbid=urn%3Aaws%3Asid%3A027Y0TCSPRG5XHFYJSR2&awscredential=&awsnoclientpipeline=true&awsstrict=false&awsturknosubway=true&wa=wsignin1.0&wctx=&wreply=https%3A%2F%2Fwww.mturk.com%2Fmturk%2Fendsignin&wtrealm=urn%3Aaws%3Asid%3A027Y0TCSPRG5XHFYJSR2&awssig=B%2BG7QiQm8L9a0G5RMeOrw0IHASk%3D');
+      $('#signout').attr('href', 'https://www.mturk.com/mturk/beginsignout');
     }
 
     OT.get_worker_id();
@@ -266,7 +265,7 @@ var OT = {
     chrome.runtime.sendMessage({
       get_mturk_host: true
     }, function(response) {
-      $.get('https://'+response.mturk_host+'/mturk/dashboard', {}, function(data) {
+      $.get('https://' + response.mturk_host + '/mturk/dashboard', {}, function(data) {
         var rewards = $(data).find('.reward');
         var approval_rate = $(data).filter("table").find("td.metrics-table-first-value:contains('... Approved')").next().next().text();
         var balance = {
@@ -281,8 +280,18 @@ var OT = {
         $("#total_earnings").html(balance['total_earnings']);
         $("#approval_rate").html(balance['approval_rate']);
         OT.switch_balance();
-        $('#workdone').sparkline(submitted_hist, {type: 'line', width: '300px', chartRangeMin: 0, lineColor: '#fb6b5b'});
-        $('#earning').sparkline(earning_hist, {type: 'line', width: '300px', chartRangeMin: 0, barColor: '#afcf6f'});
+        $('#workdone').sparkline(submitted_hist, {
+          type: 'line',
+          width: '300px',
+          chartRangeMin: 0,
+          lineColor: '#fb6b5b'
+        });
+        $('#earning').sparkline(earning_hist, {
+          type: 'line',
+          width: '300px',
+          chartRangeMin: 0,
+          barColor: '#afcf6f'
+        });
       });
     });
   },
@@ -360,14 +369,16 @@ function appendSearch(url) {
 
 function appendRecommendation(results) {
   var feed = document.getElementById("recommendation-feed");
-  for (var i = 0; i < results.stars.length; i++) {
-    var group_id = results.stars[i][0];
-    var value = results.stars[i][1];
 
-    chrome.runtime.sendMessage({
-      get_mturk_host: true
-    }, function(response) {
+  chrome.runtime.sendMessage({
+    get_mturk_host: true
+  }, function(response) {
+    for (var i = 0; i < results.stars.length; i++) {
+
+      var group_id = results.stars[i][0];
+      var value = results.stars[i][1];
       var url = 'https://' + response.mturk_host + '/mturk/preview?groupId=' + group_id;
+
       $.get(url, {}, function(data) {
         var title = $(data).find('.capsulelink_bold');
         if (title.length > 0) {
@@ -400,8 +411,8 @@ function appendRecommendation(results) {
           feed.appendChild(row);
         }
       });
-    });
-  }
+    }
+  });
 }
 
 var obj = {};
@@ -471,7 +482,7 @@ function search() {
     get_mturk_host: true
   }, function(response) {
     if (keywords.length > 0) {
-      var search_url = "https://"+response.mturk_host+"/mturk/searchbar?selectedSearchType=hitgroups&searchWords=" + keywords.replace(" ", "+");
+      var search_url = "https://" + response.mturk_host + "/mturk/searchbar?selectedSearchType=hitgroups&searchWords=" + keywords.replace(" ", "+");
       openUrl(search_url, true);
     }
   });
