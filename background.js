@@ -188,7 +188,7 @@ function getNewSearch() {
 }
 
 function getWorkerStats() {
-  $.get('https://workersandbox.mturk.com/mturk/dashboard', {}, function(data) {
+  $.get('https://'+((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com")+'/mturk/dashboard', {}, function(data) {
     var rewards = $(data).find('.reward');
     var hit_submitted = $(data).filter("table").find("td.metrics-table-first-value:contains('HITs Submitted')").next().text();
     var balance = {

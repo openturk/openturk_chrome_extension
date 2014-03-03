@@ -439,10 +439,14 @@ function loadUIRequesters() {
     if (!obj.workhistory) {
       obj['workhistory'] = [];
     }
+    var previous_total_earnings = 0;
+    var previous_hit_submitted = 0;
     $(items.workhistory).each(function() {
       obj.workhistory.push(this);
-      earning_hist.push(this.total_earnings);
-      submitted_hist.push(this.hit_submitted);
+      earning_hist.push(this.total_earnings - previous_total_earnings);
+      previous_total_earnings = this.total_earnings;
+      submitted_hist.push(this.hit_submitted - previous_hit_submitted);
+      previous_hit_submitted = this.hit_submitted;
     });
   });
 }
