@@ -103,3 +103,14 @@ a:hover {text-decoration:underline;}
 hr.break {
 	border-top: 1px dashed #8c8b8b;
 }
+
+/*.jqstooltip {
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+}*/
+.jqstooltip {
+    box-sizing: content-box;
+    height: auto !important;
+    width: auto !important;
+}
