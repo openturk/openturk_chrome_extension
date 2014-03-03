@@ -385,9 +385,17 @@ function appendRecommendation(results) {
           reward.innerText = "($" + value + ")";
           reward.href = "";
 
+          // Make as a like button
+          var heart = document.createElement("td");
+          var im = document.createElement("img");
+          im.src = 'images/grayarrow.gif';
+          im.width = 10;
+          im.height = 10;
+
+          heart.appendChild(im);
           link_col.appendChild(task);
           link_col.appendChild(reward);
-
+          row.appendChild(heart);
           row.appendChild(link_col);
           feed.appendChild(row);
         }
