@@ -46,7 +46,7 @@ $(document).ready(function() {
       chrome.runtime.sendMessage({
         group_id_get: true
       }, function(response) {
-        group_id = response.group_id;
+        var group_id = response.group_id;
         if (typeof group_id === "undefined") {
           group_id = "undefined";
         } else {}
