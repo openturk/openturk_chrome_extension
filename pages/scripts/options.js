@@ -1,5 +1,5 @@
 $(function() {
-  console.log('hello world');
+  console.log('Hello world');
 
   var $btnAdd = $('#add'),
     $url = $('#url'),
@@ -8,6 +8,7 @@ $(function() {
   console.log('this is ' + $btnAdd);
 
   function save() {
+    // This only save searchterms ..
     console.log($('#searchterms').find('.url'));
     var terms = $('#searchterms').find('.url').map(function(i, el) {
       var phrase = el.textContent.replace(/ /g, '+');
@@ -18,7 +19,12 @@ $(function() {
     }).get();
     chrome.storage.sync.set({
       'searchterms': terms
-    }, function() {});
+    }, function() {
+      console.log('opt: reload the searchterms');
+      chrome.extension.sendMessage({
+        loadSearchTerms: "true"
+      });
+    });
   }
 
   $urls.on('click', 'a.edit', function(e) {
@@ -68,6 +74,7 @@ var selectReqInterval;
 var radioSandbox;
 
 function initVariables() {
+  // Init the requesters
   chrome.storage.sync.get('requesters', function(items) {
     $('#requesters').empty();
     if (!items.requesters) {
@@ -91,6 +98,7 @@ function initVariables() {
       $li.remove();
     });
   });
+  // Init the search terms
   chrome.storage.sync.get('searchterms', function(items) {
     $('#searchterms').empty();
     if (!items.searchterms) {
@@ -100,6 +108,7 @@ function initVariables() {
       plusSearchTerm(searchterm['phrase']);
     });
   });
+  // load the thingies ..
   selectReqInterval = document.getElementById("RequestInterval");
   radioSandbox = document.getElementsByName("Sandbox");
 }
@@ -132,11 +141,9 @@ function restoreOptions() {
   }
 }
 
-function attachEvent() {
-
-}
 
 function saveOptions() {
+  // simply save the thingies
   var interval = selectReqInterval.children[selectReqInterval.selectedIndex].value;
   localStorage["RequestInterval"] = interval;
 

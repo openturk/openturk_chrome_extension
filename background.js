@@ -3,6 +3,13 @@ var storage = chrome.storage.sync;
 var obj = {};
 var index = {};
 
+// var version = chrome.app.getDetails().version; 
+// if (version != "0.0.9")
+// {
+//   storage.clear();
+// }
+// localStorage.clear();
+
 // Legacy support for pre-event-pages.
 var oldChromeVersion = !chrome.runtime;
 var requestTimerId;
@@ -110,9 +117,7 @@ function deleteRequester(req) {
 
 function loadRequesters() {
   storage.get('requesters', function(items) {
-    if (!obj.requesters) {
-      obj['requesters'] = [];
-    }
+    obj['requesters'] = [];
     $(items.requesters).each(function() {
       obj.requesters.push(this);
     })
@@ -122,20 +127,17 @@ function loadRequesters() {
 
 function loadSearchTerms() {
   storage.get('searchterms', function(items) {
-    if (!obj.searchterms) {
-      obj['searchterms'] = [];
-    }
+    obj['searchterms'] = [];
     $(items.searchterms).each(function() {
       obj.searchterms.push(this);
-    })
+    });
+    getNewSearch();
   });
 }
 
 function loadWorkHistory() {
   storage.get('workhistory', function(items) {
-    if(!obj.workhistory){
-      obj['workhistory'] = [];
-    }
+    obj['workhistory'] = [];
     $(items.workhistory).each(function() {
       obj.workhistory.push(this);
     })
@@ -234,11 +236,11 @@ function scrapForBatchs(url) {
 
 function scrapForSearch(phrase) {
   $.ajax({
-    url: 'https://'+(localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com"+'/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&searchWords=' + phrase['phrase'],
+    url: 'https://'+((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com")+'/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&searchWords=' + phrase['phrase'],
     success: function(result) {
       var spanText = $(result).find("td:contains('Results')").text();
       var resPattern = /of (.*) Results/;
-      console.log('https://'+(localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com"+'/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&searchWords=' + phrase['phrase']);
+      console.log('https://'+((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com")+'/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&searchWords=' + phrase['phrase']);
       var res = spanText.match(resPattern);
       if (res) {
         res = res[1];

@@ -47,9 +47,17 @@ var OT = {
     $('a#options').click(function(e) {
       e.preventDefault();
       var optionsUrl = chrome.extension.getURL('pages/options.html');
-      chrome.tabs.create({
-        url: optionsUrl
-      });
+      // chrome.tabs.create({
+      //   url: optionsUrl
+      // });
+      chrome.tabs.query({
+          url: optionsUrl,
+      }, function(results) {
+          if (results.length)
+              chrome.tabs.update(results[0].id, {active:true});
+          else
+              chrome.tabs.create({url:optionsUrl});
+      })
     });
     $('.hint a').click(function(e) {
       e.preventDefault();
@@ -238,6 +246,7 @@ var OT = {
     if (OT.status.openturk_username) {
       var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/recommendations').done(function(results) {
         if (results.stars) {
+          console.log(results.stars);
           appendRecommendation(results);
         } else {
           $("#rec-msg").html('There is currently 0 recommendations.');
@@ -373,16 +382,17 @@ function appendRecommendation(results) {
   chrome.runtime.sendMessage({
     get_mturk_host: true
   }, function(response) {
+    var count = 0;
     for (var i = 0; i < results.stars.length; i++) {
 
       var group_id = results.stars[i][0];
       var value = results.stars[i][1];
       var url = 'https://' + response.mturk_host + '/mturk/preview?groupId=' + group_id;
-
+      console.log(url);
       $.get(url, {}, function(data) {
         var title = $(data).find('.capsulelink_bold');
         if (title.length > 0) {
-
+          console.log(title);
           var row = document.createElement("tr");
           row.className = "link";
           var link_col = document.createElement("td");
@@ -409,8 +419,13 @@ function appendRecommendation(results) {
           row.appendChild(heart);
           row.appendChild(link_col);
           feed.appendChild(row);
+          count = count + 1;
         }
       });
+    }
+    // Check the case where all the recommendations are unsuitable.
+    if( count == 0) {
+      $("#rec-msg").html('There is currently 0 recommendations for you.');
     }
   });
 }
@@ -421,30 +436,40 @@ var index = {};
 var earning_hist = [];
 var submitted_hist = [];
 
-function loadUIRequesters() {
+function loadUIObjects() {
   chrome.storage.sync.get('requesters', function(items) {
     if (!obj.requesters) {
       obj['requesters'] = [];
     }
+    var count = 0;
     $(items.requesters).each(function() {
       obj.requesters.push(this);
       console.log(this);
       if (this['numtask']) {
         appendRequester(this);
+        count = count+1;
       }
     });
+    if (count == 0 ){
+      $("#content-msg").html('There is currently no batch from your favorite requesters.<br> Subscribe to more requesters on the dashboard.');
+    }
     indexRequesters();
   });
   chrome.storage.sync.get('searchterms', function(items) {
     if (!obj.searchterms) {
       obj['searchterms'] = [];
     }
+    var count = 0;
     $(items.searchterms).each(function() {
       obj.searchterms.push(this);
       if (this['numtask']) {
         appendSearch(this);
+        count = count + 1;
       }
     });
+    if (count == 0 ){
+      $("#search-msg").html('There is currently 0 search. <br>Add scheduled search on the options page.');
+    }
   });
   chrome.storage.sync.get('workhistory', function(items) {
     if (!obj.workhistory) {
@@ -503,7 +528,7 @@ function openUrl(url, take_focus) {
 $(document).ready(function() {
   OT.init();
   //console.log('loading stuff');
-  loadUIRequesters();
+  loadUIObjects();
   chrome.extension.sendMessage({
     read: "resetIcon"
   });
