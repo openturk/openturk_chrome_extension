@@ -7,11 +7,15 @@ $(document).ready(function() {
     var autoaccept = true;
 
     function get_worker_id(callback) {
-      $.get('https://workersandbox.mturk.com/mturk/dashboard', {}, function(data) {
-        var spanText = $(data).filter("table").find("span:contains('Worker ID')").text();
-        var workerIdPattern = /Worker ID: (.*)$/;
-        var workerId = spanText.match(workerIdPattern)[1];
-        callback(workerId);
+      chrome.runtime.sendMessage({
+        get_mturk_host: true
+      }, function(response) {
+        $.get('https://'+response.mturk_host+'/mturk/dashboard', {}, function(data) {
+          var spanText = $(data).filter("table").find("span:contains('Worker ID')").text();
+          var workerIdPattern = /Worker ID: (.*)$/;
+          var workerId = spanText.match(workerIdPattern)[1];
+          callback(workerId);
+        });
       });
     }
 
@@ -116,13 +120,13 @@ $(document).ready(function() {
           worker_id = "undefined";
         }
         get_group_id(function(group_id) {
-        var reward_text = $("table").find("td:contains('Reward')").next().text();
-        var reward_pattern = /([0-9\.]*) per/;
-        var reward = parseFloat(reward_text.match(reward_pattern)[1]);
+          var reward_text = $("table").find("td:contains('Reward')").next().text();
+          var reward_pattern = /([0-9\.]*) per/;
+          var reward = parseFloat(reward_text.match(reward_pattern)[1]);
 
-        var hits_available = parseFloat($.trim($("table").find("td:contains('HITs Available')").next().text()));
+          var hits_available = parseFloat($.trim($("table").find("td:contains('HITs Available')").next().text()));
 
-        var duration = $.trim($("table").find("td:contains('Duration')").next().text());
+          var duration = $.trim($("table").find("td:contains('Duration')").next().text());
 
           data = {
             worker_id: worker_id,

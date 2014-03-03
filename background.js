@@ -21,6 +21,7 @@ var loadingAnimation = new LoadingAnimation();
 
 SetInitialOption("RequestInterval", 1);
 SetInitialOption("Sandbox", false);
+
 function SetInitialOption(key, value) {
   if (localStorage[key] == null) {
     localStorage[key] = value;
@@ -52,10 +53,16 @@ chrome.runtime.onMessage.addListener(
       });
     }
 
-    if (typeof request.autoaccept !== "undefined") {
+    if (request.get_mturk_host) {
+      sendResponse({
+        mturk_host: (localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com"
+      });
+    }
+
+    if (request.autoaccept !== null) {
       autoaccept = request.autoaccept;
     }
-    
+
     if (request.autoaccept_get) {
       sendResponse({
         autoaccept: autoaccept
@@ -83,7 +90,7 @@ chrome.runtime.onMessage.addListener(
 
 function addRequester(req) {
   console.log('saving');
-  if(!obj.requesters){
+  if (!obj.requesters) {
     obj['requesters'] = []
   }
   obj.requesters.push(req);
@@ -102,7 +109,7 @@ function deleteRequester(req) {
 
 function loadRequesters() {
   storage.get('requesters', function(items) {
-    if(!obj.requesters){
+    if (!obj.requesters) {
       obj['requesters'] = [];
     }
     $(items.requesters).each(function() {
@@ -111,9 +118,10 @@ function loadRequesters() {
     indexRequesters();
   });
 }
+
 function loadSearchTerms() {
   storage.get('searchterms', function(items) {
-    if(!obj.searchterms){
+    if (!obj.searchterms) {
       obj['searchterms'] = [];
     }
     $(items.searchterms).each(function() {
@@ -130,8 +138,7 @@ function indexRequesters() {
 
 function modifyCount(phrase, count) {
   $(obj.searchterms).each(function() {
-    if(this.phrase == phrase)
-    { 
+    if (this.phrase == phrase) {
       console.log('changing ..');
       this.numtask = count;
     }
@@ -177,12 +184,12 @@ function printTasks() {
 
 function scrapForBatchs(url) {
   $.ajax({
-    url: 'https://workersandbox.mturk.com/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&requesterId=' + url['id'],
+    url: 'https://'+(localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com"+'/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&requesterId=' + url['id'],
     success: function(result) {
       var spanText = $(result).find("td:contains('Results')").text();
       var resPattern = /of (.*) Results/;
       var res = spanText.match(resPattern);
-      if(res) {
+      if (res) {
         res = res[1];
         id = url['id'];
         if (res != index[id].numtask) {
@@ -201,19 +208,19 @@ function scrapForBatchs(url) {
 
 function scrapForSearch(phrase) {
   $.ajax({
-    url: 'https://workersandbox.mturk.com/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&searchWords=' + phrase['phrase'],
+    url: 'https://'+(localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com"+'/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&searchWords=' + phrase['phrase'],
     success: function(result) {
       var spanText = $(result).find("td:contains('Results')").text();
       var resPattern = /of (.*) Results/;
-      console.log('https://workersandbox.mturk.com/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&searchWords=' + phrase['phrase']);
+      console.log('https://'+(localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com"+'/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&searchWords=' + phrase['phrase']);
       var res = spanText.match(resPattern);
-      if(res) {
+      if (res) {
         res = res[1];
-        console.log('searchgin for : ' +  phrase['phrase'] + ' ' +res);
+        console.log('searchgin for : ' + phrase['phrase'] + ' ' + res);
         if (res != phrase['numtask']) {
           console.log('changed number of tasks: ' + phrase['numtask']);
-          phrase['numtask']= res;
-          modifyCount(phrase['phrase'],res);
+          phrase['numtask'] = res;
+          modifyCount(phrase['phrase'], res);
           save();
           console.log('changed number of tasks after: ' + phrase['numtask']);
         }

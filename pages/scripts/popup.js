@@ -192,32 +192,36 @@ var OT = {
   },
 
   get_worker_id: function() {
-    $.ajax({
-      url: 'https://workersandbox.mturk.com/mturk/dashboard',
-      success: function(result) {
-        var spanText = $(result).filter("table").find("span:contains('Worker ID')").text();
-        var workerIdPattern = /Worker ID: (.*)$/;
-        var workerId = spanText.match(workerIdPattern);
-        if (OT.status.workerId === null || workerId === null) {
-          OT.switch_sign();
-        } else {
-          workerId = workerId[1];
-          OT.status.workerId = workerId;
-          $('#mturkusername').html('MT:' + workerId);
-          $('#mturkuser').html('MT:' + workerId);
-          if (localStorage.getItem('validated') == 'true') {
-            OT.switch_content();
+    chrome.runtime.sendMessage({
+      get_mturk_host: true
+    }, function(response) {
+      $.ajax({
+        url: 'https://' + response.mturk_host + '/mturk/dashboard',
+        success: function(result) {
+          var spanText = $(result).filter("table").find("span:contains('Worker ID')").text();
+          var workerIdPattern = /Worker ID: (.*)$/;
+          var workerId = spanText.match(workerIdPattern);
+          if (OT.status.workerId === null || workerId === null) {
+            OT.switch_sign();
           } else {
-            OT.switch_login();
+            workerId = workerId[1];
+            OT.status.workerId = workerId;
+            $('#mturkusername').html('MT:' + workerId);
+            $('#mturkuser').html('MT:' + workerId);
+            if (localStorage.getItem('validated') == 'true') {
+              OT.switch_content();
+            } else {
+              OT.switch_login();
+            }
           }
+        },
+        error: function(xhr, status) {
+          console.log('you are not logged in MTURK');
+          localStorage.removeItem('workerId');
+          localStorage.setItem('validated', 'false');
+          OT.switch_sign();
         }
-      },
-      error: function(xhr, status) {
-        console.log('you are not logged in MTURK');
-        localStorage.removeItem('workerId');
-        localStorage.setItem('validated', 'false');
-        OT.switch_sign();
-      }
+      });
     });
   },
 
@@ -250,36 +254,44 @@ var OT = {
   },
 
   get_worker_stats: function() {
-    $.get('https://workersandbox.mturk.com/mturk/dashboard', {}, function(data) {
-      var rewards = $(data).find('.reward');
-      var approval_rate = $(data).filter("table").find("td.metrics-table-first-value:contains('... Approved')").next().next().text();
-      var balance = {
-        approved_hits: $(rewards[0]).html(),
-        bonuses: $(rewards[1]).html(),
-        total_earnings: $(rewards[2]).html(),
-        approval_rate: approval_rate
-      };
-      localStorage.setItem('balance', balance);
-      $("#approved_hits").html(balance['approved_hits']);
-      $("#bonuses").html(balance['bonuses']);
-      $("#total_earnings").html(balance['total_earnings']);
-      $("#approval_rate").html(balance['approval_rate']);
-      console.log(balance);
-      OT.switch_balance();
+    chrome.runtime.sendMessage({
+      get_mturk_host: true
+    }, function(response) {
+      $.get('https://' + response.mturk_host + '/mturk/dashboard', {}, function(data) {
+        var rewards = $(data).find('.reward');
+        var approval_rate = $(data).filter("table").find("td.metrics-table-first-value:contains('... Approved')").next().next().text();
+        var balance = {
+          approved_hits: $(rewards[0]).html(),
+          bonuses: $(rewards[1]).html(),
+          total_earnings: $(rewards[2]).html(),
+          approval_rate: approval_rate
+        };
+        localStorage.setItem('balance', balance);
+        $("#approved_hits").html(balance['approved_hits']);
+        $("#bonuses").html(balance['bonuses']);
+        $("#total_earnings").html(balance['total_earnings']);
+        $("#approval_rate").html(balance['approval_rate']);
+        console.log(balance);
+        OT.switch_balance();
+      });
     });
   },
 
 
   get_worker_stats2: function() {
-    $.get('https://workersandbox.mturk.com/mturk/dashboard', {}, function(data) {
-      var rewards = $(data).find('.reward');
-      var hit_submitted = $(data).filter("table").find("td.metrics-table-first-value:contains('HITs Submitted')").next().text();
+    chrome.runtime.sendMessage({
+      get_mturk_host: true
+    }, function(response) {
+      $.get('https://' + response.mturk_host + '/mturk/dashboard', {}, function(data) {
+        var rewards = $(data).find('.reward');
+        var hit_submitted = $(data).filter("table").find("td.metrics-table-first-value:contains('HITs Submitted')").next().text();
 
-      var balance = {
-        total_earnings: $(rewards[2]).html(),
-        hit_submitted: hit_submitted
-      };
-      console.log(balance);
+        var balance = {
+          total_earnings: $(rewards[2]).html(),
+          hit_submitted: hit_submitted
+        };
+        console.log(balance);
+      });
     });
   },
 
@@ -307,7 +319,12 @@ function appendRequester(url) {
   var title = document.createElement("a");
   title.className = "link_title";
   title.innerText = url['name'];
-  title.href = 'https://workersandbox.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&requesterId=' + url['id'] + '&qualifiedFor=on';
+
+  chrome.runtime.sendMessage({
+    get_mturk_host: true
+  }, function(response) {
+    title.href = 'https://' + mturk_host + '/mturk/searchbar?selectedSearchType=hitgroups&requesterId=' + url['id'] + '&qualifiedFor=on';
+  });
   var batchs = document.createElement("a");
   batchs.className = "hint";
   batchs.innerText = "(" + url['numtask'] + " batchs)";
@@ -333,7 +350,11 @@ function appendSearch(url) {
   var title = document.createElement("a");
   title.className = "link_title";
   title.innerText = url['phrase'].replace('+', ' ');
-  title.href = 'https://workersandbox.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&qualifiedFor=on&searchWords=' + url['phrase'];
+  chrome.runtime.sendMessage({
+    get_mturk_host: true
+  }, function(response) {
+    title.href = 'https://' + response.mturk_host + '/mturk/searchbar?selectedSearchType=hitgroups&qualifiedFor=on&searchWords=' + url['phrase'];
+  });
   var batchs = document.createElement("a");
   batchs.className = "hint";
   batchs.innerText = "(" + url['numtask'] + " batchs)";
@@ -351,30 +372,35 @@ function appendRecommendation(results) {
   for (var i = 0; i < results.stars.length; i++) {
     var group_id = results.stars[i][0];
     var value = results.stars[i][1];
-    var url = 'https://workersandbox.mturk.com/mturk/preview?groupId=' + group_id;
-    $.get(url, {}, function(data) {
-      var title = $(data).find('.capsulelink_bold');
-      if (title.length > 0) {
 
-        var row = document.createElement("tr");
-        row.className = "link";
-        var link_col = document.createElement("td");
-        var task = document.createElement("a");
-        task.className = "link_title";
-        task.innerText = $(title).text().trim();
-        task.href = url;
+    chrome.runtime.sendMessage({
+      get_mturk_host: true
+    }, function(response) {
+      var url = 'https://' + response.mturk_host + '/mturk/preview?groupId=' + group_id;
+      $.get(url, {}, function(data) {
+        var title = $(data).find('.capsulelink_bold');
+        if (title.length > 0) {
 
-        var reward = document.createElement("a");
-        reward.className = "hint";
-        reward.innerText = "($" + value + ")";
-        reward.href = "";
+          var row = document.createElement("tr");
+          row.className = "link";
+          var link_col = document.createElement("td");
+          var task = document.createElement("a");
+          task.className = "link_title";
+          task.innerText = $(title).text().trim();
+          task.href = url;
 
-        link_col.appendChild(task);
-        link_col.appendChild(reward);
+          var reward = document.createElement("a");
+          reward.className = "hint";
+          reward.innerText = "($" + value + ")";
+          reward.href = "";
 
-        row.appendChild(link_col);
-        feed.appendChild(row);
-      }
+          link_col.appendChild(task);
+          link_col.appendChild(reward);
+
+          row.appendChild(link_col);
+          feed.appendChild(row);
+        }
+      });
     });
   }
 }
@@ -424,10 +450,15 @@ function searchOnEnter(e) {
 function search() {
   var searchBox = document.getElementById("searchbox");
   var keywords = searchBox.value;
-  if (keywords.length > 0) {
-    var search_url = "https://workersandbox.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&searchWords=" + keywords.replace(" ", "+");
-    openUrl(search_url, true);
-  }
+
+  chrome.runtime.sendMessage({
+    get_mturk_host: true
+  }, function(response) {
+    if (keywords.length > 0) {
+      var search_url = "https://"+response.mturk_host+"/mturk/searchbar?selectedSearchType=hitgroups&searchWords=" + keywords.replace(" ", "+");
+      openUrl(search_url, true);
+    }
+  });
 }
 
 // Show |url| in a new tab.
