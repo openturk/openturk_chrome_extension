@@ -257,7 +257,7 @@ var OT = {
     chrome.runtime.sendMessage({
       get_mturk_host: true
     }, function(response) {
-      $.get('https://' + response.mturk_host + '/mturk/dashboard', {}, function(data) {
+      $.get('https://'+response.mturk_host+'/mturk/dashboard', {}, function(data) {
         var rewards = $(data).find('.reward');
         var approval_rate = $(data).filter("table").find("td.metrics-table-first-value:contains('... Approved')").next().next().text();
         var balance = {
@@ -271,30 +271,12 @@ var OT = {
         $("#bonuses").html(balance['bonuses']);
         $("#total_earnings").html(balance['total_earnings']);
         $("#approval_rate").html(balance['approval_rate']);
-        console.log(balance);
         OT.switch_balance();
+        $('#workdone').sparkline(submitted_hist, {type: 'line', width: '300px', chartRangeMin: 0, lineColor: '#fb6b5b'});
+        $('#earning').sparkline(earning_hist, {type: 'line', width: '300px', chartRangeMin: 0, barColor: '#afcf6f'});
       });
     });
   },
-
-
-  get_worker_stats2: function() {
-    chrome.runtime.sendMessage({
-      get_mturk_host: true
-    }, function(response) {
-      $.get('https://' + response.mturk_host + '/mturk/dashboard', {}, function(data) {
-        var rewards = $(data).find('.reward');
-        var hit_submitted = $(data).filter("table").find("td.metrics-table-first-value:contains('HITs Submitted')").next().text();
-
-        var balance = {
-          total_earnings: $(rewards[2]).html(),
-          hit_submitted: hit_submitted
-        };
-        console.log(balance);
-      });
-    });
-  },
-
 
   status: {
     workerId: '',
@@ -408,6 +390,9 @@ function appendRecommendation(results) {
 var obj = {};
 var index = {};
 
+var earning_hist = [];
+var submitted_hist = [];
+
 function loadUIRequesters() {
   chrome.storage.sync.get('requesters', function(items) {
     if (!obj.requesters) {
@@ -431,6 +416,16 @@ function loadUIRequesters() {
       if (this['numtask']) {
         appendSearch(this);
       }
+    });
+  });
+  chrome.storage.sync.get('workhistory', function(items) {
+    if (!obj.workhistory) {
+      obj['workhistory'] = [];
+    }
+    $(items.workhistory).each(function() {
+      obj.workhistory.push(this);
+      earning_hist.push(this.total_earnings);
+      submitted_hist.push(this.hit_submitted);
     });
   });
 }

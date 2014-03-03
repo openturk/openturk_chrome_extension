@@ -130,6 +130,17 @@ function loadSearchTerms() {
   });
 }
 
+function loadWorkHistory() {
+  storage.get('workhistory', function(items) {
+    if(!obj.workhistory){
+      obj['workhistory'] = [];
+    }
+    $(items.workhistory).each(function() {
+      obj.workhistory.push(this);
+    })
+  });
+}
+
 function indexRequesters() {
   $(obj.requesters).each(function() {
     index[this.id] = this;
@@ -153,6 +164,7 @@ function save() {
 
 loadRequesters();
 loadSearchTerms();
+loadWorkHistory();
 
 function getNewBatchs() {
   storage.get('requesters', function(items) {
@@ -171,6 +183,19 @@ function getNewSearch() {
         scrapForSearch(phrase);
       });
     }
+  });
+}
+
+function getWorkerStats() {
+  $.get('https://workersandbox.mturk.com/mturk/dashboard', {}, function(data) {
+    var rewards = $(data).find('.reward');
+    var hit_submitted = $(data).filter("table").find("td.metrics-table-first-value:contains('HITs Submitted')").next().text();
+    var balance = {
+      total_earnings: parseInt($(rewards[2]).html().replace('$','')),
+      hit_submitted: parseInt(hit_submitted)
+    };
+    obj.workhistory.push(balance);
+    save();
   });
 }
 
@@ -302,6 +327,7 @@ function startRequest(params) {
   stopLoadingAnimation();
   getNewBatchs();
   getNewSearch();
+  getWorkerStats();
 }
 
 // Beautyfication

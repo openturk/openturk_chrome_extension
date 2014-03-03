@@ -6,6 +6,7 @@
         <link rel="stylesheet" href="styles/app.css">
         <link rel="stylesheet" href="styles/button.css">
         <script src="scripts/jquery-2.0.3.min.js"></script>
+        <script src="scripts/jquery.sparkline.min.js"></script>
         <script src="scripts/md5.js"></script>
         <script src="scripts/popup.js"></script>
         <script src="scripts/bootstrap.min.js"></script>
@@ -58,6 +59,15 @@
                 </tr>
                 <tr class="link">
                     <td>Approval Rate:</td><td> <label id="approval_rate"></label></td>
+                </tr>
+            </table>
+            <hr class="break">
+            <table class="feed" cellspacing="3" cellpadding="0">
+                <tr class="link">
+                    <td>HITs Submitted</td>    <td><span id="workdone"></span></td>
+                </tr>
+                <tr class="link">
+                    <td>Total Earnings</td> <td><span id="earning"></span></td>
                 </tr>
             </table>
         </div>

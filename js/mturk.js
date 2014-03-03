@@ -265,5 +265,18 @@ $(document).ready(function() {
       });
     });
 
+    //Add a popup
+    var elem = _.createElement("div", {
+      classes: ["hnspecial-infinite-search-notice"],
+      content: "Please keep scrolling if you want to access the search field and the footer. <span>(click to close)</span>"
+    });
+    elem.addEventListener("click", function () { this.classList.add("hnspecial-infinite-search-notice-hidden"); });
+    document.body.addEventListener("click", function (e) {
+      if (!elem.classList.contains("hnspecial-infinite-search-notice-hidden") && e.target !== elem) {
+        elem.classList.add("hnspecial-infinite-search-notice-hidden");
+      }
+    });
+    document.body.appendChild(elem);
+
   }).call(this);
 });
