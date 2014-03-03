@@ -11,7 +11,7 @@
    "content_scripts": [ {
       "all_frames": true,
       "js": ["pages/scripts/jquery-2.0.3.min.js", "js/mturk.js"],
-      "matches": [ "http://workersandbox.mturk.com/*", "https://workersandbox.mturk.com/*" ],
+      "matches": [ "http://workersandbox.mturk.com/*", "https://workersandbox.mturk.com/*","http://www.mturk.com/*", "https://www.mturk.com/*"  ],
       "css": [ "pages/styles/button.css" ],
       "run_at": "document_end"
    }],

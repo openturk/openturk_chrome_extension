@@ -2,6 +2,15 @@ var OT = {
   init: function() {
     OT.status.container = $('header.footer');
 
+    if (localStorage['Sandbox'] == "true")
+    {
+      $('#login_mturk').attr('href','https://www.amazon.com/gp/aws/ssop/index.html?awscbctx=&awscbid=urn%3Aaws%3Asid%3A0N1A8324EEG1142T9G02&awscredential=&awsnoclientpipeline=true&awsstrict=false&awsturknosubway=true&wa=wsignin1.0&wctx=&wreply=https%3A%2F%2Fworkersandbox.mturk.com%3A443%2Fmturk%2Fendsignin&wtrealm=urn%3Aaws%3Asid%3A0N1A8324EEG1142T9G02&awssig=UlH2xRjIlr69pdR3kpZEtiCTN1I%3D');
+      $('#signout').attr('href','https://workersandbox.mturk.com/mturk/beginsignout');
+    } else {
+      $('#login_mturk').attr('href','https://www.amazon.com/gp/aws/ssop/index.html?awscbctx=&awscbid=urn%3Aaws%3Asid%3A027Y0TCSPRG5XHFYJSR2&awscredential=&awsnoclientpipeline=true&awsstrict=false&awsturknosubway=true&wa=wsignin1.0&wctx=&wreply=https%3A%2F%2Fwww.mturk.com%2Fmturk%2Fendsignin&wtrealm=urn%3Aaws%3Asid%3A027Y0TCSPRG5XHFYJSR2&awssig=B%2BG7QiQm8L9a0G5RMeOrw0IHASk%3D');
+      $('#signout').attr('href','https://www.mturk.com/mturk/beginsignout');
+    }
+
     OT.get_worker_id();
     OT.get_openturk_username();
 
@@ -305,7 +314,7 @@ function appendRequester(url) {
   chrome.runtime.sendMessage({
     get_mturk_host: true
   }, function(response) {
-    title.href = 'https://' + mturk_host + '/mturk/searchbar?selectedSearchType=hitgroups&requesterId=' + url['id'] + '&qualifiedFor=on';
+    title.href = 'https://' + response.mturk_host + '/mturk/searchbar?selectedSearchType=hitgroups&requesterId=' + url['id'] + '&qualifiedFor=on';
   });
   var batchs = document.createElement("a");
   batchs.className = "hint";
