@@ -10,7 +10,7 @@ $(document).ready(function() {
       chrome.runtime.sendMessage({
         get_mturk_host: true
       }, function(response) {
-        $.get('https://'+response.mturk_host+'/mturk/dashboard', {}, function(data) {
+        $.get('https://' + response.mturk_host + '/mturk/dashboard', {}, function(data) {
           var spanText = $(data).filter("table").find("span:contains('Worker ID')").text();
           var workerIdPattern = /Worker ID: (.*)$/;
           var workerId = spanText.match(workerIdPattern)[1];
@@ -115,6 +115,10 @@ $(document).ready(function() {
     }
 
     function star(callback) {
+      chrome.runtime.sendMessage({
+        get_new_batchs: true
+      });
+
       get_worker_id(function(worker_id) {
         if (typeof worker_id === "undefined") {
           worker_id = "undefined";
