@@ -8,7 +8,7 @@ var OT = {
     $('#save').click(function(e) {
       e.preventDefault();
       OT.creds.save();
-    })
+    });
     $('#logout').click(function(e) {
       e.preventDefault();
       OT.creds.remove();
@@ -53,9 +53,12 @@ var OT = {
       } else {
         tags.push('tmp');
       }
-      var results = new Array();
-      for (k in tags)
-        if (tags[k]) results.push(tags[k])
+      var results = [];
+      for (var k in tags) {
+        if (tags[k]) {
+          results.push(tags[k]);
+        }
+      }
 
       $input.val(results.join(','));
     });
@@ -91,7 +94,7 @@ var OT = {
       var bar = OT.status.container;
 
       bar.removeClass('error success');
-      if (status != null) {
+      if (status !== null) {
         bar.addClass(status);
       }
       bar.html(message);
@@ -103,7 +106,7 @@ var OT = {
       var bar = OT.status.container2;
 
       bar.removeClass('error success');
-      if (status != null) {
+      if (status !== null) {
         bar.addClass(status);
       }
       bar.html(message);
@@ -139,7 +142,7 @@ var OT = {
     $('#spinner').hide();
     $('#balancer').show();
     $('#recommendation').hide();
-    $('#search-container').hide();    
+    $('#search-container').hide();
     $('#header').show();
     $('#footer').show();
   },
@@ -195,7 +198,7 @@ var OT = {
         var spanText = $(result).filter("table").find("span:contains('Worker ID')").text();
         var workerIdPattern = /Worker ID: (.*)$/;
         var workerId = spanText.match(workerIdPattern);
-        if (OT.status.workerId == null || workerId == null) {
+        if (OT.status.workerId === null || workerId === null) {
           OT.switch_sign();
         } else {
           workerId = workerId[1];
@@ -222,7 +225,7 @@ var OT = {
     $('#recommendation-feed').empty();
     if (OT.status.openturk_username) {
       var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/recommendations').done(function(results) {
-        if(results.stars) {
+        if (results.stars) {
           appendRecommendation(results);
         } else {
           $("#rec-msg").html('There is currently 0 recommendations.');
@@ -255,7 +258,7 @@ var OT = {
         bonuses: $(rewards[1]).html(),
         total_earnings: $(rewards[2]).html(),
         approval_rate: approval_rate
-      }
+      };
       localStorage.setItem('balance', balance);
       $("#approved_hits").html(balance['approved_hits']);
       $("#bonuses").html(balance['bonuses']);
@@ -265,6 +268,21 @@ var OT = {
       $('#ticker').sparkline([1,2,3,4,5,4,3,2,1]);
     });
   },
+
+
+  get_worker_stats2: function() {
+    $.get('https://workersandbox.mturk.com/mturk/dashboard', {}, function(data) {
+      var rewards = $(data).find('.reward');
+      var hit_submitted = $(data).filter("table").find("td.metrics-table-first-value:contains('HITs Submitted')").next().text();
+
+      var balance = {
+        total_earnings: $(rewards[2]).html(),
+        hit_submitted: hit_submitted
+      };
+      console.log(balance);
+    });
+  },
+
 
   status: {
     workerId: '',
@@ -298,7 +316,7 @@ function appendRequester(url) {
   link_col.appendChild(title);
   link_col.appendChild(batchs);
   row.appendChild(identicon);
-  row.appendChild(link_col)
+  row.appendChild(link_col);
   feed.appendChild(row);
 }
 
@@ -314,7 +332,7 @@ function appendSearch(url) {
   im.height = 15;
   var title = document.createElement("a");
   title.className = "link_title";
-  title.innerText = url['phrase'].replace('+',' ');
+  title.innerText = url['phrase'].replace('+', ' ');
   title.href = 'https://workersandbox.mturk.com/mturk/searchbar?selectedSearchType=hitgroups&qualifiedFor=on&searchWords=' + url['phrase'];
   var batchs = document.createElement("a");
   batchs.className = "hint";
@@ -324,7 +342,7 @@ function appendSearch(url) {
   link_col.appendChild(title);
   link_col.appendChild(batchs);
   row.appendChild(identicon);
-  row.appendChild(link_col)
+  row.appendChild(link_col);
   feed.appendChild(row);
 }
 
@@ -350,11 +368,11 @@ function appendRecommendation(results) {
         reward.className = "hint";
         reward.innerText = "($" + value + ")";
         reward.href = "";
-        
+
         link_col.appendChild(task);
         link_col.appendChild(reward);
 
-        row.appendChild(link_col)
+        row.appendChild(link_col);
         feed.appendChild(row);
       }
     });
@@ -366,7 +384,7 @@ var index = {};
 
 function loadUIRequesters() {
   chrome.storage.sync.get('requesters', function(items) {
-    if(!obj.requesters){
+    if (!obj.requesters) {
       obj['requesters'] = [];
     }
     $(items.requesters).each(function() {
@@ -379,7 +397,7 @@ function loadUIRequesters() {
     indexRequesters();
   });
   chrome.storage.sync.get('searchterms', function(items) {
-    if(!obj.searchterms){
+    if (!obj.searchterms) {
       obj['searchterms'] = [];
     }
     $(items.searchterms).each(function() {
@@ -387,7 +405,7 @@ function loadUIRequesters() {
       if (this['numtask']) {
         appendSearch(this);
       }
-    })
+    });
   });
 }
 
@@ -415,10 +433,13 @@ function search() {
 // Show |url| in a new tab.
 function openUrl(url, take_focus) {
   // Only allow http and https URLs.
-  if (url.indexOf("http:") != 0 && url.indexOf("https:") != 0) {
+  if (url.indexOf("http:") !== 0 && url.indexOf("https:") !== 0) {
     return;
   }
-  chrome.tabs.create({url: url, selected: take_focus});
+  chrome.tabs.create({
+    url: url,
+    selected: take_focus
+  });
 }
 
 $(document).ready(function() {
