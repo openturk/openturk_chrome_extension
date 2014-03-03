@@ -53,6 +53,10 @@ chrome.runtime.onMessage.addListener(
       });
     }
 
+    if (request.get_new_batchs) {
+      getNewBatchs();
+    }
+
     if (request.get_mturk_host) {
       sendResponse({
         mturk_host: (localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com"
