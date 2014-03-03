@@ -11,7 +11,7 @@
    "content_scripts": [ {
       "all_frames": true,
       "js": ["pages/scripts/jquery-2.0.3.min.js", "js/mturk.js"],
-      "matches": [ "http://workersandbox.mturk.com/*", "https://workersandbox.mturk.com/*","http://www.mturk.com/*", "https://www.mturk.com/*"  ],
+      "matches": [ "http://*.mturk.com/*", "https://*.mturk.com/*"  ],
       "css": [ "pages/styles/button.css" ],
       "run_at": "document_end"
    }],
@@ -26,5 +26,5 @@
    "web_accessible_resources": ["pages/scripts/jquery-2.0.3.min.map"],
    "description": "OpenTurk",
    "permissions": [ "alarms", "tabs", "\u003Call_urls\u003E", "storage" ],
-   "version": "0.0.6"
+   "version": "0.0.7"
 }
