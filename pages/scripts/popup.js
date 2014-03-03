@@ -261,8 +261,8 @@ var OT = {
       $("#bonuses").html(balance['bonuses']);
       $("#total_earnings").html(balance['total_earnings']);
       $("#approval_rate").html(balance['approval_rate']);
-      console.log(balance);
       OT.switch_balance();
+      $('#ticker').sparkline([1,2,3,4,5,4,3,2,1]);
     });
   },
 

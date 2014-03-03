@@ -89,6 +89,9 @@ a:hover {text-decoration:underline;}
 #OptionsPage a {text-decoration:underline;}
 #OptionsPage .feed {margin-left:10px;}
 
+.hnspecial-infinite-search-notice{position:fixed;right:20px;bottom:30px;width:400px;background:#f6e9d9;padding:20px;font-weight:200;cursor:pointer;-webkit-animation:slide-up 800ms ease;}
+.hnspecial-infinite-search-notice span{color:#999;font-size:13px}
+.hnspecial-infinite-search-notice.hnspecial-infinite-search-notice-hidden{-webkit-animation:slide-out-right 450ms ease;-webkit-animation-fill-mode:both}
 
 #add.edit-mode .adding {
     display: none;
