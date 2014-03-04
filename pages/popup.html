@@ -15,11 +15,11 @@
     <body>
         <div id="header">
             <div class="right">
-                <a id="favorites" href="">Favorites</a>
+                <a id="favorites" href="">Favorites<span id="favorites-notification" class="badge up bg-info" style="display: none;">!</span></a>
                 <span>|</span>
                 <a id="recos" href="">Recommended</a>
                 <span>|</span>
-                <a id="search" href="">Search</a>
+                <a id="search" href="">Search<span id="search-notification" class="badge up bg-info" style="display: none;">!</span></a>
                 <span>|</span>
                 <a id="balance" href="">Balance</a>
                 <span>|</span>
@@ -66,10 +66,7 @@
             <hr class="break">
             <table class="feed" cellspacing="3" cellpadding="0">
                 <tr class="link">
-                    <td>HITs Submitted</td>    <td><span id="workdone"></span></td>
-                </tr>
-                <tr class="link">
-                    <td>Total Earnings</td> <td><span id="earning"></span></td>
+                    <td>Performance</td> <td><span id="earning"></span></td>
                 </tr>
             </table>
         </div>

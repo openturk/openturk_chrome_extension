@@ -2,6 +2,7 @@
 var storage = chrome.storage.sync;
 var obj = {};
 var index = {};
+var updates = 0;
 
 // var version = chrome.app.getDetails().version; 
 // if (version != "0.0.9")
@@ -28,6 +29,9 @@ var loadingAnimation = new LoadingAnimation();
 
 SetInitialOption("RequestInterval", 1);
 SetInitialOption("Sandbox", false);
+
+localStorage['batchs'] = false;
+localStorage['search'] = false;
 
 function SetInitialOption(key, value) {
   if (localStorage[key] == null) {
@@ -78,7 +82,10 @@ chrome.runtime.onMessage.addListener(
 
     if (request.read === "resetIcon") {
       console.log('msg: reset the icon');
-      updateUnreadCount(0);
+      updates = 0;
+      localStorage['batchs'] = false;
+      localStorage['search'] = false;
+      updateUnreadCount(updates);
     }
     if (request.addRequester) {
       console.log('msg: adding requester ' + request.addRequester);
@@ -160,6 +167,8 @@ function modifyCount(phrase, count) {
 }
 
 function save() {
+  console.log('Obj to save : ')
+  console.log(obj.searchterms);
   console.log('saving ... ');
   chrome.storage.sync.set(obj);
 }
@@ -220,11 +229,16 @@ function scrapForBatchs(url) {
       if (res) {
         res = res[1];
         id = url['id'];
-        if (res != index[id].numtask) {
+        old_res = index[id].numtask;
+        if (res != old_res) {
           console.log('doing some update');
           index[id].numtask = res;
+          if(res > old_res) {
+            updates = updates + (res - old_res);
+            localStorage['batchs'] = true;
+            console.log('Change occured in Batchs: '+ updates + ' exactly: ' + (res - old_res));
+          }
           save();
-
         }
       }
     },
@@ -244,13 +258,18 @@ function scrapForSearch(phrase) {
       var res = spanText.match(resPattern);
       if (res) {
         res = res[1];
+        old_res = phrase['numtask'];
         console.log('searchgin for : ' + phrase['phrase'] + ' ' + res);
-        if (res != phrase['numtask']) {
+        if (res != old_res) {
           console.log('changed number of tasks: ' + phrase['numtask']);
           phrase['numtask'] = res;
           modifyCount(phrase['phrase'], res);
+          if(res > old_res) {
+            updates = updates + (res - old_res);
+            localStorage['search'] = true;
+            console.log('Change occured in Search: '+ updates + ' exactly: ' + (res - old_res));
+          }
           save();
-          console.log('changed number of tasks after: ' + phrase['numtask']);
         }
       }
     },
@@ -267,19 +286,19 @@ setTimeout(function() {
 }, 1000)
 
 
-chrome.storage.onChanged.addListener(function(changes, namespace) {
-  for (key in changes) {
-    var storageChange = changes[key];
-    console.log('Storage key "%s" in namespace "%s" changed. ' +
-      'Old value was "%s", new value is "%s".',
-      key,
-      namespace,
-      storageChange.oldValue,
-      storageChange.newValue);
-    //This is disgusting ...
-    updateUnreadCount(1);
-  }
-});
+// chrome.storage.onChanged.addListener(function(changes, namespace) {
+//   for (key in changes) {
+//     var storageChange = changes[key];
+//     console.log('Storage key "%s" in namespace "%s" changed. ' +
+//       'Old value was "%s", new value is "%s".',
+//       key,
+//       namespace,
+//       storageChange.oldValue,
+//       storageChange.newValue);
+//     //This is disgusting ...
+//     updateUnreadCount(1);
+//   }
+// });
 
 function setBadge(text) {
   chrome.browserAction.setBadgeText({
@@ -331,6 +350,7 @@ function startRequest(params) {
   getNewBatchs();
   getNewSearch();
   getWorkerStats();
+  updateUnreadCount(updates);
 }
 
 // Beautyfication

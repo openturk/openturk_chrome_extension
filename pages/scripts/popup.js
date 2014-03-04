@@ -9,6 +9,12 @@ var OT = {
       $('#login_mturk').attr('href', 'https://www.amazon.com/gp/aws/ssop/index.html?awscbctx=&awscbid=urn%3Aaws%3Asid%3A027Y0TCSPRG5XHFYJSR2&awscredential=&awsnoclientpipeline=true&awsstrict=false&awsturknosubway=true&wa=wsignin1.0&wctx=&wreply=https%3A%2F%2Fwww.mturk.com%2Fmturk%2Fendsignin&wtrealm=urn%3Aaws%3Asid%3A027Y0TCSPRG5XHFYJSR2&awssig=B%2BG7QiQm8L9a0G5RMeOrw0IHASk%3D');
       $('#signout').attr('href', 'https://www.mturk.com/mturk/beginsignout');
     }
+    if (localStorage['batchs'] == "true") {
+      $('#favorites-notification').show();
+    }
+    if (localStorage['search'] == "true") {
+      $('#search-notification').show();
+    }
 
     OT.get_worker_id();
     OT.get_openturk_username();
@@ -289,19 +295,21 @@ var OT = {
         $("#total_earnings").html(balance['total_earnings']);
         $("#approval_rate").html(balance['approval_rate']);
         OT.switch_balance();
-        $('#workdone').sparkline(submitted_hist, {
-          type: 'line',
-          width: '300px',
-          chartRangeMin: 0,
-          lineColor: '#fb6b5b'
-        });
-        $('#earning').sparkline(earning_hist, {
-          type: 'line',
-          width: '300px',
-          chartRangeMin: 0,
-          barColor: '#afcf6f'
-        });
-      });
+        // $('#workdone').sparkline(submitted_hist, {
+        //   type: 'line',
+        //   width: '300px',
+        //   chartRangeMin: 0,
+        //   lineColor: '#fb6b5b'
+        // });
+        // $('#earning').sparkline(earning_hist, {
+        //   type: 'line',
+        //   width: '300px',
+        //   chartRangeMin: 0,
+        //   barColor: '#afcf6f'
+        // });
+        $('#earning').sparkline(submitted_hist, { type: 'bar', barColor: '#fb6b5b' , width: '300px', height: '50px'});
+        $('#earning').sparkline(earning_hist, { composite: true, fillColor: false, lineColor: 'afcf6f' , width: '300px', height: '50px'});
+          });
     });
   },
 
@@ -420,6 +428,7 @@ function appendRecommendation(results) {
           row.appendChild(link_col);
           feed.appendChild(row);
           count = count + 1;
+          $("#rec-msg").hide();
         }
       });
     }
@@ -448,6 +457,7 @@ function loadUIObjects() {
       if (this['numtask']) {
         appendRequester(this);
         count = count+1;
+        $("#content-msg").hide();
       }
     });
     if (count == 0 ){
@@ -465,6 +475,7 @@ function loadUIObjects() {
       if (this['numtask']) {
         appendSearch(this);
         count = count + 1;
+        $("#search-msg").hide();
       }
     });
     if (count == 0 ){

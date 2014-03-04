@@ -109,8 +109,40 @@ hr.break {
   -moz-box-sizing: content-box;
   box-sizing: content-box;
 }*/
-.jqstooltip {
+/*.jqstooltip {
     box-sizing: content-box;
     height: auto !important;
     width: auto !important;
+}*/
+
+.badge {
+  background-color: #a7b4d3;
 }
+.badge.up {
+  position: relative;
+  top: -7px;
+  padding: 2px 4px;
+}
+
+.badge {
+  display: inline-block;
+  min-width: 5px;
+  padding: 3px 7px;
+  font-size: 6px;
+  font-weight: bold;
+  color: #ffffff;
+  line-height: 1;
+  vertical-align: baseline;
+  white-space: nowrap;
+  text-align: center;
+  background-color: #999999;
+  border-radius: 7px;
+}
+.m-l-n-sm {
+margin-left: -10px;
+}
+.bg-info {
+  background-color: #5dcff3;
+  color: #ffffff;
+}
+
