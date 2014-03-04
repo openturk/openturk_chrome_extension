@@ -266,7 +266,7 @@ var OT = {
   },
 
   get_openturk_username: function() {
-    var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
+    var jqxhr = $.getJSON('http://alpha.openturk.com/username').done(function(result) {
       if (typeof result.username !== "undefined") {
         OT.status.openturk_username = result.username;
         $('#openturkuser').html('OT:' + OT.status.openturk_username);
@@ -307,8 +307,8 @@ var OT = {
         //   chartRangeMin: 0,
         //   barColor: '#afcf6f'
         // });
-        $('#earning').sparkline(submitted_hist, { type: 'bar', barColor: '#fb6b5b' , width: '300px', height: '50px'});
-        $('#earning').sparkline(earning_hist, { composite: true, fillColor: false, lineColor: 'afcf6f' , width: '300px', height: '50px'});
+        $('#earning').sparkline(submitted_hist, { type: 'bar', barColor: '#fb6b5b' , width: '100px', height: '50px'});
+        $('#earning').sparkline(earning_hist, { composite: true, fillColor: false, lineColor: 'afcf6f' , width: '100px', height: '50px'});
           });
     });
   },
@@ -320,7 +320,8 @@ var OT = {
   }
 };
 
-
+var newbatchs = JSON.parse(localStorage["newbatchs"] || "null");
+var newterms = JSON.parse(localStorage["newterms"] || "null");
 
 function appendRequester(url) {
   var feed = document.getElementById("feed");
@@ -342,10 +343,15 @@ function appendRequester(url) {
   }, function(response) {
     title.href = 'https://' + response.mturk_host + '/mturk/searchbar?selectedSearchType=hitgroups&requesterId=' + url['id'] + '&qualifiedFor=on';
   });
-  var batchs = document.createElement("a");
+  var batchs = document.createElement("span");
   batchs.className = "hint";
-  batchs.innerText = "(" + url['numtask'] + " batchs)";
-  batchs.href = url['numtask'];
+
+  if(newbatchs && $.inArray(url['id'], newbatchs) > -1) {
+    batchs.innerText = "(" + url['numtask'] + " batchs) new!";  
+    batchs.className = "hint_new  ";
+  } else {
+    batchs.innerText = "(" + url['numtask'] + " batchs)";
+  }
   identicon.appendChild(im);
   link_col.appendChild(title);
   link_col.appendChild(batchs);
@@ -359,11 +365,12 @@ function appendSearch(url) {
   var row = document.createElement("tr");
   row.className = "link";
   var link_col = document.createElement("td");
-  var identicon = document.createElement("td");
+  // Make as a like button
+  var icone = document.createElement("td");
   var im = document.createElement("img");
-  im.src = 'http://www.gravatar.com/avatar.php?gravatar_id=' + md5(url['phrase']) + '&r=PG&s=15&default=identicon';
-  im.width = 15;
-  im.height = 15;
+  im.src = 'images/grayarrow.gif';
+  im.width = 10;
+  im.height = 10;
   var title = document.createElement("a");
   title.className = "link_title";
   title.innerText = url['phrase'].replace('+', ' ');
@@ -372,14 +379,21 @@ function appendSearch(url) {
   }, function(response) {
     title.href = 'https://' + response.mturk_host + '/mturk/searchbar?selectedSearchType=hitgroups&qualifiedFor=on&searchWords=' + url['phrase'];
   });
-  var batchs = document.createElement("a");
+  var batchs = document.createElement("span");
   batchs.className = "hint";
-  batchs.innerText = "(" + url['numtask'] + " batchs)";
-  batchs.href = url['numtask'];
-  identicon.appendChild(im);
+
+  if(newterms && $.inArray(url['phrase'], newterms) > -1) {
+    batchs.innerText = "(" + url['numtask'] + " batchs) new!";
+    batchs.className = "hint_new";
+  } else {
+    batchs.innerText = "(" + url['numtask'] + " batchs)";
+  }
+
+  // batchs.href = url['numtask'];
+  icone.appendChild(im);
   link_col.appendChild(title);
   link_col.appendChild(batchs);
-  row.appendChild(identicon);
+  row.appendChild(icone);
   row.appendChild(link_col);
   feed.appendChild(row);
 }
@@ -541,6 +555,6 @@ $(document).ready(function() {
   //console.log('loading stuff');
   loadUIObjects();
   chrome.extension.sendMessage({
-    read: "resetIcon"
+    reset: "resetIcon"
   });
 });

@@ -32,6 +32,10 @@ SetInitialOption("Sandbox", false);
 
 localStorage['batchs'] = false;
 localStorage['search'] = false;
+localStorage['newbatchs'] = [];
+localStorage['newterms'] = [];
+var newbatchs = [];
+var newterms = [];
 
 function SetInitialOption(key, value) {
   if (localStorage[key] == null) {
@@ -80,12 +84,16 @@ chrome.runtime.onMessage.addListener(
       });
     }
 
-    if (request.read === "resetIcon") {
+    if (request.reset === "resetIcon") {
       console.log('msg: reset the icon');
       updates = 0;
       localStorage['batchs'] = false;
       localStorage['search'] = false;
-      updateUnreadCount(updates);
+      localStorage['newbatchs'] = [];
+      localStorage['newterms'] = [];
+      newbatchs = [];
+      newterms = [];
+      updateUnreadCount();
     }
     if (request.addRequester) {
       console.log('msg: adding requester ' + request.addRequester);
@@ -95,9 +103,10 @@ chrome.runtime.onMessage.addListener(
       console.log('msg: deleting requester' + request.deleteRequester);
       deleteRequester(request.deleteRequester);
     }
-    if (request.loadSearchTerms) {
-      console.log('msg: Reloading searchterms');
+    if (request.fetch) {
+      console.log('msg: reloading data');
       loadSearchTerms();
+      loadRequesters();
     }
   }
 );
@@ -108,7 +117,7 @@ function addRequester(req) {
     obj['requesters'] = []
   }
   obj.requesters.push(req);
-  save();
+  saverequesters();
   getNewBatchs();
   indexRequesters();
 }
@@ -118,7 +127,7 @@ function deleteRequester(req) {
   obj.requesters = obj.requesters.filter(function(el) {
     return el.id != req.id;
   });
-  save();
+  saverequesters();
   indexRequesters();
 }
 
@@ -129,6 +138,7 @@ function loadRequesters() {
       obj.requesters.push(this);
     })
     indexRequesters();
+    getNewBatchs();
   });
 }
 
@@ -166,13 +176,23 @@ function modifyCount(phrase, count) {
   });
 }
 
-function save() {
-  console.log('Obj to save : ')
-  console.log(obj.searchterms);
-  console.log('saving ... ');
-  chrome.storage.sync.set(obj);
+function savesearchterms() {
+  chrome.storage.sync.set({
+      'searchterms': obj.searchterms
+    });
 }
 
+function saverequesters() {
+  chrome.storage.sync.set({
+      'requesters': obj.requesters
+    });
+}
+
+function saveworkhist() {
+  chrome.storage.sync.set({
+      'workhistory': obj.workhistory
+    });
+}
 
 loadRequesters();
 loadSearchTerms();
@@ -207,7 +227,7 @@ function getWorkerStats() {
       hit_submitted: parseInt(hit_submitted)
     };
     obj.workhistory.push(balance);
-    save();
+    saveworkhist();
   });
 }
 
@@ -228,17 +248,24 @@ function scrapForBatchs(url) {
       var res = spanText.match(resPattern);
       if (res) {
         res = res[1];
-        id = url['id'];
-        old_res = index[id].numtask;
+        var id = url['id'];
+        var old_res = index[id].numtask;
         if (res != old_res) {
           console.log('doing some update');
           index[id].numtask = res;
           if(res > old_res) {
-            updates = updates + (res - old_res);
+            var diff = res - old_res;
+            updates = updates + diff;
             localStorage['batchs'] = true;
-            console.log('Change occured in Batchs: '+ updates + ' exactly: ' + (res - old_res));
+            var diff = res - old_res;
+            console.log('Requester diff: ' + diff);
+            updateUnreadCount();
+            if(!(id in newbatchs)) {
+              newbatchs.push(id);
+            }
+            localStorage['newbatchs'] = JSON.stringify(newbatchs);
           }
-          save();
+          saverequesters();
         }
       }
     },
@@ -258,18 +285,24 @@ function scrapForSearch(phrase) {
       var res = spanText.match(resPattern);
       if (res) {
         res = res[1];
-        old_res = phrase['numtask'];
+        var old_res = phrase['numtask'];
         console.log('searchgin for : ' + phrase['phrase'] + ' ' + res);
         if (res != old_res) {
           console.log('changed number of tasks: ' + phrase['numtask']);
           phrase['numtask'] = res;
           modifyCount(phrase['phrase'], res);
           if(res > old_res) {
-            updates = updates + (res - old_res);
+            var diff = res - old_res;
+            updates = updates + diff;
             localStorage['search'] = true;
-            console.log('Change occured in Search: '+ updates + ' exactly: ' + (res - old_res));
+            console.log('Search diff: ' + diff);
+            updateUnreadCount();
+            if(!(phrase in newterms)) {
+              newterms.push(phrase['phrase']);
+            }
+            localStorage['newterms'] = JSON.stringify(newterms);
           }
-          save();
+          savesearchterms();
         }
       }
     },
@@ -350,7 +383,6 @@ function startRequest(params) {
   getNewBatchs();
   getNewSearch();
   getWorkerStats();
-  updateUnreadCount(updates);
 }
 
 // Beautyfication
@@ -387,9 +419,9 @@ function drawIconAtRotation() {
   });
 }
 
-function updateUnreadCount(count) {
-  var changed = localStorage.unreadCount != count;
-  localStorage.unreadCount = count;
+function updateUnreadCount() {
+  var changed = localStorage.unreadCount != updates;
+  localStorage.unreadCount = updates;
   updateIcon();
   if (changed)
     animateFlip();
@@ -414,7 +446,7 @@ function updateIcon() {
       color: [208, 0, 24, 255]
     });
     chrome.browserAction.setBadgeText({
-      text: localStorage.unreadCount != "0" ? localStorage.unreadCount : ""
+      text: localStorage.unreadCount != "0" ? "new" : ""
     });
   }
 }

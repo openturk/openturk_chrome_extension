@@ -236,7 +236,7 @@ $(document).ready(function() {
 
     //Add the star
     get_group_id(function(group_id) {
-      var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
+      var jqxhr = $.getJSON('http://alpha.openturk.com/username').done(function(result) {
         if (typeof result.username !== "undefined") {
           $('td[colspan=11]')
             .after('<span id="star" class="btn btn-icon icon-share"></span>')

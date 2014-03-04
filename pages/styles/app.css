@@ -73,6 +73,7 @@ a:hover {text-decoration:underline;}
 .link { padding: 2px 0px; }
 .link span { margin-right:3px;}
 .hint { font-size:7pt; margin-left:5px; }
+.hint_new {color:red; font-size:7pt; margin-left:5px; }
 .little_id { font-size:7pt;padding-top:20px;}
 .error {white-space: nowrap;color: red;}
 #footer {font-size:10px;}
