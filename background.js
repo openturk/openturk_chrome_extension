@@ -250,9 +250,10 @@ function scrapForBatchs(url) {
         res = res[1];
         var id = url['id'];
         var old_res = index[id].numtask;
+        console.log('Checking requester : ' + id);
         if (res != old_res) {
-          console.log('doing some update');
           index[id].numtask = res;
+          console.log('REQUESTER. Before: ' + old_res + ' After: ' + res);
           if(res > old_res) {
             var diff = res - old_res;
             updates = updates + diff;
@@ -286,9 +287,9 @@ function scrapForSearch(phrase) {
       if (res) {
         res = res[1];
         var old_res = phrase['numtask'];
-        console.log('searchgin for : ' + phrase['phrase'] + ' ' + res);
+        console.log('Checking phrase : ' + phrase['phrase']);
         if (res != old_res) {
-          console.log('changed number of tasks: ' + phrase['numtask']);
+          console.log('SEARCH. Before: ' + old_res + ' After: ' + res);
           phrase['numtask'] = res;
           modifyCount(phrase['phrase'], res);
           if(res > old_res) {

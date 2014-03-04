@@ -227,8 +227,8 @@ $(document).ready(function() {
       });
     });
 
-    //Add I'm feeling lucky button
-    $('input[value="/searchbar"]').after('<br><button id="lucky">I\'m feeling lucky</button>');
+    //Get Awesome HIT
+    $('#searchbar').after('<div class="clear"><button id="lucky" class="btn btn-warning">Recommend me a HIT</button></div>');
     $('#lucky').click(function(e) {
       e.preventDefault();
       redirect();
