@@ -392,7 +392,9 @@ function appendRecommendation(results) {
   }, function(response) {
     var count = 0;
     for (var i = 0; i < results.stars.length; i++) {
-
+      if (results.stars[i][0] == "undefined" || results.stars[i][1] == "undefined") {
+        continue;
+      }
       var group_id = results.stars[i][0];
       var value = results.stars[i][1];
       var url = 'https://' + response.mturk_host + '/mturk/preview?groupId=' + group_id;
