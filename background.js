@@ -4,13 +4,6 @@ var obj = {};
 var index = {};
 var updates = 0;
 
-// var version = chrome.app.getDetails().version; 
-// if (version != "0.0.9")
-// {
-//   storage.clear();
-// }
-// localStorage.clear();
-
 // Legacy support for pre-event-pages.
 var oldChromeVersion = !chrome.runtime;
 var requestTimerId;
@@ -29,6 +22,8 @@ var loadingAnimation = new LoadingAnimation();
 
 SetInitialOption("RequestInterval", 1);
 SetInitialOption("Sandbox", false);
+SetInitialOption("Reqnotif", false);
+SetInitialOption("Termnotif", false);
 
 localStorage['batchs'] = false;
 localStorage['search'] = false;
@@ -133,7 +128,7 @@ function deleteRequester(req) {
 
 function loadRequesters() {
   storage.get('requesters', function(items) {
-    obj['requesters'] = [];
+    obj.requesters = [];
     $(items.requesters).each(function() {
       obj.requesters.push(this);
     })
@@ -144,7 +139,7 @@ function loadRequesters() {
 
 function loadSearchTerms() {
   storage.get('searchterms', function(items) {
-    obj['searchterms'] = [];
+    obj.searchterms = [];
     $(items.searchterms).each(function() {
       obj.searchterms.push(this);
     });
@@ -154,7 +149,7 @@ function loadSearchTerms() {
 
 function loadWorkHistory() {
   storage.get('workhistory', function(items) {
-    obj['workhistory'] = [];
+    obj.workhistory = [];
     $(items.workhistory).each(function() {
       obj.workhistory.push(this);
     })
@@ -256,7 +251,9 @@ function scrapForBatchs(url) {
           console.log('REQUESTER. Before: ' + old_res + ' After: ' + res);
           if(res > old_res) {
             var diff = res - old_res;
-            updates = updates + diff;
+            if(localStorage['Reqnotif'] == "true") {
+              updates = updates + diff;
+            }
             localStorage['batchs'] = true;
             var diff = res - old_res;
             console.log('Requester diff: ' + diff);
@@ -294,7 +291,9 @@ function scrapForSearch(phrase) {
           modifyCount(phrase['phrase'], res);
           if(res > old_res) {
             var diff = res - old_res;
-            updates = updates + diff;
+            if(localStorage['Termnotif'] == "true") {
+              updates = updates + diff;
+            }
             localStorage['search'] = true;
             console.log('Search diff: ' + diff);
             updateUnreadCount();

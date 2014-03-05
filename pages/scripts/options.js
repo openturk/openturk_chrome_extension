@@ -33,7 +33,7 @@ $(function() {
   });
 
   restoreOptions();
-  $('.sandbox-tabs-radio, #RequestInterval').change(function() {
+  $('.sandbox-tabs-radio, .reqnotif-tabs-radio, .termnotif-tabs-radio, #RequestInterval').change(function() {
     saveOptions();
   });
 });
@@ -43,6 +43,8 @@ var index = {};
 
 var selectReqInterval;
 var radioSandbox;
+var radioReq;
+var radioTerm;
 
 function savesearchterms() {
   chrome.storage.sync.set({
@@ -111,6 +113,8 @@ function initVariables() {
   // load the thingies ..
   selectReqInterval = document.getElementById("RequestInterval");
   radioSandbox = document.getElementsByName("Sandbox");
+  radioReq = document.getElementsByName("Reqnotif");
+  radioTerm = document.getElementsByName("Termnotif");
 }
 
 function plusRequester(requester) {
@@ -139,6 +143,18 @@ function restoreOptions() {
       radioSandbox[i].checked = "true";
     }
   }
+  var reqTabs = localStorage["Reqnotif"];
+  for (var i = 0; i < radioReq.length; i++) {
+    if (radioReq[i].value == reqTabs) {
+      radioReq[i].checked = "true";
+    }
+  }
+  var termTabs = localStorage["Termnotif"];
+  for (var i = 0; i < radioTerm.length; i++) {
+    if (radioTerm[i].value == termTabs) {
+      radioTerm[i].checked = "true";
+    }
+  }
 }
 
 
@@ -150,6 +166,18 @@ function saveOptions() {
   for (var i = 0; i < radioSandbox.length; i++) {
     if (radioSandbox[i].checked) {
       localStorage["Sandbox"] = radioSandbox[i].value;
+      break;
+    }
+  }
+  for (var i = 0; i < radioReq.length; i++) {
+    if (radioReq[i].checked) {
+      localStorage["Reqnotif"] = radioReq[i].value;
+      break;
+    }
+  }
+  for (var i = 0; i < radioTerm.length; i++) {
+    if (radioTerm[i].checked) {
+      localStorage["Termnotif"] = radioTerm[i].value;
       break;
     }
   }

@@ -307,9 +307,10 @@ var OT = {
         //   chartRangeMin: 0,
         //   barColor: '#afcf6f'
         // });
-        $('#earning').sparkline(submitted_hist, { type: 'bar', barColor: '#fb6b5b' , width: '100px', height: '50px'});
-        $('#earning').sparkline(earning_hist, { composite: true, fillColor: false, lineColor: 'afcf6f' , width: '100px', height: '50px'});
-          });
+        // $('#earning').sparkline(submitted_hist, { type: 'bar', barColor: '#fb6b5b', height: '50px'});
+        // $('#earning').sparkline(earning_hist, { composite: true, fillColor: false, lineColor: 'afcf6f' , width: '100px', height: '50px'});
+        //Get the context of the canvas element we want to select
+        });
     });
   },
 
@@ -460,6 +461,54 @@ var index = {};
 
 var earning_hist = [];
 var submitted_hist = [];
+var test = [
+  {
+    "date": "20111001",
+    "val": "63.4",
+  },
+  {
+    "date": "20111002",
+    "val": "58.0",
+  }
+];
+
+var data = {
+  labels : ["January","February","March","April","May","June","July"],
+  datasets : [
+    {
+      fillColor : "rgba(220,220,220,0.5)",
+      strokeColor : "rgba(220,220,220,1)",
+      pointColor : "rgba(220,220,220,1)",
+      pointStrokeColor : "#fff",
+      data : [65,59,90,81,56,55,40]
+    },
+    {
+      fillColor : "rgba(151,187,205,0.5)",
+      strokeColor : "rgba(151,187,205,1)",
+      pointColor : "rgba(151,187,205,1)",
+      pointStrokeColor : "#fff",
+      data : [28,48,40,19,96,27,100]
+    }
+  ]
+};
+
+function drawChart() {
+  var data = google.visualization.arrayToDataTable([
+    ['Year', 'Sales', 'Expenses'],
+    ['2004',  1000,      400],
+    ['2005',  1170,      460],
+    ['2006',  660,       1120],
+    ['2007',  1030,      540]
+  ]);
+
+  var options = {
+    title: 'Company Performance',
+    vAxis: {title: 'Year',  titleTextStyle: {color: 'red'}}
+  };
+
+  var chart = new google.visualization.BarChart(document.getElementById('earning'));
+  chart.draw(data, options);
+}
 
 function loadUIObjects() {
   chrome.storage.sync.get('requesters', function(items) {
@@ -511,6 +560,7 @@ function loadUIObjects() {
       submitted_hist.push(this.hit_submitted - previous_hit_submitted);
       previous_hit_submitted = this.hit_submitted;
     });
+
   });
 }
 
@@ -559,4 +609,6 @@ $(document).ready(function() {
   chrome.extension.sendMessage({
     reset: "resetIcon"
   });
+  var ctx = document.getElementById("earning").getContext("2d");
+  var myNewChart = new Chart(ctx).Line(data);
 });

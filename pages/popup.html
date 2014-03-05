@@ -6,7 +6,7 @@
         <link rel="stylesheet" href="styles/app.css">
         <link rel="stylesheet" href="styles/button.css">
         <script src="scripts/jquery-2.0.3.min.js"></script>
-        <script src="scripts/jquery.sparkline.min.js"></script>
+        <script src="scripts/Chart.js"></script>
         <script src="scripts/md5.js"></script>
         <script src="scripts/popup.js"></script>
         <script src="scripts/bootstrap.min.js"></script>
@@ -66,7 +66,7 @@
             <hr class="break">
             <table class="feed" cellspacing="3" cellpadding="0">
                 <tr class="link">
-                    <td>Performance</td> <td><span id="earning"></span></td>
+                    <td>Performance</td> <td><canvas id="earning" width="200" height="100"></canvas></td>
                 </tr>
             </table>
         </div>
