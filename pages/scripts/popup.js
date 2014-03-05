@@ -266,7 +266,7 @@ var OT = {
   },
 
   get_openturk_username: function() {
-    var jqxhr = $.getJSON('http://alpha.openturk.com/username').done(function(result) {
+    var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
       if (typeof result.username !== "undefined") {
         OT.status.openturk_username = result.username;
         $('#openturkuser').html('OT:' + OT.status.openturk_username);
@@ -350,26 +350,26 @@ var OT = {
         //         result.population = parseInt(val.val);
         //         data.push( result );
         //     } );
-         
+
         //     chart = d3.select( "#bar-demo" ).append( 'svg' )
         //         .attr( 'width', 200 )
         //         .attr( 'height', h )
         //         .append('g');
-         
+
         //     d3.select('svg g')
         //         .attr('transform', 'translate(50, 50)');
-         
+
         //     x = d3.time.scale()
         //         .domain( [data[0].year, d3.time.year.offset(data[data.length - 1].year, 1)] )
         //         .range( [0, w * data.length] )
-         
+
         //     y = d3.scale.linear()
         //         .domain( [0, d3.max( data, function( d ) { return d.population; } )] )
         //         .rangeRound( [0, h - margin] );
         //     // Bars
         //     bars = chart.append('g')
         //         .attr('class', 'bars');
-         
+
         //     bars.selectAll( 'rect' )
         //         .data( data )
         //       .enter().append( 'rect' )
@@ -378,23 +378,23 @@ var OT = {
         //         .attr( 'width', w )
         //         .attr( 'height', function( d ) { return y( d.population ) } )
         //         .append('g');
-         
+
         //     // Axis
         //     xAxis = d3.svg.axis()
         //         .scale(x)
         //         .ticks(20)
         //         .tickSize(6, 3, 1);
-         
+
         //     yAxis = d3.svg.axis()
         //         .scale(d3.scale.linear().domain( [0, d3.max( data, function( d ) { return d.population; } )] ).rangeRound( [h - margin, 0] ))
         //         .tickSize(6, 3, 1)
         //         .orient('right');
-         
+
         //     chart.append('g')
         //         .attr('class', 'x axis')
         //         .attr('transform', 'translate(0, ' + (h - margin) + ')')
         //         .call(xAxis);
-         
+
         //     chart.append('g')
         //         .attr('class', 'y axis')
         //         .attr('transform', 'translate(' + x.range()[1] + ')')
@@ -440,7 +440,7 @@ function appendRequester(url) {
   batchs.className = "hint";
 
   if(newbatchs && $.inArray(url['id'], newbatchs) > -1) {
-    batchs.innerText = "(" + url['numtask'] + " batchs) new!";  
+    batchs.innerText = "(" + url['numtask'] + " batchs) new!";
     batchs.className = "hint_new  ";
   } else {
     batchs.innerText = "(" + url['numtask'] + " batchs)";
