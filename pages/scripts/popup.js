@@ -266,7 +266,7 @@ var OT = {
   },
 
   get_openturk_username: function() {
-    var jqxhr = $.getJSON('http://alpha.openturk.com/username').done(function(result) {
+    var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
       if (typeof result.username !== "undefined") {
         OT.status.openturk_username = result.username;
         $('#openturkuser').html('OT:' + OT.status.openturk_username);
@@ -309,98 +309,6 @@ var OT = {
         // });
         // $('#earning').sparkline(submitted_hist, { type: 'bar', barColor: '#fb6b5b', height: '50px'});
         // $('#earning').sparkline(earning_hist, { composite: true, fillColor: false, lineColor: 'afcf6f' , width: '100px', height: '50px'});
-        //Get the context of the canvas element we want to select
-        // var barWidth = 10;
-        // var width = (barWidth + 10) * test.length;
-        // var height = 100;
-
-        // var x = d3.scale.linear().domain([0, test.length]).range([0, width]);
-        // var y = d3.scale.linear().domain([0, d3.max(test, function(datum) { return datum.val; })]).
-        //   rangeRound([0, height]);
-
-        // // add the canvas to the DOM
-        // var barDemo = d3.select("#bar-demo").
-        //   append("svg:svg").
-        //   attr("width", width).
-        //   attr("height", height);
-
-        // barDemo.selectAll("rect").
-        //   data(test).
-        //   enter().
-        //   append("svg:rect").
-        //   attr("x", function(datum, index) { return x(index); }).
-        //   attr("y", function(datum) { return height - y(datum.val); }).
-        //   attr("height", function(datum) { return y(datum.val); }).
-        //   attr("width", barWidth).
-        //   attr("fill", "#2d578b");
-        // var results,
-        //     data = [],
-        //     chart,
-        //     bars,
-        //     margin = 10,
-        //     w = 2,
-        //     h = 200,
-        //     x, y,
-        //     xAxis, yAxis;
-
-        //     results = d3.map( test );
-        //     results.forEach( function( key, val ) {
-        //         var result = {};
-        //         result.year = Date.parse(val.date);
-        //         result.population = parseInt(val.val);
-        //         data.push( result );
-        //     } );
-         
-        //     chart = d3.select( "#bar-demo" ).append( 'svg' )
-        //         .attr( 'width', 200 )
-        //         .attr( 'height', h )
-        //         .append('g');
-         
-        //     d3.select('svg g')
-        //         .attr('transform', 'translate(50, 50)');
-         
-        //     x = d3.time.scale()
-        //         .domain( [data[0].year, d3.time.year.offset(data[data.length - 1].year, 1)] )
-        //         .range( [0, w * data.length] )
-         
-        //     y = d3.scale.linear()
-        //         .domain( [0, d3.max( data, function( d ) { return d.population; } )] )
-        //         .rangeRound( [0, h - margin] );
-        //     // Bars
-        //     bars = chart.append('g')
-        //         .attr('class', 'bars');
-         
-        //     bars.selectAll( 'rect' )
-        //         .data( data )
-        //       .enter().append( 'rect' )
-        //         .attr( 'x', function( d, i ) { return x( d.year ) - .5; } )
-        //         .attr( 'y', function( d ) { return (h - margin) - y( d.population ) + .5 } )
-        //         .attr( 'width', w )
-        //         .attr( 'height', function( d ) { return y( d.population ) } )
-        //         .append('g');
-         
-        //     // Axis
-        //     xAxis = d3.svg.axis()
-        //         .scale(x)
-        //         .ticks(20)
-        //         .tickSize(6, 3, 1);
-         
-        //     yAxis = d3.svg.axis()
-        //         .scale(d3.scale.linear().domain( [0, d3.max( data, function( d ) { return d.population; } )] ).rangeRound( [h - margin, 0] ))
-        //         .tickSize(6, 3, 1)
-        //         .orient('right');
-         
-        //     chart.append('g')
-        //         .attr('class', 'x axis')
-        //         .attr('transform', 'translate(0, ' + (h - margin) + ')')
-        //         .call(xAxis);
-         
-        //     chart.append('g')
-        //         .attr('class', 'y axis')
-        //         .attr('transform', 'translate(' + x.range()[1] + ')')
-        //         .call(yAxis);
-
-
 
         });
     });
@@ -505,23 +413,24 @@ function appendRecommendation(results) {
       var group_id = results.stars[i][0];
       var value = results.stars[i][1];
       var url = 'https://' + response.mturk_host + '/mturk/preview?groupId=' + group_id;
-      console.log(url);
-      $.get(url, {}, function(data) {
+      console.log('url: '+url);
+      $.get(url,{}, function(data) {
         var title = $(data).find('.capsulelink_bold');
         if (title.length > 0) {
+          var gid = $(data).find('input[name=groupId]').val();
           console.log(title);
+          console.log(gid);
           var row = document.createElement("tr");
           row.className = "link";
           var link_col = document.createElement("td");
           var task = document.createElement("a");
           task.className = "link_title";
           task.innerText = $(title).text().trim();
-          task.href = url;
+          task.href = 'https://' + response.mturk_host + '/mturk/preview?groupId=' + gid;
 
-          var reward = document.createElement("a");
+          var reward = document.createElement("span");
           reward.className = "hint";
           reward.innerText = "($" + value + ")";
-          reward.href = "";
 
           // Make as a like button
           var heart = document.createElement("td");
@@ -671,4 +580,24 @@ $(document).ready(function() {
   chrome.extension.sendMessage({
     reset: "resetIcon"
   });
+
+  $("#bar-demo").dxChart({
+    dataSource: [
+        {day: "Monday", oranges: 3},
+        {day: "Tuesday", oranges: 2},
+        {day: "Wednesday", oranges: 3},
+        {day: "Thursday", oranges: 4},
+        {day: "Friday", oranges: 6},
+        {day: "Saturday", oranges: 11},
+        {day: "Sunday", oranges: 4} ],
+ 
+    series: {
+        argumentField: "day",
+        valueField: "oranges",
+        name: "My oranges",
+        type: "bar",
+        color: '#ffa500'
+    }
+});
+
 });
