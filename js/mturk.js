@@ -139,7 +139,6 @@ $(document).ready(function() {
           type: "POST",
           data: data
         }).always(function(data) {
-          console.log(data)
           callback();
         });
       });

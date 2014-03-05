@@ -309,7 +309,6 @@ var OT = {
         // });
         // $('#earning').sparkline(submitted_hist, { type: 'bar', barColor: '#fb6b5b', height: '50px'});
         // $('#earning').sparkline(earning_hist, { composite: true, fillColor: false, lineColor: 'afcf6f' , width: '100px', height: '50px'});
-
         });
     });
   },
@@ -348,7 +347,7 @@ function appendRequester(url) {
   batchs.className = "hint";
 
   if(newbatchs && $.inArray(url['id'], newbatchs) > -1) {
-    batchs.innerText = "(" + url['numtask'] + " batchs) new!";  
+    batchs.innerText = "(" + url['numtask'] + " batchs) new!";
     batchs.className = "hint_new  ";
   } else {
     batchs.innerText = "(" + url['numtask'] + " batchs)";

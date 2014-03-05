@@ -221,8 +221,8 @@ function getWorkerStats() {
       total_earnings: parseInt($(rewards[2]).html().replace('$','')),
       hit_submitted: parseInt(hit_submitted)
     };
-    obj.workhistory.push(balance);
-    saveworkhist();
+    //obj.workhistory.push(balance);
+    //saveworkhist();
   });
 }
 
@@ -382,7 +382,7 @@ function startRequest(params) {
   stopLoadingAnimation();
   getNewBatchs();
   getNewSearch();
-  getWorkerStats();
+  //getWorkerStats();
 }
 
 // Beautyfication
