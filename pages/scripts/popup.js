@@ -310,6 +310,98 @@ var OT = {
         // $('#earning').sparkline(submitted_hist, { type: 'bar', barColor: '#fb6b5b', height: '50px'});
         // $('#earning').sparkline(earning_hist, { composite: true, fillColor: false, lineColor: 'afcf6f' , width: '100px', height: '50px'});
         //Get the context of the canvas element we want to select
+        // var barWidth = 10;
+        // var width = (barWidth + 10) * test.length;
+        // var height = 100;
+
+        // var x = d3.scale.linear().domain([0, test.length]).range([0, width]);
+        // var y = d3.scale.linear().domain([0, d3.max(test, function(datum) { return datum.val; })]).
+        //   rangeRound([0, height]);
+
+        // // add the canvas to the DOM
+        // var barDemo = d3.select("#bar-demo").
+        //   append("svg:svg").
+        //   attr("width", width).
+        //   attr("height", height);
+
+        // barDemo.selectAll("rect").
+        //   data(test).
+        //   enter().
+        //   append("svg:rect").
+        //   attr("x", function(datum, index) { return x(index); }).
+        //   attr("y", function(datum) { return height - y(datum.val); }).
+        //   attr("height", function(datum) { return y(datum.val); }).
+        //   attr("width", barWidth).
+        //   attr("fill", "#2d578b");
+        // var results,
+        //     data = [],
+        //     chart,
+        //     bars,
+        //     margin = 10,
+        //     w = 2,
+        //     h = 200,
+        //     x, y,
+        //     xAxis, yAxis;
+
+        //     results = d3.map( test );
+        //     results.forEach( function( key, val ) {
+        //         var result = {};
+        //         result.year = Date.parse(val.date);
+        //         result.population = parseInt(val.val);
+        //         data.push( result );
+        //     } );
+         
+        //     chart = d3.select( "#bar-demo" ).append( 'svg' )
+        //         .attr( 'width', 200 )
+        //         .attr( 'height', h )
+        //         .append('g');
+         
+        //     d3.select('svg g')
+        //         .attr('transform', 'translate(50, 50)');
+         
+        //     x = d3.time.scale()
+        //         .domain( [data[0].year, d3.time.year.offset(data[data.length - 1].year, 1)] )
+        //         .range( [0, w * data.length] )
+         
+        //     y = d3.scale.linear()
+        //         .domain( [0, d3.max( data, function( d ) { return d.population; } )] )
+        //         .rangeRound( [0, h - margin] );
+        //     // Bars
+        //     bars = chart.append('g')
+        //         .attr('class', 'bars');
+         
+        //     bars.selectAll( 'rect' )
+        //         .data( data )
+        //       .enter().append( 'rect' )
+        //         .attr( 'x', function( d, i ) { return x( d.year ) - .5; } )
+        //         .attr( 'y', function( d ) { return (h - margin) - y( d.population ) + .5 } )
+        //         .attr( 'width', w )
+        //         .attr( 'height', function( d ) { return y( d.population ) } )
+        //         .append('g');
+         
+        //     // Axis
+        //     xAxis = d3.svg.axis()
+        //         .scale(x)
+        //         .ticks(20)
+        //         .tickSize(6, 3, 1);
+         
+        //     yAxis = d3.svg.axis()
+        //         .scale(d3.scale.linear().domain( [0, d3.max( data, function( d ) { return d.population; } )] ).rangeRound( [h - margin, 0] ))
+        //         .tickSize(6, 3, 1)
+        //         .orient('right');
+         
+        //     chart.append('g')
+        //         .attr('class', 'x axis')
+        //         .attr('transform', 'translate(0, ' + (h - margin) + ')')
+        //         .call(xAxis);
+         
+        //     chart.append('g')
+        //         .attr('class', 'y axis')
+        //         .attr('transform', 'translate(' + x.range()[1] + ')')
+        //         .call(yAxis);
+
+
+
         });
     });
   },
@@ -463,52 +555,22 @@ var earning_hist = [];
 var submitted_hist = [];
 var test = [
   {
-    "date": "20111001",
-    "val": "63.4",
+    "date": "02-10-2014",
+    "val": "16",
   },
   {
-    "date": "20111002",
-    "val": "58.0",
+    "date": "02-08-2014",
+    "val": "8",
+  },
+  {
+    "date": "02-06-2014",
+    "val": "4",
+  },
+  {
+    "date": "02-05-2014",
+    "val": "2",
   }
 ];
-
-var data = {
-  labels : ["January","February","March","April","May","June","July"],
-  datasets : [
-    {
-      fillColor : "rgba(220,220,220,0.5)",
-      strokeColor : "rgba(220,220,220,1)",
-      pointColor : "rgba(220,220,220,1)",
-      pointStrokeColor : "#fff",
-      data : [65,59,90,81,56,55,40]
-    },
-    {
-      fillColor : "rgba(151,187,205,0.5)",
-      strokeColor : "rgba(151,187,205,1)",
-      pointColor : "rgba(151,187,205,1)",
-      pointStrokeColor : "#fff",
-      data : [28,48,40,19,96,27,100]
-    }
-  ]
-};
-
-function drawChart() {
-  var data = google.visualization.arrayToDataTable([
-    ['Year', 'Sales', 'Expenses'],
-    ['2004',  1000,      400],
-    ['2005',  1170,      460],
-    ['2006',  660,       1120],
-    ['2007',  1030,      540]
-  ]);
-
-  var options = {
-    title: 'Company Performance',
-    vAxis: {title: 'Year',  titleTextStyle: {color: 'red'}}
-  };
-
-  var chart = new google.visualization.BarChart(document.getElementById('earning'));
-  chart.draw(data, options);
-}
 
 function loadUIObjects() {
   chrome.storage.sync.get('requesters', function(items) {
@@ -609,6 +671,4 @@ $(document).ready(function() {
   chrome.extension.sendMessage({
     reset: "resetIcon"
   });
-  var ctx = document.getElementById("earning").getContext("2d");
-  var myNewChart = new Chart(ctx).Line(data);
 });

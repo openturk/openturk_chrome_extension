@@ -10,8 +10,8 @@ $(function() {
   $btnAddSearchTerm.on('click', function(e) {
     e.preventDefault();
     console.log($('#searchterms').find('.url').size());
-    if ($('#searchterms').find('.url').size() >= 5) {
-      alert('you have reached the maximum search terms');
+    if ($('#searchterms').find('.url').size() >= 20) {
+      alert('You have reached the maximum allowed scheduled search terms');
     } else {
       var term = $('#terminput').val().trim();
       if (term) {
