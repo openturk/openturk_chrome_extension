@@ -1,117 +1,115 @@
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>Openturk</title>
-        <link rel="stylesheet" href="styles/font-awesome/css/font-awesome.min.css">
-        <link rel="stylesheet" href="styles/app.css">
-        <link rel="stylesheet" href="styles/button.css">
-        <script src="scripts/jquery-2.0.3.min.js"></script>
-        <script src="scripts/md5.js"></script>
-        <script src="scripts/popup.js"></script>
-        <script src="scripts/bootstrap.min.js"></script>
-        <script src="scripts/knockout-3.0.0.js"></script>
-        <script src="scripts/globalize.min.js"></script>
-        <script src="scripts/dx.chartjs.js"></script>
-        <base target="_blank" />
-    </head>
-    <body>
-        <div id="header">
-            <div class="right">
-                <a id="favorites" href="">Favorites<span id="favorites-notification" class="badge up bg-info" style="display: none;">!</span></a>
-                <span>|</span>
-                <a id="recos" href="">Recommended</a>
-                <span>|</span>
-                <a id="search" href="">Search<span id="search-notification" class="badge up bg-info" style="display: none;">!</span></a>
-                <span>|</span>
-                <a id="balance" href="">Balance</a>
-                <span>|</span>
-                <a href="#" id="options">Settings</a>
-            </div>
+<head>
+    <meta charset="utf-8">
+    <title>Openturk</title>
+    <link rel="stylesheet" href="styles/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="styles/app.css">
+    <link rel="stylesheet" href="styles/button.css">
+    <script src="scripts/jquery-2.0.3.min.js"></script>
+    <script src="scripts/md5.js"></script>
+    <script src="scripts/popup.js"></script>
+    <script src="scripts/bootstrap.min.js"></script>
+    <script src="scripts/knockout-3.0.0.js"></script>
+    <script src="scripts/globalize.min.js"></script>
+    <script src="scripts/dx.chartjs.js"></script>
+    <base target="_blank" />
+</head>
+<body>
+    <div id="header">
+        <div class="right">
+            <a id="favorites" href="">Favorites<span id="favorites-notification" class="badge up bg-info" style="display: none;">!</span></a>
+            <span>|</span>
+            <a id="recos" href="">Recommended</a>
+            <span>|</span>
+            <a id="search" href="">Search<span id="search-notification" class="badge up bg-info" style="display: none;">!</span></a>
+            <span>|</span>
+            <a id="balance" href="">Balance</a>
+            <span>|</span>
+            <a href="#" id="options">Settings</a>
         </div>
-        <div class="container" id="spinner">
-            <img src="images/spin.gif">
+    </div>
+    <div class="container" id="spinner">
+        <img src="images/spin.gif">
+    </div>
+    <div class="container" id="content" style="display: none;">
+        <p id="content-msg"> </p>
+        <table id="feed" class="feed" cellspacing="3" cellpadding="0"></table>
+    </div>
+    <div class="container" id="search-container" style="display: none;">
+        <div id="searchdiv">
+            <input type="text" id="searchbox" name="searchbox" placeholder="search mturk..." />
+            <input type="submit" id="searchbutton" value="search" />
         </div>
-        <div class="container" id="content" style="display: none;">
-            <p id="content-msg"> </p>
-            <table id="feed" class="feed" cellspacing="3" cellpadding="0">
-            </table>
-        </div>
-        <div class="container" id="search-container" style="display: none;">
-            <div id="searchdiv">
-              <input type="text" id="searchbox" name="searchbox" placeholder="search mturk..." />
-              <input type="submit" id="searchbutton" value="search" />
-            </div>
-            <p id="search-msg"> </p>
-            <table id="keywordsearch" class="feed" cellspacing="3" cellpadding="0">
-            </table>
-        </div>
-        <div class="container" id="recommendation" style="display: none;">
-            <p id="rec-msg"> </p>
-            <table id="recommendation-feed" class="feed" cellspacing="3" cellpadding="0">
-            </table>
-        </div>
-        <div class="container" id="balancer" style="display: none;">
-            <table id="balance-feed" class="feed" cellspacing="3" cellpadding="0">
-                <tr class="link">
-                    <td>Approved Hits:</td><td> <label id="approved_hits"></label></td>
-                </tr>
-                <tr class="link">
-                    <td>Bonus:</td><td> <label id="bonuses"></label></td>
-                </tr>
-                <tr class="link">
-                    <td>Total Earnings:</td><td> <label id="total_earnings"></label></td>
-                </tr>
-                <tr class="link">
-                    <td>Approval Rate:</td><td> <label id="approval_rate"></label></td>
-                </tr>
-            </table>
-            <hr class="break">
-            <table class="feed" cellspacing="3" cellpadding="0">
-                <tr class="link">
-                    <td>Performance</td> <td><div id="bar-demo" class="hint_new"> graph comming soon.</div></td>
-                </tr>
-            </table>
-        </div>
+        <p id="search-msg"> </p>
+        <table id="keywordsearch" class="feed" cellspacing="3" cellpadding="0"></table>
+    </div>
+    <div class="container" id="recommendation" style="display: none;">
+        <p id="rec-msg"> </p>
+        <table id="recommendation-feed" class="feed" cellspacing="3" cellpadding="0"></table>
+        <button id="recMore">load more</button>
+    </div>
+    <div class="container" id="balancer" style="display: none;">
+        <table id="balance-feed" class="feed" cellspacing="3" cellpadding="0">
+            <tr class="link">
+                <td>Approved Hits:</td><td> <label id="approved_hits"></label></td>
+            </tr>
+            <tr class="link">
+                <td>Bonus:</td><td> <label id="bonuses"></label></td>
+            </tr>
+            <tr class="link">
+                <td>Total Earnings:</td><td> <label id="total_earnings"></label></td>
+            </tr>
+            <tr class="link">
+                <td>Approval Rate:</td><td> <label id="approval_rate"></label></td>
+            </tr>
+        </table>
+        <hr class="break">
+        <table class="feed" cellspacing="3" cellpadding="0">
+            <tr class="link">
+                <td>Performance</td> <td><div id="bar-demo" class="hint_new"> graph comming soon.</div></td>
+            </tr>
+        </table>
+    </div>
 
-        <div id="sign" class="login" style="display: none;">
-            <form>
-                <div class="row">
-                    <img src="/icons/icon48.png">
-                </div>
-                <div class="tight-row">
-                    <p class="text-warning text-center">
-                        Please, first login to your Mturk account to load this extension.
-                    </p>
-                </div>
-                <div style="padding:10px;">
-                    <a id="login_mturk" class="btn btn-primary" href="">Login</a>
-                </div>
-            </form>
-        </div>
-        <div id="login" class="login" style="display: none;">
-            <form>
-                <div class="row">
-                    <img src="/icons/icon48.png">
-                </div>
-                <div class="tight-row">
-                    <p class="text-warning text-center">
-                        You are logged in mTurk as:
-                    </p>
-                    <p id="mturkusername">
-
-                    </p>
-                </div>
-                <div style="padding:10px;">
-                    <a class="btn btn-success" id="save" href="#">Use Openturk</a>
-                    <a class="btn btn-primary" id="signout" href="">Sign Out Mturk</a>
-                </div>
-
-            </form>
-        </div>
-        <div id="footer">
-            <div class="right">
-                <a href="http://mturk.com" id="mturkuser">MT: </a> | <a href="http://alpha.openturk.com" id="openturkuser">Connect to openturk</a> | <a href="https://github.com/vhf/openturk_extension/issues" id="suggestion">Suggestions?</a> | <a href="#" id="logout">Logout</a>
+    <div id="sign" class="login" style="display: none;">
+        <form>
+            <div class="row">
+                <img src="/icons/icon48.png">
             </div>
+            <div class="tight-row">
+                <p class="text-warning text-center">
+                    Please, first login to your Mturk account to load this extension.
+                </p>
+            </div>
+            <div style="padding:10px;">
+                <a id="login_mturk" class="btn btn-primary" href="">Login</a>
+            </div>
+        </form>
+    </div>
+    <div id="login" class="login" style="display: none;">
+        <form>
+            <div class="row">
+                <img src="/icons/icon48.png">
+            </div>
+            <div class="tight-row">
+                <p class="text-warning text-center">
+                    You are logged in mTurk as:
+                </p>
+                <p id="mturkusername">
+
+                </p>
+            </div>
+            <div style="padding:10px;">
+                <a class="btn btn-success" id="save" href="#">Use Openturk</a>
+                <a class="btn btn-primary" id="signout" href="">Sign Out Mturk</a>
+            </div>
+
+        </form>
+    </div>
+    <div id="footer">
+        <div class="right">
+            <a href="http://mturk.com" id="mturkuser">MT: </a> | <a href="http://alpha.openturk.com" id="openturkuser">Connect to openturk</a> | <a href="https://github.com/vhf/openturk_extension/issues" id="suggestion">Suggestions?</a> | <a href="#" id="logout">Logout</a>
         </div>
-    </body>
+    </div>
+</body>
 </html>

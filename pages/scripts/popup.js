@@ -89,6 +89,17 @@ var OT = {
       $input.val(results.join(','));
     });
     $('#title').focus();
+
+    $('#recMore').click(function() {
+      if (OT.recChecked < OT.recCount) {
+        console.log('Loading next page');
+        OT.recCurrentPage++;
+        OT.get_recommendation(OT.recCurrentPage);
+      } else {
+        console.log('Reached last page');
+      }
+    });
+
   },
 
   creds: {
@@ -251,11 +262,18 @@ var OT = {
     });
   },
 
+  recCurrentPage: 0,
+  recCount: 0,
+  recAppended: 0,
+  recChecked: 0,
+
   get_recommendation: function() {
-    $('#recommendation-feed').empty();
+    //$('#recommendation-feed').empty();
     if (OT.status.openturk_username) {
-      var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/recommendations').done(function(results) {
+      var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/recommendations?page=' + OT.recCurrentPage).done(function(results) {
+        console.log('Loading recommendation page #' + OT.recCurrentPage);
         if (results.stars) {
+          OT.recCount = results.count;
           appendRecommendation(results);
         } else {
           $("#rec-msg").html('There is currently 0 recommendations.');
@@ -336,7 +354,7 @@ function appendRequester(url) {
   im.src = 'http://www.gravatar.com/avatar.php?gravatar_id=' + md5(url['id']) + '&r=PG&s=15&default=identicon';
   im.width = 15;
   im.height = 15;
-  console.log(md5(url['id']));
+  //console.log(md5(url['id']));
   var title = document.createElement("a");
   title.className = "link_title";
   title.innerText = url['name'];
@@ -401,11 +419,12 @@ function appendSearch(url) {
   feed.appendChild(row);
 }
 
-function validateRecommendation(url, callback) {
+function validateRecommendation(url, mturk_host, reward) {
   $.get(url, {}, function(data) {
     var title = $(data).find('.capsulelink_bold');
     if (title.length > 0) {
-      return callback(data, title);
+      insertRecommendation(mturk_host, data, title, reward);
+      return true;
     } else {
       return false;
     }
@@ -413,58 +432,64 @@ function validateRecommendation(url, callback) {
 }
 
 function appendRecommendation(results) {
-  var feed = document.getElementById("recommendation-feed");
-
   chrome.runtime.sendMessage({
     get_mturk_host: true
   }, function(response) {
-    var count = 0;
     for (var i = 0; i < results.stars.length; i++) {
+      OT.recChecked++;
       if (results.stars[i][0] == "undefined" || results.stars[i][1] == "undefined") {
         continue;
       }
       var group_id = results.stars[i][0];
-      var value = results.stars[i][1];
+      var reward = results.stars[i][1];
       var url = 'https://' + response.mturk_host + '/mturk/preview?groupId=' + group_id;
-      console.log('url: ' + url);
-      validateRecommendation(url, function(data, title) {
-        var gid = $(data).find('input[name=groupId]').val();
-        console.log(title);
-        console.log(gid);
-        var row = document.createElement("tr");
-        row.className = "link";
-        var link_col = document.createElement("td");
-        var task = document.createElement("a");
-        task.className = "link_title";
-        task.innerText = $(title).text().trim();
-        task.href = 'https://' + response.mturk_host + '/mturk/preview?groupId=' + gid;
-
-        var reward = document.createElement("span");
-        reward.className = "hint";
-        reward.innerText = "($" + value + ")";
-
-        // Make as a like button
-        var heart = document.createElement("td");
-        var im = document.createElement("img");
-        im.src = 'images/grayarrow.gif';
-        im.width = 10;
-        im.height = 10;
-
-        heart.appendChild(im);
-        link_col.appendChild(task);
-        link_col.appendChild(reward);
-        row.appendChild(heart);
-        row.appendChild(link_col);
-        feed.appendChild(row);
-        count = count + 1;
-        $("#rec-msg").hide();
-      });
+      if (validateRecommendation(url, response.mturk_host, reward)) {
+        OT.recAppended++;
+      }
     }
-    // Check the case where all the recommendations are unsuitable.
-    if (count == 0) {
-      $("#rec-msg").html('There is currently 0 recommendations for you.');
+    if (OT.recAppended < 10) {
+      console.log('Not reached 10');
+      if (OT.recChecked < OT.recCount) {
+        console.log('Loading next page');
+        OT.recCurrentPage++;
+        OT.get_recommendation(OT.recCurrentPage);
+      } else {
+        console.log('Reached last page');
+      }
     }
   });
+}
+
+function insertRecommendation(mturk_host, data, title, reward) {
+  var feed = document.getElementById("recommendation-feed");
+  var gid = $(data).find('input[name=groupId]').val();
+  var row = document.createElement("tr");
+  row.className = "link";
+  var link_col = document.createElement("td");
+  var task = document.createElement("a");
+  task.className = "link_title";
+  task.innerText = $(title).text().trim();
+  task.href = 'https://' + mturk_host + '/mturk/preview?groupId=' + gid;
+
+  var rewardSpan = document.createElement("span");
+  rewardSpan.className = "hint";
+  rewardSpan.innerText = "($" + reward + ")";
+
+  // Make as a like button
+  var heart = document.createElement("td");
+  var im = document.createElement("img");
+  im.src = 'images/grayarrow.gif';
+  im.width = 10;
+  im.height = 10;
+
+  heart.appendChild(im);
+  link_col.appendChild(task);
+  link_col.appendChild(rewardSpan);
+  row.appendChild(heart);
+  row.appendChild(link_col);
+  feed.appendChild(row);
+  console.log(row);
+  $("#rec-msg").hide();
 }
 
 var obj = {};
@@ -494,7 +519,7 @@ function loadUIObjects() {
     var count = 0;
     $(items.requesters).each(function() {
       obj.requesters.push(this);
-      console.log(this);
+      //console.log(this);
       if (this['numtask']) {
         appendRequester(this);
         count = count + 1;
