@@ -57,12 +57,16 @@ var OT = {
       //   url: optionsUrl
       // });
       chrome.tabs.query({
-          url: optionsUrl,
+        url: optionsUrl,
       }, function(results) {
-          if (results.length)
-              chrome.tabs.update(results[0].id, {active:true});
-          else
-              chrome.tabs.create({url:optionsUrl});
+        if (results.length)
+          chrome.tabs.update(results[0].id, {
+            active: true
+          });
+        else
+          chrome.tabs.create({
+            url: optionsUrl
+          });
       })
     });
     $('.hint a').click(function(e) {
@@ -85,6 +89,18 @@ var OT = {
       $input.val(results.join(','));
     });
     $('#title').focus();
+
+    $('#recMore').click(function() {
+      if (OT.recChecked < OT.recCount) {
+        console.log('Loading next page');
+        OT.recCurrentPage++;
+        OT.get_recommendation(OT.recCurrentPage);
+      } else {
+        $('#recMore').prop('disabled', true).html('no more recommendations');
+        console.log('Reached last page');
+      }
+    });
+
   },
 
   creds: {
@@ -247,12 +263,18 @@ var OT = {
     });
   },
 
+  recCurrentPage: 0,
+  recCount: 0,
+  recAppended: 0,
+  recChecked: 0,
+
   get_recommendation: function() {
-    $('#recommendation-feed').empty();
+    //$('#recommendation-feed').empty();
     if (OT.status.openturk_username) {
-      var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/recommendations').done(function(results) {
+      var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/recommendations?page=' + OT.recCurrentPage).done(function(results) {
+        console.log('Loading recommendation page #' + OT.recCurrentPage);
         if (results.stars) {
-          console.log(results.stars);
+          OT.recCount = results.count;
           appendRecommendation(results);
         } else {
           $("#rec-msg").html('There is currently 0 recommendations.');
@@ -309,7 +331,7 @@ var OT = {
         // });
         // $('#earning').sparkline(submitted_hist, { type: 'bar', barColor: '#fb6b5b', height: '50px'});
         // $('#earning').sparkline(earning_hist, { composite: true, fillColor: false, lineColor: 'afcf6f' , width: '100px', height: '50px'});
-        });
+      });
     });
   },
 
@@ -333,7 +355,7 @@ function appendRequester(url) {
   im.src = 'http://www.gravatar.com/avatar.php?gravatar_id=' + md5(url['id']) + '&r=PG&s=15&default=identicon';
   im.width = 15;
   im.height = 15;
-  console.log(md5(url['id']));
+  //console.log(md5(url['id']));
   var title = document.createElement("a");
   title.className = "link_title";
   title.innerText = url['name'];
@@ -346,7 +368,7 @@ function appendRequester(url) {
   var batchs = document.createElement("span");
   batchs.className = "hint";
 
-  if(newbatchs && $.inArray(url['id'], newbatchs) > -1) {
+  if (newbatchs && $.inArray(url['id'], newbatchs) > -1) {
     batchs.innerText = "(" + url['numtask'] + " batchs) new!";
     batchs.className = "hint_new  ";
   } else {
@@ -382,7 +404,7 @@ function appendSearch(url) {
   var batchs = document.createElement("span");
   batchs.className = "hint";
 
-  if(newterms && $.inArray(url['phrase'], newterms) > -1) {
+  if (newterms && $.inArray(url['phrase'], newterms) > -1) {
     batchs.innerText = "(" + url['numtask'] + " batchs) new!";
     batchs.className = "hint_new";
   } else {
@@ -398,62 +420,77 @@ function appendSearch(url) {
   feed.appendChild(row);
 }
 
-function appendRecommendation(results) {
-  var feed = document.getElementById("recommendation-feed");
+function validateRecommendation(url, mturk_host, reward) {
+  $.get(url, {}, function(data) {
+    var title = $(data).find('.capsulelink_bold');
+    if (title.length > 0) {
+      insertRecommendation(mturk_host, data, title, reward);
+      return true;
+    } else {
+      return false;
+    }
+  });
+}
 
+function appendRecommendation(results) {
   chrome.runtime.sendMessage({
     get_mturk_host: true
   }, function(response) {
-    var count = 0;
     for (var i = 0; i < results.stars.length; i++) {
+      OT.recChecked++;
       if (results.stars[i][0] == "undefined" || results.stars[i][1] == "undefined") {
         continue;
       }
       var group_id = results.stars[i][0];
-      var value = results.stars[i][1];
+      var reward = results.stars[i][1];
       var url = 'https://' + response.mturk_host + '/mturk/preview?groupId=' + group_id;
-      console.log('url: '+url);
-      $.get(url,{}, function(data) {
-        var title = $(data).find('.capsulelink_bold');
-        if (title.length > 0) {
-          var gid = $(data).find('input[name=groupId]').val();
-          console.log(title);
-          console.log(gid);
-          var row = document.createElement("tr");
-          row.className = "link";
-          var link_col = document.createElement("td");
-          var task = document.createElement("a");
-          task.className = "link_title";
-          task.innerText = $(title).text().trim();
-          task.href = 'https://' + response.mturk_host + '/mturk/preview?groupId=' + gid;
-
-          var reward = document.createElement("span");
-          reward.className = "hint";
-          reward.innerText = "($" + value + ")";
-
-          // Make as a like button
-          var heart = document.createElement("td");
-          var im = document.createElement("img");
-          im.src = 'images/grayarrow.gif';
-          im.width = 10;
-          im.height = 10;
-
-          heart.appendChild(im);
-          link_col.appendChild(task);
-          link_col.appendChild(reward);
-          row.appendChild(heart);
-          row.appendChild(link_col);
-          feed.appendChild(row);
-          count = count + 1;
-          $("#rec-msg").hide();
-        }
-      });
+      if (validateRecommendation(url, response.mturk_host, reward)) {
+        OT.recAppended++;
+      }
     }
-    // Check the case where all the recommendations are unsuitable.
-    if( count == 0) {
-      $("#rec-msg").html('There is currently 0 recommendations for you.');
+    if (OT.recAppended < 10) {
+      console.log('Not reached 10');
+      if (OT.recChecked < OT.recCount) {
+        console.log('Loading next page');
+        OT.recCurrentPage++;
+        OT.get_recommendation(OT.recCurrentPage);
+      } else {
+        console.log('Reached last page');
+      }
     }
   });
+}
+
+function insertRecommendation(mturk_host, data, title, reward) {
+  var feed = document.getElementById("recommendation-feed");
+  var gid = $(data).find('input[name=groupId]').val();
+  var row = document.createElement("tr");
+  row.className = "link";
+  var link_col = document.createElement("td");
+  var task = document.createElement("a");
+  task.className = "link_title";
+  task.innerText = $(title).text().trim();
+  task.href = 'https://' + mturk_host + '/mturk/preview?groupId=' + gid;
+
+  var rewardSpan = document.createElement("span");
+  rewardSpan.className = "hint";
+  rewardSpan.innerText = "($" + reward + ")";
+
+  // Make as a like button
+  var heart = document.createElement("td");
+  var im = document.createElement("img");
+  im.src = 'images/grayarrow.gif';
+  im.width = 10;
+  im.height = 10;
+
+  heart.appendChild(im);
+  link_col.appendChild(task);
+  link_col.appendChild(rewardSpan);
+  row.appendChild(heart);
+  row.appendChild(link_col);
+  feed.appendChild(row);
+  console.log(row);
+  $("#rec-msg").hide();
 }
 
 var obj = {};
@@ -461,24 +498,19 @@ var index = {};
 
 var earning_hist = [];
 var submitted_hist = [];
-var test = [
-  {
-    "date": "02-10-2014",
-    "val": "16",
-  },
-  {
-    "date": "02-08-2014",
-    "val": "8",
-  },
-  {
-    "date": "02-06-2014",
-    "val": "4",
-  },
-  {
-    "date": "02-05-2014",
-    "val": "2",
-  }
-];
+var test = [{
+  "date": "02-10-2014",
+  "val": "16",
+}, {
+  "date": "02-08-2014",
+  "val": "8",
+}, {
+  "date": "02-06-2014",
+  "val": "4",
+}, {
+  "date": "02-05-2014",
+  "val": "2",
+}];
 
 function loadUIObjects() {
   chrome.storage.sync.get('requesters', function(items) {
@@ -488,14 +520,14 @@ function loadUIObjects() {
     var count = 0;
     $(items.requesters).each(function() {
       obj.requesters.push(this);
-      console.log(this);
+      //console.log(this);
       if (this['numtask']) {
         appendRequester(this);
-        count = count+1;
+        count = count + 1;
         $("#content-msg").hide();
       }
     });
-    if (count == 0 ){
+    if (count == 0) {
       $("#content-msg").html('There is currently no batch from your favorite requesters.<br> Subscribe to more requesters on the dashboard.');
     }
     indexRequesters();
@@ -513,7 +545,7 @@ function loadUIObjects() {
         $("#search-msg").hide();
       }
     });
-    if (count == 0 ){
+    if (count == 0) {
       $("#search-msg").html('There is currently 0 search. <br>Add scheduled search on the options page.');
     }
   });
@@ -581,22 +613,36 @@ $(document).ready(function() {
   });
 
   $("#bar-demo").dxChart({
-    dataSource: [
-        {day: "Monday", oranges: 3},
-        {day: "Tuesday", oranges: 2},
-        {day: "Wednesday", oranges: 3},
-        {day: "Thursday", oranges: 4},
-        {day: "Friday", oranges: 6},
-        {day: "Saturday", oranges: 11},
-        {day: "Sunday", oranges: 4} ],
- 
+    dataSource: [{
+      day: "Monday",
+      oranges: 3
+    }, {
+      day: "Tuesday",
+      oranges: 2
+    }, {
+      day: "Wednesday",
+      oranges: 3
+    }, {
+      day: "Thursday",
+      oranges: 4
+    }, {
+      day: "Friday",
+      oranges: 6
+    }, {
+      day: "Saturday",
+      oranges: 11
+    }, {
+      day: "Sunday",
+      oranges: 4
+    }],
+
     series: {
-        argumentField: "day",
-        valueField: "oranges",
-        name: "My oranges",
-        type: "bar",
-        color: '#ffa500'
+      argumentField: "day",
+      valueField: "oranges",
+      name: "My oranges",
+      type: "bar",
+      color: '#ffa500'
     }
-});
+  });
 
 });

@@ -33,13 +33,13 @@ $(document).ready(function() {
   }
 
   function setGroupId() {
-    var group_id = getUrlParameters()['groupId'];
-    if (typeof group_id !== "undefined") {
+    var groupId = getUrlParameters()['groupId'];
+    if (typeof groupId !== "undefined") {
       chrome.runtime.sendMessage({
-        group_id: group_id
+        group_id: groupId
       }, function(response) {});
     }
-    return group_id;
+    return groupId;
   }
   setGroupId();
 
@@ -47,11 +47,11 @@ $(document).ready(function() {
     chrome.runtime.sendMessage({
       group_id_get: true
     }, function(response) {
-      var group_id = response.group_id;
-      if (typeof group_id === "undefined") {
-        group_id = "undefined";
+      var groupId = response.group_id;
+      if (typeof groupId === "undefined") {
+        groupId = "undefined";
       } else {}
-      callback(group_id);
+      callback(groupId);
     });
   }
 
@@ -83,22 +83,22 @@ $(document).ready(function() {
 
   function redirect() {
     var jqxhr = $.getJSON(openturk_endpoint).done(function(data) {
-      var redirect_url = data.url[0];
-      window.top.location.href = redirect_url;
+      var redirectUrl = data.url[0];
+      window.top.location.href = redirectUrl;
     });
   }
 
-  function log(callback, hit_skipped, batch_skipped) {
-    getWorkerId(function(worker_id) {
-      if (typeof worker_id === "undefined") {
-        worker_id = "undefined";
+  function log(callback, hitSkipped, batchSkipped) {
+    getWorkerId(function(workerId) {
+      if (typeof workerId === "undefined") {
+        workerId = "undefined";
       }
-      getGroupId(function(group_id) {
+      getGroupId(function(groupId) {
         data = {
-          worker_id: worker_id,
-          group_id: group_id,
-          hit_skipped: hit_skipped,
-          batch_skipped: batch_skipped
+          worker_id: workerId,
+          group_id: groupId,
+          hit_skipped: hitSkipped,
+          batch_skipped: batchSkipped
         };
         request = $.ajax({
           url: 'http://alpha.openturk.com/endpoint/log',
@@ -113,25 +113,25 @@ $(document).ready(function() {
 
   function star(callback) {
 
-    getWorkerId(function(worker_id) {
-      if (typeof worker_id === "undefined") {
-        worker_id = "undefined";
+    getWorkerId(function(workerId) {
+      if (typeof workerId === "undefined") {
+        workerId = "undefined";
       }
-      getGroupId(function(group_id) {
-        var reward_text = $("table").find("td:contains('Reward')").next().text();
-        var reward_pattern = /([0-9\.]*) per/;
-        var reward = parseFloat(reward_text.match(reward_pattern)[1]);
+      getGroupId(function(groupId) {
+        var rewardText = $("table").find("td:contains('Reward')").next().text();
+        var rewardPattern = /([0-9\.]*) per/;
+        var reward = parseFloat(rewardText.match(rewardPattern)[1]);
 
-        var hits_available = parseFloat($.trim($("table").find("td:contains('HITs Available')").next().text()));
+        var hitsAvailable = parseFloat($.trim($("table").find("td:contains('HITs Available')").next().text()));
 
         var duration = $.trim($("table").find("td:contains('Duration')").next().text());
 
         data = {
-          worker_id: worker_id,
-          group_id: group_id,
+          worker_id: workerId,
+          group_id: groupId,
           reward: reward,
           duration: duration,
-          hits_available: hits_available,
+          hits_available: hitsAvailable,
           message: $('#star_message').val()
         };
         request = $.ajax({
@@ -201,12 +201,17 @@ $(document).ready(function() {
       var task = $(tasks[i]);
       var tr = $(task.find('tbody > tr > td > table > tbody > tr > td > table > tbody > tr')[0]);
       var requester = $(tr.find('td > a')[1]);
-      var requester_id = getUrlParameters('lala?' + requester.attr('href'))['requesterId'];
-      var requester_name = requester.html();
-      var insert_after = $(tr.find('td')[1]);
+      var requesterId = getUrlParameters('lala?' + requester.attr('href'))['requesterId'];
+      var requesterName = requester.html();
+      var insertAfterElt = $(tr.find('td')[1]);
 
+<<<<<<< HEAD
       if (!(requester_id in already)) {
         insert_after.after('<a class="subscribe btn btn-icon" data-id="' + requester_id + '" data-name="' + requester_name + '"><span class="icon-star3"></span></button></td>');
+=======
+      if (!(requesterId in already)) {
+        insertAfterElt.after('<td><button class="subscribe btn btn-icon" data-id="' + requesterId + '" data-name="' + requesterName + '"><span class="icon-star3"></span></button></td>');
+>>>>>>> 7b233db184dacb99e69d1c9031343d21b4e702ab
       }
     }
     $('.subscribe').click(function(e) {
@@ -232,15 +237,26 @@ $(document).ready(function() {
     redirect();
   });
 
+<<<<<<< HEAD
   //Add the ShareHIT
   getGroupId(function(group_id) {
+=======
+  //Add the star
+  getGroupId(function(groupId) {
+>>>>>>> 7b233db184dacb99e69d1c9031343d21b4e702ab
     var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
       var el = $('td[class="capsulelink_bold"]').next().next();
       // $('td[class="capsulelink_bold"]').after('<td align="right" valign="middle" width="250" nowrap=""><span class="capsulelink"><a href="/mturk/preview?groupId=2KGW3K4F0OHOS2X5OUBO9L95OFJ10P">Share HIT</a></span></td>');
       if (typeof result.username !== "undefined") {
+<<<<<<< HEAD
         $(el)
           .append('<span class="capsulelink"><a href="#" id="sharehit">&#187; Share HIT</a></span>')
           .after('<div id="modal" style="display:none;position:absolute;background-color:#fff;width:350px;padding:15px;text-align:left;border:2px solid #333;opacity:1;-moz-border-radius:6px;-webkit-border-radius:6px;-moz-box-shadow: 0 0 50px #ccc;-webkit-box-shadow: 0 0 50px #ccc;"><h2>We will post the following message on mturkforum.com</h2><textarea id="star_message" style="width: 340px; height: 100px">OpenTurk user ' + (result.username) + ' recommended the following task: ' + group_id + '</textarea><br /><input id="modal_submit" type="submit" value="ok"><input id="modal_cancel" type="submit" value="cancel"></div>');
+=======
+        $('td[colspan=11]')
+          .after('<span id="star" class="btn btn-icon icon-share"></span>')
+          .after('<div id="modal" style="display:none;position:absolute;background-color:#fff;width:350px;padding:15px;text-align:left;border:2px solid #333;opacity:1;-moz-border-radius:6px;-webkit-border-radius:6px;-moz-box-shadow: 0 0 50px #ccc;-webkit-box-shadow: 0 0 50px #ccc;"><h2>We will post the following message on mturkforum.com</h2><textarea id="star_message" style="width: 340px; height: 100px">OpenTurk user ' + (result.username) + ' recommended the following task: ' + groupId + '</textarea><br /><input id="modal_submit" type="submit" value="ok"><input id="modal_cancel" type="submit" value="cancel"></div>');
+>>>>>>> 7b233db184dacb99e69d1c9031343d21b4e702ab
       } else {
         $(el)
           .append('<span class="capsulelink"><a href="#" id="sharehit">Share HIT</a></span>')
