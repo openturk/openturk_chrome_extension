@@ -96,6 +96,7 @@ var OT = {
         OT.recCurrentPage++;
         OT.get_recommendation(OT.recCurrentPage);
       } else {
+        $('#recMore').prop('disabled', true).html('no more recommendations');
         console.log('Reached last page');
       }
     });
