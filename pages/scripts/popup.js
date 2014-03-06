@@ -57,12 +57,16 @@ var OT = {
       //   url: optionsUrl
       // });
       chrome.tabs.query({
-          url: optionsUrl,
+        url: optionsUrl,
       }, function(results) {
-          if (results.length)
-              chrome.tabs.update(results[0].id, {active:true});
-          else
-              chrome.tabs.create({url:optionsUrl});
+        if (results.length)
+          chrome.tabs.update(results[0].id, {
+            active: true
+          });
+        else
+          chrome.tabs.create({
+            url: optionsUrl
+          });
       })
     });
     $('.hint a').click(function(e) {
@@ -252,7 +256,6 @@ var OT = {
     if (OT.status.openturk_username) {
       var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/recommendations').done(function(results) {
         if (results.stars) {
-          console.log(results.stars);
           appendRecommendation(results);
         } else {
           $("#rec-msg").html('There is currently 0 recommendations.');
@@ -309,7 +312,7 @@ var OT = {
         // });
         // $('#earning').sparkline(submitted_hist, { type: 'bar', barColor: '#fb6b5b', height: '50px'});
         // $('#earning').sparkline(earning_hist, { composite: true, fillColor: false, lineColor: 'afcf6f' , width: '100px', height: '50px'});
-        });
+      });
     });
   },
 
@@ -346,7 +349,7 @@ function appendRequester(url) {
   var batchs = document.createElement("span");
   batchs.className = "hint";
 
-  if(newbatchs && $.inArray(url['id'], newbatchs) > -1) {
+  if (newbatchs && $.inArray(url['id'], newbatchs) > -1) {
     batchs.innerText = "(" + url['numtask'] + " batchs) new!";
     batchs.className = "hint_new  ";
   } else {
@@ -382,7 +385,7 @@ function appendSearch(url) {
   var batchs = document.createElement("span");
   batchs.className = "hint";
 
-  if(newterms && $.inArray(url['phrase'], newterms) > -1) {
+  if (newterms && $.inArray(url['phrase'], newterms) > -1) {
     batchs.innerText = "(" + url['numtask'] + " batchs) new!";
     batchs.className = "hint_new";
   } else {
@@ -396,6 +399,17 @@ function appendSearch(url) {
   row.appendChild(icone);
   row.appendChild(link_col);
   feed.appendChild(row);
+}
+
+function validateRecommendation(url, callback) {
+  $.get(url, {}, function(data) {
+    var title = $(data).find('.capsulelink_bold');
+    if (title.length > 0) {
+      return callback(data, title);
+    } else {
+      return false;
+    }
+  });
 }
 
 function appendRecommendation(results) {
@@ -412,45 +426,42 @@ function appendRecommendation(results) {
       var group_id = results.stars[i][0];
       var value = results.stars[i][1];
       var url = 'https://' + response.mturk_host + '/mturk/preview?groupId=' + group_id;
-      console.log('url: '+url);
-      $.get(url,{}, function(data) {
-        var title = $(data).find('.capsulelink_bold');
-        if (title.length > 0) {
-          var gid = $(data).find('input[name=groupId]').val();
-          console.log(title);
-          console.log(gid);
-          var row = document.createElement("tr");
-          row.className = "link";
-          var link_col = document.createElement("td");
-          var task = document.createElement("a");
-          task.className = "link_title";
-          task.innerText = $(title).text().trim();
-          task.href = 'https://' + response.mturk_host + '/mturk/preview?groupId=' + gid;
+      console.log('url: ' + url);
+      validateRecommendation(url, function(data, title) {
+        var gid = $(data).find('input[name=groupId]').val();
+        console.log(title);
+        console.log(gid);
+        var row = document.createElement("tr");
+        row.className = "link";
+        var link_col = document.createElement("td");
+        var task = document.createElement("a");
+        task.className = "link_title";
+        task.innerText = $(title).text().trim();
+        task.href = 'https://' + response.mturk_host + '/mturk/preview?groupId=' + gid;
 
-          var reward = document.createElement("span");
-          reward.className = "hint";
-          reward.innerText = "($" + value + ")";
+        var reward = document.createElement("span");
+        reward.className = "hint";
+        reward.innerText = "($" + value + ")";
 
-          // Make as a like button
-          var heart = document.createElement("td");
-          var im = document.createElement("img");
-          im.src = 'images/grayarrow.gif';
-          im.width = 10;
-          im.height = 10;
+        // Make as a like button
+        var heart = document.createElement("td");
+        var im = document.createElement("img");
+        im.src = 'images/grayarrow.gif';
+        im.width = 10;
+        im.height = 10;
 
-          heart.appendChild(im);
-          link_col.appendChild(task);
-          link_col.appendChild(reward);
-          row.appendChild(heart);
-          row.appendChild(link_col);
-          feed.appendChild(row);
-          count = count + 1;
-          $("#rec-msg").hide();
-        }
+        heart.appendChild(im);
+        link_col.appendChild(task);
+        link_col.appendChild(reward);
+        row.appendChild(heart);
+        row.appendChild(link_col);
+        feed.appendChild(row);
+        count = count + 1;
+        $("#rec-msg").hide();
       });
     }
     // Check the case where all the recommendations are unsuitable.
-    if( count == 0) {
+    if (count == 0) {
       $("#rec-msg").html('There is currently 0 recommendations for you.');
     }
   });
@@ -461,24 +472,19 @@ var index = {};
 
 var earning_hist = [];
 var submitted_hist = [];
-var test = [
-  {
-    "date": "02-10-2014",
-    "val": "16",
-  },
-  {
-    "date": "02-08-2014",
-    "val": "8",
-  },
-  {
-    "date": "02-06-2014",
-    "val": "4",
-  },
-  {
-    "date": "02-05-2014",
-    "val": "2",
-  }
-];
+var test = [{
+  "date": "02-10-2014",
+  "val": "16",
+}, {
+  "date": "02-08-2014",
+  "val": "8",
+}, {
+  "date": "02-06-2014",
+  "val": "4",
+}, {
+  "date": "02-05-2014",
+  "val": "2",
+}];
 
 function loadUIObjects() {
   chrome.storage.sync.get('requesters', function(items) {
@@ -491,11 +497,11 @@ function loadUIObjects() {
       console.log(this);
       if (this['numtask']) {
         appendRequester(this);
-        count = count+1;
+        count = count + 1;
         $("#content-msg").hide();
       }
     });
-    if (count == 0 ){
+    if (count == 0) {
       $("#content-msg").html('There is currently no batch from your favorite requesters.<br> Subscribe to more requesters on the dashboard.');
     }
     indexRequesters();
@@ -513,7 +519,7 @@ function loadUIObjects() {
         $("#search-msg").hide();
       }
     });
-    if (count == 0 ){
+    if (count == 0) {
       $("#search-msg").html('There is currently 0 search. <br>Add scheduled search on the options page.');
     }
   });
@@ -581,22 +587,36 @@ $(document).ready(function() {
   });
 
   $("#bar-demo").dxChart({
-    dataSource: [
-        {day: "Monday", oranges: 3},
-        {day: "Tuesday", oranges: 2},
-        {day: "Wednesday", oranges: 3},
-        {day: "Thursday", oranges: 4},
-        {day: "Friday", oranges: 6},
-        {day: "Saturday", oranges: 11},
-        {day: "Sunday", oranges: 4} ],
- 
+    dataSource: [{
+      day: "Monday",
+      oranges: 3
+    }, {
+      day: "Tuesday",
+      oranges: 2
+    }, {
+      day: "Wednesday",
+      oranges: 3
+    }, {
+      day: "Thursday",
+      oranges: 4
+    }, {
+      day: "Friday",
+      oranges: 6
+    }, {
+      day: "Saturday",
+      oranges: 11
+    }, {
+      day: "Sunday",
+      oranges: 4
+    }],
+
     series: {
-        argumentField: "day",
-        valueField: "oranges",
-        name: "My oranges",
-        type: "bar",
-        color: '#ffa500'
+      argumentField: "day",
+      valueField: "oranges",
+      name: "My oranges",
+      type: "bar",
+      color: '#ffa500'
     }
-});
+  });
 
 });
