@@ -206,7 +206,7 @@ $(document).ready(function() {
       var insert_after = $(tr.find('td')[1]);
 
       if (!(requester_id in already)) {
-        insert_after.after('<td><button class="subscribe btn btn-icon" data-id="' + requester_id + '" data-name="' + requester_name + '"><span class="icon-star3"></span></button></td>');
+        insert_after.after('<a class="subscribe btn btn-icon" data-id="' + requester_id + '" data-name="' + requester_name + '"><span class="icon-star3"></span></button></td>');
       }
     }
     $('.subscribe').click(function(e) {
@@ -223,24 +223,30 @@ $(document).ready(function() {
 
   //Get Awesome HIT
   $('#searchbar').after('<div class="clear"><button id="lucky" class="btn btn-warning">Recommend me a HIT</button></div>');
+  // if(cond) {
+  //   $('#subtabs_and_searchbar').after('<div class="message info"><span class="icon"></span><h6><span id="alertboxHeader">HITs that need your attention.</span></h6></div>');
+  // }
+
   $('#lucky').click(function(e) {
     e.preventDefault();
     redirect();
   });
 
-  //Add the star
+  //Add the ShareHIT
   getGroupId(function(group_id) {
     var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
+      var el = $('td[class="capsulelink_bold"]').next().next();
+      // $('td[class="capsulelink_bold"]').after('<td align="right" valign="middle" width="250" nowrap=""><span class="capsulelink"><a href="/mturk/preview?groupId=2KGW3K4F0OHOS2X5OUBO9L95OFJ10P">Share HIT</a></span></td>');
       if (typeof result.username !== "undefined") {
-        $('td[colspan=11]')
-          .after('<span id="star" class="btn btn-icon icon-share"></span>')
+        $(el)
+          .append('<span class="capsulelink"><a href="#" id="sharehit">&#187; Share HIT</a></span>')
           .after('<div id="modal" style="display:none;position:absolute;background-color:#fff;width:350px;padding:15px;text-align:left;border:2px solid #333;opacity:1;-moz-border-radius:6px;-webkit-border-radius:6px;-moz-box-shadow: 0 0 50px #ccc;-webkit-box-shadow: 0 0 50px #ccc;"><h2>We will post the following message on mturkforum.com</h2><textarea id="star_message" style="width: 340px; height: 100px">OpenTurk user ' + (result.username) + ' recommended the following task: ' + group_id + '</textarea><br /><input id="modal_submit" type="submit" value="ok"><input id="modal_cancel" type="submit" value="cancel"></div>');
       } else {
-        $('td[colspan=11]')
-          .after('<span id="star" class="btn btn-icon icon-share"></span>')
+        $(el)
+          .append('<span class="capsulelink"><a href="#" id="sharehit">Share HIT</a></span>')
           .after('<div id="modal" style="display:none;position:absolute;background-color:#fff;width:350px;padding:15px;text-align:left;border:2px solid #333;opacity:1;-moz-border-radius:6px;-webkit-border-radius:6px;-moz-box-shadow: 0 0 50px #ccc;-webkit-box-shadow: 0 0 50px #ccc;"><h2>Please log in on <a href="http://alpha.openturk.com/accounts/login/">OpenTurk.com</a></h2></div>');
       }
-      $('#star').click(function(e) {
+      $('#sharehit').click(function(e) {
         e.preventDefault();
         var left = Math.max($(window).width() - $('#modal').outerWidth(), 0) / 2;
         $('#modal').css({
@@ -259,18 +265,5 @@ $(document).ready(function() {
       });
     });
   });
-
-  //Add a popup (DJ: trying ...)
-  // var elem = _.createElement("div", {
-  //   classes: ["hnspecial-infinite-search-notice"],
-  //   content: "Please keep scrolling if you want to access the search field and the footer. <span>(click to close)</span>"
-  // });
-  // elem.addEventListener("click", function () { this.classList.add("hnspecial-infinite-search-notice-hidden"); });
-  // document.body.addEventListener("click", function (e) {
-  //   if (!elem.classList.contains("hnspecial-infinite-search-notice-hidden") && e.target !== elem) {
-  //     elem.classList.add("hnspecial-infinite-search-notice-hidden");
-  //   }
-  // });
-  // document.body.appendChild(elem);
 
 });
