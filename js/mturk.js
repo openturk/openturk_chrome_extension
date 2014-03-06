@@ -205,13 +205,8 @@ $(document).ready(function() {
       var requesterName = requester.html();
       var insertAfterElt = $(tr.find('td')[1]);
 
-<<<<<<< HEAD
       if (!(requester_id in already)) {
         insert_after.after('<a class="subscribe btn btn-icon" data-id="' + requester_id + '" data-name="' + requester_name + '"><span class="icon-star3"></span></button></td>');
-=======
-      if (!(requesterId in already)) {
-        insertAfterElt.after('<td><button class="subscribe btn btn-icon" data-id="' + requesterId + '" data-name="' + requesterName + '"><span class="icon-star3"></span></button></td>');
->>>>>>> 7b233db184dacb99e69d1c9031343d21b4e702ab
       }
     }
     $('.subscribe').click(function(e) {
@@ -237,26 +232,15 @@ $(document).ready(function() {
     redirect();
   });
 
-<<<<<<< HEAD
   //Add the ShareHIT
   getGroupId(function(group_id) {
-=======
-  //Add the star
-  getGroupId(function(groupId) {
->>>>>>> 7b233db184dacb99e69d1c9031343d21b4e702ab
     var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
       var el = $('td[class="capsulelink_bold"]').next().next();
       // $('td[class="capsulelink_bold"]').after('<td align="right" valign="middle" width="250" nowrap=""><span class="capsulelink"><a href="/mturk/preview?groupId=2KGW3K4F0OHOS2X5OUBO9L95OFJ10P">Share HIT</a></span></td>');
       if (typeof result.username !== "undefined") {
-<<<<<<< HEAD
         $(el)
           .append('<span class="capsulelink"><a href="#" id="sharehit">&#187; Share HIT</a></span>')
           .after('<div id="modal" style="display:none;position:absolute;background-color:#fff;width:350px;padding:15px;text-align:left;border:2px solid #333;opacity:1;-moz-border-radius:6px;-webkit-border-radius:6px;-moz-box-shadow: 0 0 50px #ccc;-webkit-box-shadow: 0 0 50px #ccc;"><h2>We will post the following message on mturkforum.com</h2><textarea id="star_message" style="width: 340px; height: 100px">OpenTurk user ' + (result.username) + ' recommended the following task: ' + group_id + '</textarea><br /><input id="modal_submit" type="submit" value="ok"><input id="modal_cancel" type="submit" value="cancel"></div>');
-=======
-        $('td[colspan=11]')
-          .after('<span id="star" class="btn btn-icon icon-share"></span>')
-          .after('<div id="modal" style="display:none;position:absolute;background-color:#fff;width:350px;padding:15px;text-align:left;border:2px solid #333;opacity:1;-moz-border-radius:6px;-webkit-border-radius:6px;-moz-box-shadow: 0 0 50px #ccc;-webkit-box-shadow: 0 0 50px #ccc;"><h2>We will post the following message on mturkforum.com</h2><textarea id="star_message" style="width: 340px; height: 100px">OpenTurk user ' + (result.username) + ' recommended the following task: ' + groupId + '</textarea><br /><input id="modal_submit" type="submit" value="ok"><input id="modal_cancel" type="submit" value="cancel"></div>');
->>>>>>> 7b233db184dacb99e69d1c9031343d21b4e702ab
       } else {
         $(el)
           .append('<span class="capsulelink"><a href="#" id="sharehit">Share HIT</a></span>')
