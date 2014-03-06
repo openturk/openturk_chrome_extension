@@ -29,6 +29,12 @@ var OT = {
     });
     $('#recos').click(function(e) {
       e.preventDefault();
+      $('#recommendation-feed').empty();
+      $('#recMore').prop('disabled', true).html('load more');
+      OT.recChecked = 0;
+      OT.recAppended = 0;
+      OT.recCount = 0;
+      OT.recCurrentPage = 1 ;
       OT.switch_spinner();
       OT.get_recommendation();
     });
@@ -94,6 +100,7 @@ var OT = {
       if (OT.recChecked < OT.recCount) {
         console.log('Loading next page');
         OT.recCurrentPage++;
+        OT.recAppended = 0;
         OT.get_recommendation(OT.recCurrentPage);
       } else {
         $('#recMore').prop('disabled', true).html('no more recommendations');
@@ -230,55 +237,62 @@ var OT = {
   },
 
   get_worker_id: function() {
-    chrome.runtime.sendMessage({
-      get_mturk_host: true
-    }, function(response) {
-      $.ajax({
-        url: 'https://' + response.mturk_host + '/mturk/dashboard',
-        success: function(result) {
-          var spanText = $(result).filter("table").find("span:contains('Worker ID')").text();
-          var workerIdPattern = /Worker ID: (.*)$/;
-          var workerId = spanText.match(workerIdPattern);
-          if (OT.status.workerId === null || workerId === null) {
-            OT.switch_sign();
-          } else {
-            workerId = workerId[1];
-            OT.status.workerId = workerId;
-            $('#mturkusername').html('MT:' + workerId);
-            $('#mturkuser').html('MT:' + workerId);
-            if (localStorage.getItem('validated') == 'true') {
-              OT.switch_content();
-            } else {
-              OT.switch_login();
-            }
-          }
-        },
-        error: function(xhr, status) {
-          console.log('you are not logged in MTURK');
-          localStorage.removeItem('workerId');
-          localStorage.setItem('validated', 'false');
+    $.ajax({
+      url: 'https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/dashboard',
+      success: function(result) {
+        var spanText = $(result).filter("table").find("span:contains('Worker ID')").text();
+        var workerIdPattern = /Worker ID: (.*)$/;
+        var workerId = spanText.match(workerIdPattern);
+        if (OT.status.workerId === null || workerId === null) {
           OT.switch_sign();
+        } else {
+          workerId = workerId[1];
+          OT.status.workerId = workerId;
+          $('#mturkusername').html('MT:' + workerId);
+          $('#mturkuser').html('MT:' + workerId);
+          if (localStorage.getItem('validated') == 'true') {
+            OT.switch_content();
+          } else {
+            OT.switch_login();
+          }
         }
-      });
+      },
+      error: function(xhr, status) {
+        console.log('you are not logged in MTURK');
+        localStorage.removeItem('workerId');
+        localStorage.setItem('validated', 'false');
+        OT.switch_sign();
+      }
     });
   },
 
-  recCurrentPage: 0,
+  recCurrentPage: 1,
   recCount: 0,
   recAppended: 0,
   recChecked: 0,
+  stars: [],
 
   get_recommendation: function() {
-    //$('#recommendation-feed').empty();
+    // $('#recommendation-feed').empty();
     if (OT.status.openturk_username) {
       var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/recommendations?page=' + OT.recCurrentPage).done(function(results) {
         console.log('Loading recommendation page #' + OT.recCurrentPage);
-        if (results.stars) {
-          OT.recCount = results.count;
-          appendRecommendation(results);
-        } else {
-          $("#rec-msg").html('There is currently 0 recommendations.');
-        }
+        if (results.stars) {   
+          console.log('stars returned something: ' + results + ' ' + results.stars.length);     
+          if (results.stars.length > 0) {
+            console.log('stars returned something');
+            $('#recspin').show();
+            OT.recCount = results.count;
+            OT.stars = results.stars;
+            fetchRecommendation();
+          } else {
+            $('#recspin').hide();
+            $('#recMore').prop('disabled', true).html('No more recommendations');
+          }
+        } 
+        // else {
+        //   $("#rec-msg").html('There is currently 0 recommendations.');
+        // }
       });
     } else {
       // TODO: login button somewhere ..
@@ -299,39 +313,35 @@ var OT = {
   },
 
   get_worker_stats: function() {
-    chrome.runtime.sendMessage({
-      get_mturk_host: true
-    }, function(response) {
-      $.get('https://' + response.mturk_host + '/mturk/dashboard', {}, function(data) {
-        var rewards = $(data).find('.reward');
-        var approval_rate = $(data).filter("table").find("td.metrics-table-first-value:contains('... Approved')").next().next().text();
-        var balance = {
-          approved_hits: $(rewards[0]).html(),
-          bonuses: $(rewards[1]).html(),
-          total_earnings: $(rewards[2]).html(),
-          approval_rate: approval_rate
-        };
-        localStorage.setItem('balance', balance);
-        $("#approved_hits").html(balance['approved_hits']);
-        $("#bonuses").html(balance['bonuses']);
-        $("#total_earnings").html(balance['total_earnings']);
-        $("#approval_rate").html(balance['approval_rate']);
-        OT.switch_balance();
-        // $('#workdone').sparkline(submitted_hist, {
-        //   type: 'line',
-        //   width: '300px',
-        //   chartRangeMin: 0,
-        //   lineColor: '#fb6b5b'
-        // });
-        // $('#earning').sparkline(earning_hist, {
-        //   type: 'line',
-        //   width: '300px',
-        //   chartRangeMin: 0,
-        //   barColor: '#afcf6f'
-        // });
-        // $('#earning').sparkline(submitted_hist, { type: 'bar', barColor: '#fb6b5b', height: '50px'});
-        // $('#earning').sparkline(earning_hist, { composite: true, fillColor: false, lineColor: 'afcf6f' , width: '100px', height: '50px'});
-      });
+    $.get('https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/dashboard', {}, function(data) {
+      var rewards = $(data).find('.reward');
+      var approval_rate = $(data).filter("table").find("td.metrics-table-first-value:contains('... Approved')").next().next().text();
+      var balance = {
+        approved_hits: $(rewards[0]).html(),
+        bonuses: $(rewards[1]).html(),
+        total_earnings: $(rewards[2]).html(),
+        approval_rate: approval_rate
+      };
+      localStorage.setItem('balance', balance);
+      $("#approved_hits").html(balance['approved_hits']);
+      $("#bonuses").html(balance['bonuses']);
+      $("#total_earnings").html(balance['total_earnings']);
+      $("#approval_rate").html(balance['approval_rate']);
+      OT.switch_balance();
+      // $('#workdone').sparkline(submitted_hist, {
+      //   type: 'line',
+      //   width: '300px',
+      //   chartRangeMin: 0,
+      //   lineColor: '#fb6b5b'
+      // });
+      // $('#earning').sparkline(earning_hist, {
+      //   type: 'line',
+      //   width: '300px',
+      //   chartRangeMin: 0,
+      //   barColor: '#afcf6f'
+      // });
+      // $('#earning').sparkline(submitted_hist, { type: 'bar', barColor: '#fb6b5b', height: '50px'});
+      // $('#earning').sparkline(earning_hist, { composite: true, fillColor: false, lineColor: 'afcf6f' , width: '100px', height: '50px'});
     });
   },
 
@@ -360,11 +370,7 @@ function appendRequester(url) {
   title.className = "link_title";
   title.innerText = url['name'];
 
-  chrome.runtime.sendMessage({
-    get_mturk_host: true
-  }, function(response) {
-    title.href = 'https://' + response.mturk_host + '/mturk/searchbar?selectedSearchType=hitgroups&requesterId=' + url['id'] + '&qualifiedFor=on';
-  });
+  title.href = 'https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar?selectedSearchType=hitgroups&requesterId=' + url['id'] + '&qualifiedFor=on';
   var batchs = document.createElement("span");
   batchs.className = "hint";
 
@@ -396,11 +402,7 @@ function appendSearch(url) {
   var title = document.createElement("a");
   title.className = "link_title";
   title.innerText = url['phrase'].replace('+', ' ');
-  chrome.runtime.sendMessage({
-    get_mturk_host: true
-  }, function(response) {
-    title.href = 'https://' + response.mturk_host + '/mturk/searchbar?selectedSearchType=hitgroups&qualifiedFor=on&searchWords=' + url['phrase'];
-  });
+  title.href = 'https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar?selectedSearchType=hitgroups&qualifiedFor=on&searchWords=' + url['phrase'];
   var batchs = document.createElement("span");
   batchs.className = "hint";
 
@@ -420,48 +422,52 @@ function appendSearch(url) {
   feed.appendChild(row);
 }
 
-function validateRecommendation(url, mturk_host, reward) {
+function fetchRecommendation() {
+  console.log(OT.stars);
+  console.log(OT.stars.length);
+  var recommendation = OT.stars.pop();
+  if(recommendation) {
+    var group_id = recommendation[0];
+    var reward = recommendation[1];
+    var url = 'https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/preview?groupId=' + group_id;
+    // FIXME
+    // if (results.stars[i][0] == "undefined" || results.stars[i][1] == "undefined") {
+    //   continue;
+    // }
+    validateRecommendation(url, reward, function() {
+      if (OT.recAppended < 10) {
+        console.log(OT.recChecked + ' ' + OT.recAppended + '  .... Not reached 10');
+        if (OT.stars.length > 0) {
+          fetchRecommendation();
+        }
+        else if (OT.recChecked < OT.recCount) {
+            console.log('Loading next page');
+            OT.recCurrentPage++;
+            OT.get_recommendation(OT.recCurrentPage);
+        } else {
+          console.log('Reached last page');
+          $('#recspin').hide();
+          $('#recMore').prop('disabled', true).html('No more recommendations');
+        }
+      }
+    });
+  }
+}
+
+function validateRecommendation(url, reward, callback) {
   $.get(url, {}, function(data) {
     var title = $(data).find('.capsulelink_bold');
+    console.log(url);
+    OT.recChecked++;
     if (title.length > 0) {
-      insertRecommendation(mturk_host, data, title, reward);
-      return true;
-    } else {
-      return false;
+      OT.recAppended++;
+      insertRecommendation(data, title, reward); 
     }
+    callback();
   });
 }
 
-function appendRecommendation(results) {
-  chrome.runtime.sendMessage({
-    get_mturk_host: true
-  }, function(response) {
-    for (var i = 0; i < results.stars.length; i++) {
-      OT.recChecked++;
-      if (results.stars[i][0] == "undefined" || results.stars[i][1] == "undefined") {
-        continue;
-      }
-      var group_id = results.stars[i][0];
-      var reward = results.stars[i][1];
-      var url = 'https://' + response.mturk_host + '/mturk/preview?groupId=' + group_id;
-      if (validateRecommendation(url, response.mturk_host, reward)) {
-        OT.recAppended++;
-      }
-    }
-    if (OT.recAppended < 10) {
-      console.log('Not reached 10');
-      if (OT.recChecked < OT.recCount) {
-        console.log('Loading next page');
-        OT.recCurrentPage++;
-        OT.get_recommendation(OT.recCurrentPage);
-      } else {
-        console.log('Reached last page');
-      }
-    }
-  });
-}
-
-function insertRecommendation(mturk_host, data, title, reward) {
+function insertRecommendation(data, title, reward) {
   var feed = document.getElementById("recommendation-feed");
   var gid = $(data).find('input[name=groupId]').val();
   var row = document.createElement("tr");
@@ -470,7 +476,7 @@ function insertRecommendation(mturk_host, data, title, reward) {
   var task = document.createElement("a");
   task.className = "link_title";
   task.innerText = $(title).text().trim();
-  task.href = 'https://' + mturk_host + '/mturk/preview?groupId=' + gid;
+  task.href = 'https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/preview?groupId=' + gid;
 
   var rewardSpan = document.createElement("span");
   rewardSpan.className = "hint";
@@ -498,19 +504,6 @@ var index = {};
 
 var earning_hist = [];
 var submitted_hist = [];
-var test = [{
-  "date": "02-10-2014",
-  "val": "16",
-}, {
-  "date": "02-08-2014",
-  "val": "8",
-}, {
-  "date": "02-06-2014",
-  "val": "4",
-}, {
-  "date": "02-05-2014",
-  "val": "2",
-}];
 
 function loadUIObjects() {
   chrome.storage.sync.get('requesters', function(items) {
@@ -582,14 +575,10 @@ function search() {
   var searchBox = document.getElementById("searchbox");
   var keywords = searchBox.value;
 
-  chrome.runtime.sendMessage({
-    get_mturk_host: true
-  }, function(response) {
-    if (keywords.length > 0) {
-      var search_url = "https://" + response.mturk_host + "/mturk/searchbar?selectedSearchType=hitgroups&searchWords=" + keywords.replace(" ", "+");
-      openUrl(search_url, true);
-    }
-  });
+  if (keywords.length > 0) {
+    var search_url = "https://" + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + "/mturk/searchbar?selectedSearchType=hitgroups&searchWords=" + keywords.replace(" ", "+");
+    openUrl(search_url, true);
+  }
 }
 
 // Show |url| in a new tab.
@@ -611,38 +600,4 @@ $(document).ready(function() {
   chrome.extension.sendMessage({
     reset: "resetIcon"
   });
-
-  $("#bar-demo").dxChart({
-    dataSource: [{
-      day: "Monday",
-      oranges: 3
-    }, {
-      day: "Tuesday",
-      oranges: 2
-    }, {
-      day: "Wednesday",
-      oranges: 3
-    }, {
-      day: "Thursday",
-      oranges: 4
-    }, {
-      day: "Friday",
-      oranges: 6
-    }, {
-      day: "Saturday",
-      oranges: 11
-    }, {
-      day: "Sunday",
-      oranges: 4
-    }],
-
-    series: {
-      argumentField: "day",
-      valueField: "oranges",
-      name: "My oranges",
-      type: "bar",
-      color: '#ffa500'
-    }
-  });
-
 });

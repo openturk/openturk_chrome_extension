@@ -205,8 +205,8 @@ $(document).ready(function() {
       var requesterName = requester.html();
       var insertAfterElt = $(tr.find('td')[1]);
 
-      if (!(requester_id in already)) {
-        insert_after.after('<a class="subscribe btn btn-icon" data-id="' + requester_id + '" data-name="' + requester_name + '"><span class="icon-star3"></span></button></td>');
+      if (!(requesterId in already)) {
+        insertAfterElt.after('<a class="subscribe btn btn-icon" data-id="' + requesterId + '" data-name="' + requesterName + '"><span class="icon-star3"></span></button></td>');
       }
     }
     $('.subscribe').click(function(e) {
@@ -240,11 +240,11 @@ $(document).ready(function() {
       if (typeof result.username !== "undefined") {
         $(el)
           .append('<span class="capsulelink"><a href="#" id="sharehit">&#187; Share HIT</a></span>')
-          .after('<div id="modal" style="display:none;position:absolute;background-color:#fff;width:350px;padding:15px;text-align:left;border:2px solid #333;opacity:1;-moz-border-radius:6px;-webkit-border-radius:6px;-moz-box-shadow: 0 0 50px #ccc;-webkit-box-shadow: 0 0 50px #ccc;"><h2>We will post the following message on mturkforum.com</h2><textarea id="star_message" style="width: 340px; height: 100px">OpenTurk user ' + (result.username) + ' recommended the following task: ' + group_id + '</textarea><br /><input id="modal_submit" type="submit" value="ok"><input id="modal_cancel" type="submit" value="cancel"></div>');
+          .after('<div id="modal" style="display:none;z-index:10;position:absolute;background-color:#fff;width:350px;padding:15px;text-align:left;border:2px solid #333;opacity:1;-moz-border-radius:6px;-webkit-border-radius:6px;-moz-box-shadow: 0 0 50px #ccc;-webkit-box-shadow: 0 0 50px #ccc;"><h2>We will post the following message on mturkforum.com</h2><textarea id="star_message" style="width: 340px; height: 100px">OpenTurk user ' + (result.username) + ' recommended the following task: ' + group_id + '</textarea><br /><input id="modal_submit" type="submit" value="ok"><input id="modal_cancel" type="submit" value="cancel"></div>');
       } else {
         $(el)
-          .append('<span class="capsulelink"><a href="#" id="sharehit">Share HIT</a></span>')
-          .after('<div id="modal" style="display:none;position:absolute;background-color:#fff;width:350px;padding:15px;text-align:left;border:2px solid #333;opacity:1;-moz-border-radius:6px;-webkit-border-radius:6px;-moz-box-shadow: 0 0 50px #ccc;-webkit-box-shadow: 0 0 50px #ccc;"><h2>Please log in on <a href="http://alpha.openturk.com/accounts/login/">OpenTurk.com</a></h2></div>');
+          .append('<span class="capsulelink"><a href="#" id="sharehit">&#187; Share HIT</a></span>')
+          .after('<div id="modal" style="display:none;z-index:10;position:absolute;background-color:#fff;width:350px;padding:15px;text-align:left;border:2px solid #333;opacity:1;-moz-border-radius:6px;-webkit-border-radius:6px;-moz-box-shadow: 0 0 50px #ccc;-webkit-box-shadow: 0 0 50px #ccc;"><h2>Please log in on <a href="http://alpha.openturk.com/accounts/login/">OpenTurk.com</a></h2></div>');
       }
       $('#sharehit').click(function(e) {
         e.preventDefault();
