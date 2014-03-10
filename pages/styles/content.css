@@ -1,12 +1,12 @@
-.fb-share {
+.ot-share {
   vertical-align: top;
   display: inline-block;
   height: 18px;
   padding: 0 4px;
-  border: 1px solid #cad4e7;
+  border: 1px solid #dd6e00;
   border-radius: 3px;
-  background: #eceef5;
-  color: #3b5998;
+  background: #dd6e00;
+  color: #eee;
   font-family: 'Lucida Grande', Tahoma, Verdana, Arial, sans-serif;
   font-size: 11px;
   line-height: 1;
@@ -16,22 +16,11 @@
   *display: inline;
   *zoom: 1;
 }
-.fb-share:hover {
-  border-color: #9dacce;
+.ot-share:hover {
+  border-color: #a15037;
 }
-.fb-share-icon {
-  position: relative;
-  top: 2px;
-  display: inline-block;
-  width: 14px;
-  height: 14px;
-  margin-right: 1px;
-  background-image: url(https://fbstatic-a.akamaihd.net/rsrc.php/v2/y-/r/tbhIfdAHjXE.png);
-  /* IE7 */
-  *display: inline;
-  *zoom: 1;
-}
-.fb-share-text {
+
+.ot-share-text {
   position: relative;
   top: -1px;
 }

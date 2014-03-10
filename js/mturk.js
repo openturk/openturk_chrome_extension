@@ -4,6 +4,18 @@ $(document).ready(function() {
   var openturk_endpoint = 'http://alpha.openturk.com/endpoint/redirect';
   var autoaccept = true;
 
+  function appendFontAwesomeStyle() {
+        if ($('#font-awesome-style').length == 0) {
+            var fontAwesomeLink = document.createElement('link');
+            fontAwesomeLink.rel = 'stylesheet';
+            fontAwesomeLink.id = 'font-awesome-style';
+            fontAwesomeLink.href = chrome.extension.getURL('pages/styles/font-awesome/css/font-awesome.min.css');
+            document.head.appendChild(fontAwesomeLink);
+        }
+    };
+
+  appendFontAwesomeStyle();
+
   function getWorkerId(callback) {
     chrome.runtime.sendMessage({
       get_mturk_host: true
@@ -180,10 +192,11 @@ $(document).ready(function() {
       var requesterId = getUrlParameters('lala?' + requester.attr('href'))['requesterId'];
       var requesterName = requester.html();
       var insertAfterElt = tr.find('td').eq(1);
-      insertAfterElt.attr('width', 100);
+      // insertAfterElt.attr('width', 100);
 
       if (!(requesterId in already)) {
-        insertAfterElt.after('<a class="fb-share" data-id="' + requesterId + '" data-name="' + requesterName + '">subscribe</button></td>');
+        // insertAfterElt.after('<a class="fb-share" data-id="' + requesterId + '" data-name="' + requesterName + '">subscribe</button></td>');
+        insertAfterElt.after('<a class="ot-share" href="#"><i class="fa fa-cog fa-spin"></i><span class="ot-share-text">subscribe</span></a>');
       }
     }
 
@@ -191,8 +204,8 @@ $(document).ready(function() {
     var el = $('td[class="capsulelink_bold"]').next().next();
     requesterId = $('input[name=requesterId').val();
     requesterName = $('input[name=prevRequester').val();
-    el.after('<td width="100" valign="middle" nowrap>&nbsp;<span class="capsulelink"><a class="subscribe" href="#" data-id="' + requesterId + '" data-name="' + requesterName + '">&#187; Star requester</a></span></td>');
-    // el.after('<a class="fb-share" href="#"><span class="fb-share-icon"></span><span class="fb-share-text">subscribe</span></a>');
+    // el.after('<td width="100" valign="middle" nowrap>&nbsp;<span class="capsulelink"><a class="subscribe" href="#" data-id="' + requesterId + '" data-name="' + requesterName + '">&#187; Star requester</a></span></td>');
+    el.after('<a class="ot-share" href="#"><span class="ot-share-icon"></span><span class="ot-share-text">share</span></a>');
     //bind events
     $('.subscribe').click(function(e) {
       chrome.runtime.sendMessage({
