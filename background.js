@@ -20,6 +20,7 @@ var requestTimeout = 1000 * 2; // 2 seconds
 var rotation = 0;
 var loadingAnimation = new LoadingAnimation();
 
+
 SetInitialOption("RequestInterval", 5);
 SetInitialOption("Sandbox", false);
 SetInitialOption("Reqnotif", false);

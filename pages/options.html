@@ -4,7 +4,6 @@
 	<title>Openturk Chrome extension Settings</title>
     <link rel="stylesheet" href="styles/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="styles/app.css">
-    <link rel="stylesheet" href="styles/button.css">
     <script src="scripts/jquery-2.0.3.min.js"></script>
     <script src="scripts/options.js"></script>
     <script src="scripts/md5.js"></script>
@@ -13,8 +12,9 @@
 		    font-family: verdana,helvetica, arial, sans-serif;
 		    font-size: 10pt;
 		    -webkit-font-smoothing:antialiased;
-		    margin: 0;
+		    margin: 0 auto;
 		    float: center;
+		    width: 400px;
 		}
     </style>
 </head>
@@ -38,36 +38,40 @@
 				<option value="60">1 hour</option>
 			</select><br/><br>
 			<hr class="break">
-			<p>:: Edit Search Keywords (max 5)</p>
-			<input id="terminput" />
-			<button id="btnAddSearchTerm">Add</button>
-		    <ul id="searchterms">
-			    <li><img src="images/spin.gif"></li>
-			</ul>
-
+			<p>:: Activate notifications for new requesters</p>
+			<input type="radio" class='reqnotif-tabs-radio' name="Reqnotif" value="true"> Yes
+			<input type="radio" class="second-radio reqnotif-tabs-radio" name="Reqnotif" value="false"> No<br/>
 			<hr class="break">
+
+			<p>:: Activate notifications for new search keywords</p>
+				<input type="radio" class='termnotif-tabs-radio' name="Termnotif" value="true"> Yes
+				<input type="radio" class="second-radio termnotif-tabs-radio" name="Termnotif" value="false"> No<br/>
+			<hr class="break">
+
 			<p>:: Edit Favorite Requesters</p>
-			<input id="requester" disabled/>
-			<button id="add-requester" disabled>
+			<input id="requester" disabled style="display: none;"/>
+			<button id="add-requester" disabled style="display: none;">
 		        <span class="adding-requester">Add</span>
 		    </button>
 			<ul id="requesters">
 			    <li><img src="images/spin.gif"></li>
 			</ul>
 			<hr class="break">
-			<p>:: Activate notifications for new requesters</p>
-			<input type="radio" class='reqnotif-tabs-radio' name="Reqnotif" value="true"> Yes
-			<input type="radio" class="second-radio reqnotif-tabs-radio" name="Reqnotif" value="false"> No<br/>
+
+			<p>:: Edit Automatic Search Keywords (max 20)</p>
+			<input id="terminput" />
+			<button id="btnAddSearchTerm">Add</button>
+		    <ul id="searchterms">
+			    <li><img src="images/spin.gif"></li>
+			</ul>
 			<hr class="break">
-			<p>:: Activate notifications for new search keywords</p>
-			<input type="radio" class='termnotif-tabs-radio' name="Termnotif" value="true"> Yes
-			<input type="radio" class="second-radio termnotif-tabs-radio" name="Termnotif" value="false"> No<br/>
-			<hr class="break">
+			<!-- 			
 			<p>:: Use Mechanical Turk Sandbox instead?</p>
-			<input type="radio" class="second-radio sandbox-tabs-radio" name="Sandbox" value="false"> No
-			<input type="radio" class='sandbox-tabs-radio' name="Sandbox" value="true"> Yes<br/>
+				<input type="radio" class="second-radio sandbox-tabs-radio" name="Sandbox" value="false"> No
+				<input type="radio" class='sandbox-tabs-radio' name="Sandbox" value="true"> Yes<br/>
+			-->
 			<p class='right'>
-        	<a href='http://github.com/vhf/openturk_extension/issues' target='_blank'>Report an Issue</a>
+	        	<a href='http://github.com/openturk/openturk_extension/issues' target='_blank'>Report a bug on Github</a>
 			</p>
 		</div>
 	</div>
