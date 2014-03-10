@@ -20,7 +20,7 @@ var requestTimeout = 1000 * 2; // 2 seconds
 var rotation = 0;
 var loadingAnimation = new LoadingAnimation();
 
-SetInitialOption("RequestInterval", 1);
+SetInitialOption("RequestInterval", 5);
 SetInitialOption("Sandbox", false);
 SetInitialOption("Reqnotif", false);
 SetInitialOption("Termnotif", false);
@@ -197,7 +197,7 @@ function getNewBatchs() {
   storage.get('requesters', function(items) {
     if (typeof items.requesters !== "undefined") {
       items.requesters.forEach(function(url) {
-        scrapForBatchs(url);
+        setTimeout(scrapForBatchs(url),1000);
       });
     }
   });
@@ -207,7 +207,7 @@ function getNewSearch() {
   storage.get('searchterms', function(items) {
     if (typeof items.searchterms !== "undefined") {
       items.searchterms.forEach(function(phrase) {
-        scrapForSearch(phrase);
+        setTimeout(scrapForSearch(phrase), 1000);
       });
     }
   });
@@ -311,13 +311,6 @@ function scrapForSearch(phrase) {
     }
   });
 }
-
-setTimeout(function() {
-  console.log('Fetching new Batchs !');
-  getNewBatchs();
-  printTasks();
-}, 1000)
-
 
 // chrome.storage.onChanged.addListener(function(changes, namespace) {
 //   for (key in changes) {

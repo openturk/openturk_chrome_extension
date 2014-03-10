@@ -243,10 +243,10 @@ $(document).ready(function() {
     fetchHit();
   });
   var attempt = 0;
-  var max_attempt = 10p;
+  var max_attempt = 10;
   function fetchHit() {
     if(attempt < max_attempt) {
-      var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/next').done(function(result) {
+      var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/schedule').done(function(result) {
         if (result) {   
           var group_id = result.next;
           var url = 'https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/preview?groupId=' + group_id;
@@ -266,9 +266,7 @@ $(document).ready(function() {
   function validateRecommendation(url, callback) {
     $.get(url, {}, function(data) {
       var title = $(data).find('.capsulelink_bold');
-      console.log(url);
       attempt ++;
-      console.log(url);
       if (title.length > 0) {
         console.log(url + " - success redirect");
         callback(url);
