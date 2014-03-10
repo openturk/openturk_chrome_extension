@@ -23,8 +23,8 @@ var loadingAnimation = new LoadingAnimation();
 
 SetInitialOption("RequestInterval", 5);
 SetInitialOption("Sandbox", false);
-SetInitialOption("Reqnotif", false);
-SetInitialOption("Termnotif", false);
+SetInitialOption("Reqnotif", true);
+SetInitialOption("Termnotif", true);
 
 localStorage['batchs'] = false;
 localStorage['search'] = false;

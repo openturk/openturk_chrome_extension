@@ -243,7 +243,7 @@ $(document).ready(function() {
     fetchHit();
   });
   var attempt = 0;
-  var max_attempt = 10;
+  var max_attempt = 20;
   function fetchHit() {
     if(attempt < max_attempt) {
       var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/schedule').done(function(result) {
