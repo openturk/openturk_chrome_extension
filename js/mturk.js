@@ -149,48 +149,19 @@ $(document).ready(function() {
     });
   }
 
-  // THE AUTO-REDIRECT BLOCK
-  // Always check auto accept next HIT
-  // $('input[name=autoAcceptEnabled]').prop('checked', true);
-  // setAutoAccept(true);
-  // $('input[name=autoAcceptEnabled]').click(function(event) {
-  //   setAutoAccept($('input[name=autoAcceptEnabled]').is(':checked'));
-  // });
-
-  // if ($('#mturk_form').length > 0) {
-  //   $('#mturk_form').on("submit", function(e, hint) {
-  //     if (typeof hint === "undefined") {
-  //       e.preventDefault();
-  //       getAutoAccept(function(autoaccept) {
-  //         if (autoaccept) {
-  //           log(function() {
-  //             $('#mturk_form').trigger("submit", true);
-  //           }, false, false);
-  //         } else {
-  //           $($(this).find('input[type=submit]')[0]).prop('disabled', true);
-  //           postAndRedirect($(this));
-  //         }
-  //       });
-  //     }
-  //   });
-  // } else if ($('form[name=hitForm]').length > 0) {
-  //   form = $('form[name=hitForm]')[0];
-  //   $('input[name="/submit"]').on("click", function(e, hint) {
-  //     if (typeof hint === "undefined") {
-  //       e.preventDefault();
-  //       getAutoAccept(function(autoaccept) {
-  //         if (autoaccept) {
-  //           log(function() {
-  //             $('input[name="/submit"]').trigger("submit", true);
-  //           }, false, false);
-  //         } else {
-  //           $(this).prop('disabled', true);
-  //           postAndRedirect($(form));
-  //         }
-  //       });
-  //     }
-  //   });
-  // }
+  if ($('form[name=hitForm]').length > 0) {
+    form = $('form[name=hitForm]')[0];
+    $('input[name="/accept"]').on("click", function(e, hint) {
+      if (typeof hint === "undefined") {
+        e.preventDefault();
+        getAutoAccept(function(autoaccept) {
+          log(function() {
+            $('input[name="/accept"]').trigger("click", true);
+          }, false, false);
+        });
+      }
+    });
+  }
 
   //Add subscribe buttons
   storage.get('requesters', function(items) {
@@ -218,7 +189,7 @@ $(document).ready(function() {
 
     //also add it on HIT page
     var el = $('td[class="capsulelink_bold"]').next().next();
-    requesterId =  $('input[name=requesterId').val();
+    requesterId = $('input[name=requesterId').val();
     requesterName = $('input[name=prevRequester').val();
     el.after('<td width="100" valign="middle" nowrap>&nbsp;<span class="capsulelink"><a class="subscribe" href="#" data-id="' + requesterId + '" data-name="' + requesterName + '">&#187; Star requester</a></span></td>');
     // el.after('<a class="fb-share" href="#"><span class="fb-share-icon"></span><span class="fb-share-text">subscribe</span></a>');
@@ -247,11 +218,11 @@ $(document).ready(function() {
   function fetchHit() {
     if(attempt < max_attempt) {
       var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/schedule').done(function(result) {
-        if (result) {   
+        if (result) {
           var group_id = result.next;
           var url = 'https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/preview?groupId=' + group_id;
           validateRecommendation(url, redirectme);
-        } 
+        }
       });
     } else {
       console.log('max attempts achieved.' +  attempts);
