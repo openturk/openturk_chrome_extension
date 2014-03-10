@@ -88,6 +88,10 @@ $(document).ready(function() {
     });
   }
 
+  function redirectme(redirectUrl) {
+    window.top.location.href = redirectUrl;
+  }
+
   function log(callback, hitSkipped, batchSkipped) {
     getWorkerId(function(workerId) {
       if (typeof workerId === "undefined") {
@@ -145,47 +149,48 @@ $(document).ready(function() {
     });
   }
 
-  //Always check auto accept next HIT
-  $('input[name=autoAcceptEnabled]').prop('checked', true);
-  setAutoAccept(true);
-  $('input[name=autoAcceptEnabled]').click(function(event) {
-    setAutoAccept($('input[name=autoAcceptEnabled]').is(':checked'));
-  });
+  // THE AUTO-REDIRECT BLOCK
+  // Always check auto accept next HIT
+  // $('input[name=autoAcceptEnabled]').prop('checked', true);
+  // setAutoAccept(true);
+  // $('input[name=autoAcceptEnabled]').click(function(event) {
+  //   setAutoAccept($('input[name=autoAcceptEnabled]').is(':checked'));
+  // });
 
-  if ($('#mturk_form').length > 0) {
-    $('#mturk_form').on("submit", function(e, hint) {
-      if (typeof hint === "undefined") {
-        e.preventDefault();
-        getAutoAccept(function(autoaccept) {
-          if (autoaccept) {
-            log(function() {
-              $('#mturk_form').trigger("submit", true);
-            }, false, false);
-          } else {
-            $($(this).find('input[type=submit]')[0]).prop('disabled', true);
-            postAndRedirect($(this));
-          }
-        });
-      }
-    });
-  } else if ($('form[name=hitForm]').length > 0) {
-    form = $('form[name=hitForm]')[0];
-    $('input[name="/submit"]').on("click", function(e, hint) {
-      if (typeof hint === "undefined") {
-        e.preventDefault();
-        getAutoAccept(function(autoaccept) {
-          if (autoaccept) {
-            log(function() {
-              $('input[name="/submit"]').trigger("submit", true);
-            }, false, false);
-          } else {
-            $(this).prop('disabled', true);
-            postAndRedirect($(form));
-          }
-        });
-      }
-    });
-  }
+  // if ($('#mturk_form').length > 0) {
+  //   $('#mturk_form').on("submit", function(e, hint) {
+  //     if (typeof hint === "undefined") {
+  //       e.preventDefault();
+  //       getAutoAccept(function(autoaccept) {
+  //         if (autoaccept) {
+  //           log(function() {
+  //             $('#mturk_form').trigger("submit", true);
+  //           }, false, false);
+  //         } else {
+  //           $($(this).find('input[type=submit]')[0]).prop('disabled', true);
+  //           postAndRedirect($(this));
+  //         }
+  //       });
+  //     }
+  //   });
+  // } else if ($('form[name=hitForm]').length > 0) {
+  //   form = $('form[name=hitForm]')[0];
+  //   $('input[name="/submit"]').on("click", function(e, hint) {
+  //     if (typeof hint === "undefined") {
+  //       e.preventDefault();
+  //       getAutoAccept(function(autoaccept) {
+  //         if (autoaccept) {
+  //           log(function() {
+  //             $('input[name="/submit"]').trigger("submit", true);
+  //           }, false, false);
+  //         } else {
+  //           $(this).prop('disabled', true);
+  //           postAndRedirect($(form));
+  //         }
+  //       });
+  //     }
+  //   });
+  // }
 
   //Add subscribe buttons
   storage.get('requesters', function(items) {
@@ -221,18 +226,53 @@ $(document).ready(function() {
     });
   });
 
-  //Get Awesome HIT
-  $('#searchbar').after('<div class="clear"><button id="lucky" class="btn btn-warning">Recommend me a HIT</button></div>');
+  // MANUAL RECOMMENDATION HIT
+  // Add Recommendation button
+  $('#searchbar').after('<div class="clear"><button id="recommendation-button" class="btn btn-warning">Recommend me a HIT</button></div>');
+  $('#recommendation-button').click(function(e) {
+    e.preventDefault();
+    fetchHit();
+  });
+  var attempt = 0;
+  var max_attempt = 10p;
+  function fetchHit() {
+    if(attempt < max_attempt) {
+      var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/next').done(function(result) {
+        if (result) {   
+          var group_id = result.next;
+          var url = 'https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/preview?groupId=' + group_id;
+          validateRecommendation(url, redirectme);
+        } 
+      });
+    } else {
+      console.log('max attempts achieved.' +  attempts);
+      $('#recommendation-button').html('0 for now (try later)');
+    }
+  }
+  // Alerts if needed ...
   // if(cond) {
   //   $('#subtabs_and_searchbar').after('<div class="message info"><span class="icon"></span><h6><span id="alertboxHeader">HITs that need your attention.</span></h6></div>');
   // }
 
-  $('#lucky').click(function(e) {
-    e.preventDefault();
-    redirect();
-  });
+  function validateRecommendation(url, callback) {
+    $.get(url, {}, function(data) {
+      var title = $(data).find('.capsulelink_bold');
+      console.log(url);
+      attempt ++;
+      console.log(url);
+      if (title.length > 0) {
+        console.log(url + " - success redirect");
+        callback(url);
+      } else {
+        console.log(url + " - failure retry");
+        fetchHit();
+      }
+    });
+  }
 
-  //Add the ShareHIT
+
+
+  //Add the ShareHIT Button
   getGroupId(function(group_id) {
     var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
       var el = $('td[class="capsulelink_bold"]').next().next();

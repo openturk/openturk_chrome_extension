@@ -210,3 +210,63 @@
 .icon-truck:before        { content: "\e613";}
 .icon-male:before         { content: "\e614";}
 .icon-female:before       { content: "\e615";}
+
+
+.fbLike {
+  text-decoration: none;
+  background: #3d599b url("\e615") no-repeat left center;
+  background-size: 20px;
+  color: #fff;
+  padding-left: 24px;
+  height: 20px;
+  line-height: 20px;
+  display: block;
+  border-radius: 2px;
+  font-weight: 400;
+  width: 30px;
+  margin-right: 100px;
+}
+.fbLike span {
+  margin-left: 37px;
+}
+.fbShare {
+  text-decoration: none;
+  background: #3d599b url("https://cdn1.iconfinder.com/data/icons/freebie%3A-social-media-icons/64/facebook.png") no-repeat left center;
+  background-size: 20px;
+  color: #fff;
+  padding-left: 24px;
+  height: 20px;
+  line-height: 20px;
+  display: block;
+  border-radius: 2px;
+  font-weight: 400;
+  width: 38px;
+}
+.fbShare span {
+  margin-left: 45px;
+}
+.fbLike span,
+.fbShare span {
+  position: absolute;
+  background: #fff;
+  text-align: center;
+  font-weight: 800;
+  color: rgba(0,0,0,0.4);
+  line-height: 18px;
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 2px;
+  padding: 0px 5px;
+}
+.fbLike span:after,
+.fbShare span:after {
+  content: '';
+  display: block;
+  position: absolute;
+  margin: -13px 0px 0px -9px;
+  background: #fff;
+  height: 6px;
+  width: 6px;
+  border-left: 1px solid rgba(0,0,0,0.2);
+  border-bottom: 1px solid rgba(0,0,0,0.2);
+  transform: rotate(45deg);
+}
