@@ -203,12 +203,21 @@ $(document).ready(function() {
       var requester = $(tr.find('td > a')[1]);
       var requesterId = getUrlParameters('lala?' + requester.attr('href'))['requesterId'];
       var requesterName = requester.html();
-      var insertAfterElt = $(tr.find('td')[1]);
+      var insertAfterElt = tr.find('td').eq(1);
+      insertAfterElt.attr('width', 100);
 
       if (!(requesterId in already)) {
         insertAfterElt.after('<a class="subscribe btn btn-icon" data-id="' + requesterId + '" data-name="' + requesterName + '"><span class="icon-star3"></span></button></td>');
       }
     }
+
+    //also add it on HIT page
+    var el = $('td[class="capsulelink_bold"]').next().next();
+    requesterId =  $('input[name=requesterId').val();
+    requesterName = $('input[name=prevRequester').val();
+    el.after('<td width="100" valign="middle" nowrap>&nbsp;<span class="capsulelink"><a class="subscribe" href="#" data-id="' + requesterId + '" data-name="' + requesterName + '">&#187; Star requester</a></span></td>');
+
+    //bind events
     $('.subscribe').click(function(e) {
       chrome.runtime.sendMessage({
         addRequester: {
