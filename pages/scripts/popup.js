@@ -59,9 +59,6 @@ var OT = {
     $('a#options').click(function(e) {
       e.preventDefault();
       var optionsUrl = chrome.extension.getURL('pages/options.html');
-      // chrome.tabs.create({
-      //   url: optionsUrl
-      // });
       chrome.tabs.query({
         url: optionsUrl,
       }, function(results) {
@@ -367,6 +364,7 @@ function appendRequester(url) {
   im.height = 15;
   //console.log(md5(url['id']));
   var title = document.createElement("a");
+  title.id = "requester_link";
   title.className = "link_title";
   title.innerText = url['name'];
 
@@ -400,6 +398,7 @@ function appendSearch(url) {
   im.width = 10;
   im.height = 10;
   var title = document.createElement("a");
+  title.id = "search_link";
   title.className = "link_title";
   title.innerText = url['phrase'].replace('+', ' ');
   title.href = 'https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar?selectedSearchType=hitgroups&qualifiedFor=on&searchWords=' + url['phrase'];
@@ -449,6 +448,7 @@ function fetchRecommendation() {
           $('#recspin').hide();
           $('#recMore').prop('disabled', true).html('No more recommendations');
         }
+        $('a#recommendation_link').click(function(e) { e.preventDefault(); openLink(this.href)});
       }
     });
   }
@@ -474,6 +474,7 @@ function insertRecommendation(data, title, reward) {
   row.className = "link";
   var link_col = document.createElement("td");
   var task = document.createElement("a");
+  task.id = "recommendation_link"
   task.className = "link_title";
   task.innerText = $(title).text().trim();
   task.href = 'https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/preview?groupId=' + gid;
@@ -524,6 +525,7 @@ function loadUIObjects() {
       $("#content-msg").html('There is currently no batch from your favorite requesters.<br> Subscribe to more requesters on the dashboard.');
     }
     indexRequesters();
+    $('a#requester_link').click(function(e) { e.preventDefault(); openLink(this.href)});
   });
   chrome.storage.sync.get('searchterms', function(items) {
     if (!obj.searchterms) {
@@ -541,22 +543,22 @@ function loadUIObjects() {
     if (count == 0) {
       $("#search-msg").html('There is currently 0 search. <br>Add scheduled search on the options page.');
     }
+    $('a#search_link').click(function(e) { e.preventDefault(); openLink(this.href)});
   });
-  chrome.storage.sync.get('workhistory', function(items) {
-    if (!obj.workhistory) {
-      obj['workhistory'] = [];
-    }
-    var previous_total_earnings = 0;
-    var previous_hit_submitted = 0;
-    $(items.workhistory).each(function() {
-      obj.workhistory.push(this);
-      earning_hist.push(this.total_earnings - previous_total_earnings);
-      previous_total_earnings = this.total_earnings;
-      submitted_hist.push(this.hit_submitted - previous_hit_submitted);
-      previous_hit_submitted = this.hit_submitted;
-    });
-
-  });
+  // chrome.storage.sync.get('workhistory', function(items) {
+  //   if (!obj.workhistory) {
+  //     obj['workhistory'] = [];
+  //   }
+  //   var previous_total_earnings = 0;
+  //   var previous_hit_submitted = 0;
+  //   $(items.workhistory).each(function() {
+  //     obj.workhistory.push(this);
+  //     earning_hist.push(this.total_earnings - previous_total_earnings);
+  //     previous_total_earnings = this.total_earnings;
+  //     submitted_hist.push(this.hit_submitted - previous_hit_submitted);
+  //     previous_hit_submitted = this.hit_submitted;
+  //   });
+  // });
 }
 
 function indexRequesters() {
@@ -590,6 +592,23 @@ function openUrl(url, take_focus) {
   chrome.tabs.create({
     url: url,
     selected: take_focus
+  });
+}
+
+function openLink(urlto) {
+  var mturk_pattern = '*://www.mturk.com/*';
+  chrome.tabs.query({
+    url: mturk_pattern,
+  }, function(results) {
+    if (results.length)
+      chrome.tabs.update(results[0].id, {
+        url: urlto,
+        active: true
+      });
+    else
+      chrome.tabs.create({
+        url: urlto
+      });
   });
 }
 
