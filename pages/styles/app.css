@@ -81,6 +81,8 @@ a:hover {text-decoration:underline;}
 .right {float:right;}
 #searchbox { margin:12px 3px 0 26px; font-size:11px; width:215px;}
 #searchbutton {font-family:courier;}
+label.red {color:red;font-weight: bold;}
+label.green {color:green;font-weight: bold;}
 
 #OptionsPage #header {margin-bottom:20px;}
 #OptionsPage .option-container {background:#fffbf1; margin:auto;}

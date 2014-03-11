@@ -666,7 +666,7 @@ function getStats() {
           pointColor : "rgba(220,220,220,1)",
           pointStrokeColor : "#fff",
           data : submitted_data,
-          title : 'submitted'
+          title : 'Submitted'
         },
         {
           fillColor : "rgba(163, 191, 63,0.5)",
@@ -711,6 +711,57 @@ function legend(parent, data) {
     });
 }
 
+
+// Earning Projection Function
+var MPRE_DELAY = 2000;
+var STD_DAILY = localStorage['Target'];
+var STATUSDETAIL_BASE_URL = 'https://'+ ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") +'/mturk/statusdetail';
+
+function getProjection() {
+  $.get(STATUSDETAIL_BASE_URL, function(data){
+      var $src = $(data);
+      var maxpagerate = $src.find("td[class='error_title']:contains('You have exceeded the maximum allowed page request rate for this website.')");
+      if (maxpagerate.length == 0)
+      {
+          date_header = $src.find("td[class='white_text_14_bold']:contains('HITs You Worked On For')").clone().children().remove().end().text().trim();
+          var total = scrape($src);
+          console.log('returned ! ' + total);
+          $('#projection').html( '$' + (total/100).toFixed(2) );
+          if (total >= STD_DAILY) {
+            $('#projection').removeClass("red");
+            $('#projection').addClass("green");
+          }
+      }
+      else
+      {
+          setTimeout(function(){getProjection();}, MPRE_DELAY);
+      }
+  });
+}
+
+function scrape($src)
+{
+    var $reward = $src.find("td[class='statusdetailAmountColumnValue']");
+    var $approval = $src.find("td[class='statusdetailStatusColumnValue']");
+    page_total = 0;
+    console.log('scrapping !');
+    for (var j = 0; j < $reward.length; j++)
+    {
+        // I"m worried if I use parseFloat errors will accumulate because floats are inexact
+        var reward = parseInt($reward.eq(j).text().replace(/[^0-9]/g,''), 10);
+        var approval = $approval.eq(j).text();
+        console.log('yey !' + reward);
+        if (approval != 'Rejected')
+        {
+            page_total += reward;
+        }                
+    }
+    console.log('total ! ' + page_total);
+    return page_total;
+}
+
+// Launching stuff !
+
 $(document).ready(function() {
   OT.init();
   //console.log('loading stuff');
@@ -719,4 +770,5 @@ $(document).ready(function() {
     reset: "resetIcon"
   });
   getStats();
+  getProjection();
 });

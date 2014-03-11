@@ -232,7 +232,7 @@ $(document).ready(function() {
 
   // MANUAL RECOMMENDATION HIT
   // Add Recommendation button
-  $('#searchbar').after('<div class="clear"><a id="recommendation-button" href="#" class="ot-schedule"><i id="recommendation-button-i" class="fa fa-heart"></i> Recommend Me a HIT</a></div>');
+  $('#searchbar').after('<div class="clear"><a id="recommendation-button" href="#" class="ot-schedule"><i id="recommendation-button-i" class="fa fa-heart"></i> Recommend me a HIT</a></div>');
   $('#recommendation-button').click(function(e) {
     e.preventDefault();
     $('#recommendation-button-i').addClass( "fa-spinner fa-spin" );

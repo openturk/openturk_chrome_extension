@@ -25,6 +25,7 @@ SetInitialOption("RequestInterval", 5);
 SetInitialOption("Sandbox", false);
 SetInitialOption("Reqnotif", true);
 SetInitialOption("Termnotif", true);
+SetInitialOption("Target", 1000);
 
 localStorage['batchs'] = false;
 localStorage['search'] = false;
