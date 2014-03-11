@@ -94,6 +94,19 @@ chrome.runtime.onMessage.addListener(
   }
 );
 
+function subscribe(req, unsubscribe) {
+  data = {
+    requester_id: req.id,
+    name: req.id
+  };
+  var endpoint = 'http://alpha.openturk.com/endpoint/' + (unsubscribe === true ? 'unsubscribe' : 'subscribe');
+  request = $.ajax({
+    url: endpoint,
+    type: "POST",
+    data: data
+  }).always(function(data) {});
+}
+
 function addRequester(req) {
   console.log('saving');
   if (!obj.requesters) {
@@ -103,6 +116,7 @@ function addRequester(req) {
   saverequesters();
   getNewBatchs();
   indexRequesters();
+  subscribe(req);
 }
 
 function deleteRequester(req) {
@@ -112,6 +126,7 @@ function deleteRequester(req) {
   });
   saverequesters();
   indexRequesters();
+  subscribe(req, true);
 }
 
 function loadRequesters() {
@@ -161,20 +176,20 @@ function modifyCount(phrase, count) {
 
 function savesearchterms() {
   chrome.storage.sync.set({
-      'searchterms': obj.searchterms
-    });
+    'searchterms': obj.searchterms
+  });
 }
 
 function saverequesters() {
   chrome.storage.sync.set({
-      'requesters': obj.requesters
-    });
+    'requesters': obj.requesters
+  });
 }
 
 function saveworkhist() {
   chrome.storage.sync.set({
-      'workhistory': obj.workhistory
-    });
+    'workhistory': obj.workhistory
+  });
 }
 
 loadRequesters();
@@ -185,7 +200,7 @@ function getNewBatchs() {
   storage.get('requesters', function(items) {
     if (typeof items.requesters !== "undefined") {
       items.requesters.forEach(function(url) {
-        setTimeout(scrapForBatchs(url),1000);
+        setTimeout(scrapForBatchs(url), 1000);
       });
     }
   });
@@ -202,11 +217,11 @@ function getNewSearch() {
 }
 
 function getWorkerStats() {
-  $.get('https://'+((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com")+'/mturk/dashboard', {}, function(data) {
+  $.get('https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/dashboard', {}, function(data) {
     var rewards = $(data).find('.reward');
     var hit_submitted = $(data).filter("table").find("td.metrics-table-first-value:contains('HITs Submitted')").next().text();
     var balance = {
-      total_earnings: parseInt($(rewards[2]).html().replace('$','')),
+      total_earnings: parseInt($(rewards[2]).html().replace('$', '')),
       hit_submitted: parseInt(hit_submitted)
     };
     //obj.workhistory.push(balance);
@@ -224,7 +239,7 @@ function printTasks() {
 
 function scrapForBatchs(url) {
   $.ajax({
-    url: 'https://'+((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com")+'/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&requesterId=' + url['id'],
+    url: 'https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&requesterId=' + url['id'],
     success: function(result) {
       var spanText = $(result).find("td:contains('Results')").text();
       var resPattern = /of (.*) Results/;
@@ -237,16 +252,16 @@ function scrapForBatchs(url) {
         if (res != old_res) {
           index[id].numtask = res;
           console.log('REQUESTER. Before: ' + old_res + ' After: ' + res);
-          if(res > old_res) {
+          if (res > old_res) {
             var diff = res - old_res;
-            if(localStorage['Reqnotif'] == "true") {
+            if (localStorage['Reqnotif'] == "true") {
               updates = updates + diff;
             }
             localStorage['batchs'] = true;
             var diff = res - old_res;
             console.log('Requester diff: ' + diff);
             updateUnreadCount();
-            if(!(id in newbatchs)) {
+            if (!(id in newbatchs)) {
               newbatchs.push(id);
             }
             localStorage['newbatchs'] = JSON.stringify(newbatchs);
@@ -263,11 +278,11 @@ function scrapForBatchs(url) {
 
 function scrapForSearch(phrase) {
   $.ajax({
-    url: 'https://'+((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com")+'/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&searchWords=' + phrase['phrase'],
+    url: 'https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&searchWords=' + phrase['phrase'],
     success: function(result) {
       var spanText = $(result).find("td:contains('Results')").text();
       var resPattern = /of (.*) Results/;
-      console.log('https://'+((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com")+'/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&searchWords=' + phrase['phrase']);
+      console.log('https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&searchWords=' + phrase['phrase']);
       var res = spanText.match(resPattern);
       if (res) {
         res = res[1];
@@ -277,15 +292,15 @@ function scrapForSearch(phrase) {
           console.log('SEARCH. Before: ' + old_res + ' After: ' + res);
           phrase['numtask'] = res;
           modifyCount(phrase['phrase'], res);
-          if(res > old_res) {
+          if (res > old_res) {
             var diff = res - old_res;
-            if(localStorage['Termnotif'] == "true") {
+            if (localStorage['Termnotif'] == "true") {
               updates = updates + diff;
             }
             localStorage['search'] = true;
             console.log('Search diff: ' + diff);
             updateUnreadCount();
-            if(!(phrase in newterms)) {
+            if (!(phrase in newterms)) {
               newterms.push(phrase['phrase']);
             }
             localStorage['newterms'] = JSON.stringify(newterms);
