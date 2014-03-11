@@ -4,7 +4,7 @@
     <title>Openturk</title>
     <link rel="stylesheet" href="styles/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="styles/app.css">
-    <link rel="stylesheet" href="styles/button.css">
+    <link rel="stylesheet" href="styles/content.css">
     <script src="scripts/jquery-2.0.3.min.js"></script>
     <script src="scripts/md5.js"></script>
     <script src="scripts/popup.js"></script>
@@ -45,6 +45,15 @@
         <button id="recMore">load more</button><img id="recspin" style="display: none;" src="images/spin.gif">
     </div>
     <div class="container" id="balancer" style="display: none;">
+        <table class="feed" cellspacing="3" cellpadding="0">
+            <tr class="link">
+                <td>Your AMT ID:</td><td> <label id="mturkuser"></label></td>
+            </tr>
+            <tr class="link">
+                <td>Openturk ID:</td><td> <a href="http://alpha.openturk.com" id="openturkuser">Connect to openturk</a></td>
+            </tr>
+        </table>
+        <hr class="break">
         <table id="balance-feed" class="feed" cellspacing="3" cellpadding="0">
             <tr class="link">
                 <td>Approved Hits:</td><td> <label id="approved_hits"></label></td>
@@ -89,22 +98,19 @@
             </div>
             <div class="tight-row">
                 <p class="text-warning text-center">
-                    You are logged in mTurk as:
+                    You are logged in Amazon Mechanical Turk
                 </p>
-                <p id="mturkusername">
-
-                </p>
+                ID: <label id="mturkusername"> </label>
             </div>
             <div style="padding:10px;">
                 <a class="btn btn-success" id="save" href="#">Use Openturk</a>
-                <a class="btn btn-primary" id="signout" href="">Sign Out Mturk</a>
             </div>
 
         </form>
     </div>
     <div id="footer">
         <div class="right">
-            <a href="http://mturk.com" id="mturkuser">MT: </a> | <a href="http://alpha.openturk.com" id="openturkuser">Connect to openturk</a> | <a href="https://github.com/vhf/openturk_extension/issues" id="suggestion">Suggestions?</a> | <a href="#" id="logout">Logout</a>
+            <a href="http://alpha.openturk.com" id="ot-connect">Connect to openturk |</a> <a href="https://github.com/vhf/openturk_extension/issues" id="suggestion">Suggestions?</a> | <a href="#" id="logout">Logout</a>
         </div>
     </div>
 </body>

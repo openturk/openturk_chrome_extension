@@ -245,8 +245,8 @@ var OT = {
         } else {
           workerId = workerId[1];
           OT.status.workerId = workerId;
-          $('#mturkusername').html('MT:' + workerId);
-          $('#mturkuser').html('MT:' + workerId);
+          $('#mturkusername').html(workerId);
+          $('#mturkuser').html(workerId);
           if (localStorage.getItem('validated') == 'true') {
             OT.switch_content();
           } else {
@@ -302,9 +302,11 @@ var OT = {
     var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
       if (typeof result.username !== "undefined") {
         OT.status.openturk_username = result.username;
-        $('#openturkuser').html('OT:' + OT.status.openturk_username);
+        $('#openturkuser').html(OT.status.openturk_username);
+        $('#ot-connect').hide();
       } else {
         $('#openturkuser').html('Connect to openturk');
+        $('#ot-connect').show();
       }
     });
   },

@@ -26,5 +26,5 @@
    "web_accessible_resources": ["pages/scripts/jquery-2.0.3.min.map","pages/styles/font-awesome/css/font-awesome.min.css","pages/styles/font-awesome/fonts/fontawesome-webfont.eot", "pages/styles/font-awesome/fonts/fontawesome-webfont.svg", "pages/styles/font-awesome/fonts/fontawesome-webfont.ttf", "pages/styles/font-awesome/fonts/fontawesome-webfont.woff"],
    "description": "OpenTurk",
    "permissions": [ "alarms", "tabs", "\u003Call_urls\u003E", "storage" ],
-   "version": "0.1.4"
+   "version": "0.1.5"
 }
