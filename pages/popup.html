@@ -8,6 +8,7 @@
     <script src="scripts/jquery-2.0.3.min.js"></script>
     <script src="scripts/md5.js"></script>
     <script src="scripts/popup.js"></script>
+    <script src="scripts/Chart.js"></script>
     <base target="_blank" />
 </head>
 <body>
@@ -45,15 +46,6 @@
         <button id="recMore">load more</button><img id="recspin" style="display: none;" src="images/spin.gif">
     </div>
     <div class="container" id="balancer" style="display: none;">
-        <table class="feed" cellspacing="3" cellpadding="0">
-            <tr class="link">
-                <td>Your AMT ID:</td><td> <label id="mturkuser"></label></td>
-            </tr>
-            <tr class="link">
-                <td>Openturk ID:</td><td> <a href="http://alpha.openturk.com" id="openturkuser">Connect to openturk</a></td>
-            </tr>
-        </table>
-        <hr class="break">
         <table id="balance-feed" class="feed" cellspacing="3" cellpadding="0">
             <tr class="link">
                 <td>Approved Hits:</td><td> <label id="approved_hits"></label></td>
@@ -71,7 +63,17 @@
         <hr class="break">
         <table class="feed" cellspacing="3" cellpadding="0">
             <tr class="link">
-                <td>Performance</td> <td><div id="bar-demo" class="hint_new"> graph comming soon.</div></td>
+                <td><canvas id="stats" class="hint_new"> graph comming soon.</canvas></td>
+                <td><div id="lineLegend"></div></td> 
+            </tr>
+        </table>
+                <hr class="break">
+        <table class="feed" cellspacing="3" cellpadding="0">
+            <tr class="link">
+                <td>Your AMT ID:</td><td> <label id="mturkuser"></label></td>
+            </tr>
+            <tr class="link">
+                <td>Openturk ID:</td><td> <a href="http://alpha.openturk.com" id="openturkuser">Connect to openturk</a></td>
             </tr>
         </table>
     </div>

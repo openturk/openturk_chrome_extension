@@ -614,6 +614,103 @@ function openLink(urlto) {
   });
 }
 
+function getStats() {
+  $.get('https://www.mturk.com/mturk/status', {}, function(data) {
+    var rows = $(data).find('tr');
+    console.log(rows);
+
+    var submitted_data = [];
+    var pending_data = [];
+    var rejected_data = [];
+    var approved_data = [];
+    var dollar_data = [];
+    var dates_data = [];
+
+    for (var i = 0; i < rows.length; i++) {
+      var row = rows[i];
+
+      if (row.cells.length != 6)
+        continue;
+      if (row.className.match('grayHead')) {
+        continue;
+      }
+      if (row.className.match('odd|even') == null) {
+        continue;
+      }
+
+      var odd = row.className.match('odd');
+      var submitted = parseInt(row.cells[1].innerHTML);
+      var approved = parseInt(row.cells[2].innerHTML);
+      var rejected = parseInt(row.cells[3].innerHTML);
+      var pending = parseInt(row.cells[4].innerHTML);
+      var earnings = row.cells[5].childNodes[0].innerHTML;
+      var dollars = parseFloat(earnings.slice(earnings.search('\\$') + 1));
+      var date = row.cells[0].childNodes[1].href.substr(53);
+
+      submitted_data.unshift(submitted);
+      pending_data.unshift(pending);
+      rejected_data.unshift(rejected);
+      approved_data.unshift(approved);
+      dollar_data.unshift(dollars);
+
+      dates_data.unshift($.trim(row.cells[0].textContent.replace(/, 20../, "")));
+
+    }
+    console.log(pending_data, rejected_data, approved_data, dollar_data, dates_data)
+    var data = {
+      labels : dates_data,
+      datasets : [
+        {
+          fillColor : "rgba(220,220,220,0.5)",
+          strokeColor : "rgba(220,220,220,1)",
+          pointColor : "rgba(220,220,220,1)",
+          pointStrokeColor : "#fff",
+          data : submitted_data,
+          title : 'submitted'
+        },
+        {
+          fillColor : "rgba(163, 191, 63,0.5)",
+          strokeColor : "rgba(163, 191, 63,1)",
+          pointColor : "rgba(163, 191, 63,1)",
+          pointStrokeColor : "#fff",
+          data : approved_data,
+          title : 'Approved'
+        },
+        {
+          fillColor : "rgba(237, 124, 60, 0.5)",
+          strokeColor : "rgba(237, 124, 60, 1)",
+          pointColor : "rgba(237, 124, 60, 1)",
+          pointStrokeColor : "#fff",
+          data : pending_data ,
+          title : 'Pendings'
+        }
+      ]
+    }
+    var options = {
+        animation: false
+    };
+    var ctx = document.getElementById("stats").getContext("2d");
+    var myNewChart = new Chart(ctx).Line(data,options);
+    legend(document.getElementById("lineLegend"), data);
+  });
+}
+
+function legend(parent, data) {
+    parent.className = 'legend';
+    var datas = data.hasOwnProperty('datasets') ? data.datasets : data;
+
+    datas.forEach(function(d) {
+        var title = document.createElement('span');
+        title.className = 'title';
+        title.style.borderColor = d.hasOwnProperty('strokeColor') ? d.strokeColor : d.color;
+        title.style.borderStyle = 'solid';
+        parent.appendChild(title);
+
+        var text = document.createTextNode(d.title);
+        title.appendChild(text);
+    });
+}
+
 $(document).ready(function() {
   OT.init();
   //console.log('loading stuff');
@@ -621,4 +718,5 @@ $(document).ready(function() {
   chrome.extension.sendMessage({
     reset: "resetIcon"
   });
+  getStats();
 });
