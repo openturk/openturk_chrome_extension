@@ -177,6 +177,32 @@ $(document).ready(function() {
           $('#modal').toggle();
           star(function() {});
         });
+        var requesterId = $('input[name=requesterId').val();
+        var requesterName = $('input[name=prevRequester').val();
+        storage.get('requesters', function(items) {
+          var obj = items;
+          var already = {};
+          if (obj.requesters) {
+            for (var j = 0; j < obj.requesters.length; j++) {
+              already[obj.requesters[j].id] = true;
+            }
+          }
+          console.log(el);
+          if (!(requesterId in already)) {
+            $("#sharehit").parent().after('<td><a class="ot-subscribe" href="#" data-id="' + requesterId + '" data-name="' + requesterName + '"><span class="ot-subscribe-text">subscribe</span></a></td>');
+            //bind events
+            $('.ot-subscribe').click(function(e) {
+              chrome.runtime.sendMessage({
+                addRequester: {
+                  "name": $(this).attr('data-name'),
+                  "id": $(this).attr('data-id'),
+                  "numtask": 0
+                }
+              }, function(response) {});
+              $('.ot-subscribe[data-id=' + $(this).attr('data-id') + ']').hide();
+            });
+          }
+        });
       });
   }
 
@@ -202,26 +228,6 @@ $(document).ready(function() {
         insertAfterElt.after('<a class="ot-subscribe" href="#" data-id="' + requesterId + '" data-name="' + requesterName + '"><span class="ot-subscribe-text">Subscribe</span></a>');
       }
     }
-
-    //also add it on HIT page
-    // var el = $('td[class="capsulelink_bold"]').next().next();
-    var el = $('#sharehit').parent();
-    requesterId = $('input[name=requesterId').val();
-    requesterName = $('input[name=prevRequester').val();
-    if (!(requesterId in already)) {
-      el.after('<td><a class="ot-subscribe" href="#" data-id="' + requesterId + '" data-name="' + requesterName + '"><span class="ot-subscribe-text">subscribe</span></a></td>');
-    }
-    //bind events
-    $('.ot-subscribe').click(function(e) {
-      chrome.runtime.sendMessage({
-        addRequester: {
-          "name": $(this).attr('data-name'),
-          "id": $(this).attr('data-id'),
-          "numtask": 0
-        }
-      }, function(response) {});
-      $('.ot-subscribe[data-id=' + $(this).attr('data-id') + ']').hide();
-    });
   });
 
   // MANUAL RECOMMENDATION HIT
