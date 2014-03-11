@@ -45,24 +45,11 @@ function SetInitialOption(key, value) {
 // storage.set(obj);
 
 // Variables for the content script
-var group_id;
 var autoaccept;
 
 // Set the Listener for the autoaccept
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    if (typeof request.group_id !== "undefined" && request.group_id !== "undefined") {
-      group_id = request.group_id;
-      sendResponse({
-        group_id: group_id
-      });
-    }
-
-    if (request.group_id_get) {
-      sendResponse({
-        group_id: group_id
-      });
-    }
 
     if (request.get_mturk_host) {
       sendResponse({

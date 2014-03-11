@@ -40,29 +40,6 @@ $(document).ready(function() {
     return params;
   }
 
-  function setGroupId() {
-    var groupId = getUrlParameters()['groupId'];
-    if (typeof groupId !== "undefined") {
-      chrome.runtime.sendMessage({
-        group_id: groupId
-      }, function(response) {});
-    }
-    return groupId;
-  }
-  setGroupId();
-
-  function getGroupId(callback) {
-    chrome.runtime.sendMessage({
-      group_id_get: true
-    }, function(response) {
-      var groupId = response.group_id;
-      if (typeof groupId === "undefined") {
-        groupId = "undefined";
-      } else {}
-      callback(groupId);
-    });
-  }
-
   function setAutoAccept(autoaccept) {
     if ($('input[name=autoAcceptEnabled]').length > 0) {
       chrome.runtime.sendMessage({
@@ -105,10 +82,10 @@ $(document).ready(function() {
       if (typeof workerId === "undefined") {
         workerId = "undefined";
       }
-      getGroupId(function(groupId) {
+
         data = {
           worker_id: workerId,
-          group_id: groupId,
+          group_id: getUrlParameters()['groupId'],
           hit_skipped: hitSkipped,
           batch_skipped: batchSkipped
         };
@@ -119,7 +96,6 @@ $(document).ready(function() {
         }).always(function() {
           callback();
         });
-      });
     });
   }
 
@@ -129,7 +105,7 @@ $(document).ready(function() {
       if (typeof workerId === "undefined") {
         workerId = "undefined";
       }
-      getGroupId(function(groupId) {
+
         var rewardText = $("table").find("td:contains('Reward')").next().text();
         var rewardPattern = /([0-9\.]*) per/;
         var reward = parseFloat(rewardText.match(rewardPattern)[1]);
@@ -140,20 +116,19 @@ $(document).ready(function() {
 
         data = {
           worker_id: workerId,
-          group_id: groupId,
+          group_id: getUrlParameters()['groupId'],
           reward: reward,
           duration: duration,
           hits_available: hitsAvailable,
           message: $('#star_message').val()
         };
         request = $.ajax({
-          url: 'http://alpha.openturk.com/endpoint/star',
+          url: 'http://alpha.openturk.com/endpoint/recommend',
           type: "POST",
           data: data
         }).always(function(data) {
           callback();
         });
-      });
     });
   }
 
@@ -173,9 +148,9 @@ $(document).ready(function() {
 
   //Add the ShareHIT Button
   if($('td[class="capsulelink_bold"]').length > 0) {
-    getGroupId(function(group_id) {
       var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
         var el = $('div > table > tbody > tr > td > table > tbody > tr').last();
+        var group_id = getUrlParameters()['groupId'];
         if (typeof result.username !== "undefined") {
           $(el)
             .after('<tr><td><a href="#" class="ot-share" id="sharehit"><span class="ot-subscribe-text">Share HIT</span></a></td></tr>')
@@ -203,7 +178,6 @@ $(document).ready(function() {
           star(function() {});
         });
       });
-    });
   }
 
   //Add subscribe buttons
