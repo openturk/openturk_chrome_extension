@@ -4,17 +4,13 @@ $(document).ready(function() {
   var openturk_endpoint = 'http://alpha.openturk.com/endpoint/redirect';
   var autoaccept = true;
 
-  function appendFontAwesomeStyle() {
-        if ($('#font-awesome-style').length == 0) {
-            var fontAwesomeLink = document.createElement('link');
-            fontAwesomeLink.rel = 'stylesheet';
-            fontAwesomeLink.id = 'font-awesome-style';
-            fontAwesomeLink.href = chrome.extension.getURL('pages/styles/font-awesome/css/font-awesome.min.css');
-            document.head.appendChild(fontAwesomeLink);
-        }
-    };
-
-  appendFontAwesomeStyle();
+  if ($('#font-awesome-style').length == 0) {
+     var fontAwesomeLink = document.createElement('link');
+     fontAwesomeLink.rel = 'stylesheet';
+     fontAwesomeLink.id = 'font-awesome-style';
+     fontAwesomeLink.href = chrome.extension.getURL('pages/styles/font-awesome/css/font-awesome.min.css');
+     document.head.appendChild(fontAwesomeLink);
+  }
 
   function getWorkerId(callback) {
     chrome.runtime.sendMessage({
@@ -127,7 +123,7 @@ $(document).ready(function() {
     });
   }
 
-  function recommend(callback) {
+  function star(callback) {
 
     getWorkerId(function(workerId) {
       if (typeof workerId === "undefined") {
@@ -148,10 +144,10 @@ $(document).ready(function() {
           reward: reward,
           duration: duration,
           hits_available: hitsAvailable,
-          message: $('#recommend_message').val()
+          message: $('#star_message').val()
         };
         request = $.ajax({
-          url: 'http://alpha.openturk.com/endpoint/recommend',
+          url: 'http://alpha.openturk.com/endpoint/star',
           type: "POST",
           data: data
         }).always(function(data) {
@@ -175,6 +171,41 @@ $(document).ready(function() {
     });
   }
 
+  //Add the ShareHIT Button
+  if($('td[class="capsulelink_bold"]').length > 0) {
+    getGroupId(function(group_id) {
+      var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
+        var el = $('div > table > tbody > tr > td > table > tbody > tr').last();
+        if (typeof result.username !== "undefined") {
+          $(el)
+            .after('<tr><td><a href="#" class="ot-share" id="sharehit"><span class="ot-subscribe-text">Share HIT</span></a></td></tr>')
+            .after('<div id="modal" style="display:none;z-index:10;position:absolute;background-color:#fff;width:350px;padding:15px;text-align:left;border:2px solid #333;opacity:1;-moz-border-radius:6px;-webkit-border-radius:6px;-moz-box-shadow: 0 0 50px #ccc;-webkit-box-shadow: 0 0 50px #ccc;"><h2>Share this HIT for other workers:</h2><textarea id="star_message" style="width: 340px; height: 100px">OpenTurk user ' + (result.username) + ' recommended the following task: ' + group_id + '</textarea><br /><input id="modal_submit" type="submit" value="ok"><input id="modal_cancel" type="submit" value="cancel"></div>');
+        } else {
+          $(el)
+            .after('<tr><td><a href="#" class="ot-share" id="sharehit"><span class="ot-subscribe-text">Share HIT</span></a></td></tr>')
+            .after('<div id="modal" style="display:none;z-index:10;position:absolute;background-color:#fff;width:350px;padding:15px;text-align:left;border:2px solid #333;opacity:1;-moz-border-radius:6px;-webkit-border-radius:6px;-moz-box-shadow: 0 0 50px #ccc;-webkit-box-shadow: 0 0 50px #ccc;"><h2>Please log in on <a href="http://alpha.openturk.com/accounts/login/">OpenTurk.com</a></h2></div>');
+        }
+        $('#sharehit').click(function(e) {
+          e.preventDefault();
+          var left = Math.max($(window).width() - $('#modal').outerWidth(), 0) / 2;
+          $('#modal').css({
+            left: left + $(window).scrollLeft()
+          });
+          $('#modal').toggle();
+        });
+        $('#modal_cancel').click(function(e) {
+          e.preventDefault();
+          $('#modal').toggle();
+        });
+        $('#modal_submit').click(function(e) {
+          e.preventDefault();
+          $('#modal').toggle();
+          star(function() {});
+        });
+      });
+    });
+  }
+
   //Add subscribe buttons
   storage.get('requesters', function(items) {
     var obj = items;
@@ -192,22 +223,22 @@ $(document).ready(function() {
       var requesterId = getUrlParameters('lala?' + requester.attr('href'))['requesterId'];
       var requesterName = requester.html();
       var insertAfterElt = tr.find('td').eq(1);
-      // insertAfterElt.attr('width', 100);
 
       if (!(requesterId in already)) {
-        // insertAfterElt.after('<a class="fb-share" data-id="' + requesterId + '" data-name="' + requesterName + '">subscribe</button></td>');
-        insertAfterElt.after('<a class="ot-share" href="#"><i class="fa fa-cog fa-spin"></i><span class="ot-share-text">subscribe</span></a>');
+        insertAfterElt.after('<a class="ot-subscribe" href="#" data-id="' + requesterId + '" data-name="' + requesterName + '"><span class="ot-subscribe-text">Subscribe</span></a>');
       }
     }
 
     //also add it on HIT page
-    var el = $('td[class="capsulelink_bold"]').next().next();
+    // var el = $('td[class="capsulelink_bold"]').next().next();
+    var el = $('#sharehit').parent();
     requesterId = $('input[name=requesterId').val();
     requesterName = $('input[name=prevRequester').val();
-    // el.after('<td width="100" valign="middle" nowrap>&nbsp;<span class="capsulelink"><a class="subscribe" href="#" data-id="' + requesterId + '" data-name="' + requesterName + '">&#187; Star requester</a></span></td>');
-    el.after('<a class="ot-share" href="#"><span class="ot-share-icon"></span><span class="ot-share-text">share</span></a>');
+    if (!(requesterId in already)) {
+      el.after('<td><a class="ot-subscribe" href="#" data-id="' + requesterId + '" data-name="' + requesterName + '"><span class="ot-subscribe-text">subscribe</span></a></td>');
+    }
     //bind events
-    $('.subscribe').click(function(e) {
+    $('.ot-subscribe').click(function(e) {
       chrome.runtime.sendMessage({
         addRequester: {
           "name": $(this).attr('data-name'),
@@ -215,15 +246,16 @@ $(document).ready(function() {
           "numtask": 0
         }
       }, function(response) {});
-      $('.subscribe[data-id=' + $(this).attr('data-id') + ']').hide();
+      $('.ot-subscribe[data-id=' + $(this).attr('data-id') + ']').hide();
     });
   });
 
   // MANUAL RECOMMENDATION HIT
   // Add Recommendation button
-  $('#searchbar').after('<div class="clear"><button id="recommendation-button" class="btn btn-warning">Recommend me a HIT</button></div>');
+  $('#searchbar').after('<div class="clear"><a id="recommendation-button" href="#" class="ot-schedule"><i id="recommendation-button-i" class="fa fa-heart"></i> Recommend Me a HIT</a></div>');
   $('#recommendation-button').click(function(e) {
     e.preventDefault();
+    $('#recommendation-button-i').addClass( "fa-spinner fa-spin" );
     fetchHit();
   });
   var attempt = 0;
@@ -238,8 +270,9 @@ $(document).ready(function() {
         }
       });
     } else {
-      console.log('max attempts achieved.' +  attempts);
+      console.log('max attempts achieved.' +  attempt);
       $('#recommendation-button').html('0 for now (try later)');
+      $('#recommendation-button-i').removeClass( "fa-spinner fa-spin" );
     }
   }
   // Alerts if needed ...
@@ -253,6 +286,7 @@ $(document).ready(function() {
       attempt ++;
       if (title.length > 0) {
         console.log(url + " - success redirect");
+        $('#recommendation-button-i').removeClass( "fa-spinner fa-spin" );
         callback(url);
       } else {
         console.log(url + " - failure retry");
@@ -260,41 +294,4 @@ $(document).ready(function() {
       }
     });
   }
-
-
-
-  //Add the ShareHIT Button
-  getGroupId(function(group_id) {
-    var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
-      var el = $('td[class="capsulelink_bold"]').next().next();
-      // $('td[class="capsulelink_bold"]').after('<td align="right" valign="middle" width="250" nowrap=""><span class="capsulelink"><a href="/mturk/preview?groupId=2KGW3K4F0OHOS2X5OUBO9L95OFJ10P">Share HIT</a></span></td>');
-      if (typeof result.username !== "undefined") {
-        $(el)
-          .append('<span class="capsulelink"><a href="#" id="sharehit">&#187; Share HIT</a></span>')
-          .after('<div id="modal" style="display:none;z-index:10;position:absolute;background-color:#fff;width:350px;padding:15px;text-align:left;border:2px solid #333;opacity:1;-moz-border-radius:6px;-webkit-border-radius:6px;-moz-box-shadow: 0 0 50px #ccc;-webkit-box-shadow: 0 0 50px #ccc;"><h2>Share this HIT for other workers:</h2><textarea id="recommend_message" style="width: 340px; height: 100px">OpenTurk user ' + (result.username) + ' recommended the following task: ' + group_id + '</textarea><br /><input id="modal_submit" type="submit" value="ok"><input id="modal_cancel" type="submit" value="cancel"></div>');
-      } else {
-        $(el)
-          .append('<span class="capsulelink"><a href="#" id="sharehit">&#187; Share HIT</a></span>')
-          .after('<div id="modal" style="display:none;z-index:10;position:absolute;background-color:#fff;width:350px;padding:15px;text-align:left;border:2px solid #333;opacity:1;-moz-border-radius:6px;-webkit-border-radius:6px;-moz-box-shadow: 0 0 50px #ccc;-webkit-box-shadow: 0 0 50px #ccc;"><h2>Please log in on <a href="http://alpha.openturk.com/accounts/login/">OpenTurk.com</a></h2></div>');
-      }
-      $('#sharehit').click(function(e) {
-        e.preventDefault();
-        var left = Math.max($(window).width() - $('#modal').outerWidth(), 0) / 2;
-        $('#modal').css({
-          left: left + $(window).scrollLeft()
-        });
-        $('#modal').toggle();
-      });
-      $('#modal_cancel').click(function(e) {
-        e.preventDefault();
-        $('#modal').toggle();
-      });
-      $('#modal_submit').click(function(e) {
-        e.preventDefault();
-        $('#modal').toggle();
-        recommend(function() {});
-      });
-    });
-  });
-
 });
