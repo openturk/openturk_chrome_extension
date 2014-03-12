@@ -61,6 +61,26 @@ var OT = {
       var optionsUrl = chrome.extension.getURL('pages/options.html');
       chrome.tabs.query({
         url: optionsUrl,
+        active: true, 
+        currentWindow: true
+      }, function(results) {
+        if (results.length)
+          chrome.tabs.update(results[0].id, {
+            active: true
+          });
+        else
+          chrome.tabs.create({
+            url: optionsUrl
+          });
+      })
+    });
+    $('a#target-projection').click(function(e) {
+      e.preventDefault();
+      var optionsUrl = chrome.extension.getURL('pages/options.html');
+      chrome.tabs.query({
+        url: optionsUrl,
+        active: true, 
+        currentWindow: true
       }, function(results) {
         if (results.length)
           chrome.tabs.update(results[0].id, {
@@ -104,7 +124,6 @@ var OT = {
         console.log('Reached last page');
       }
     });
-
   },
 
   creds: {
@@ -727,6 +746,8 @@ var page_total = 0;
 var subtotal = 0;
 
 function getProjection() {
+  var num = localStorage["Target"];
+  $("#target-projection").html("$" +num/100);
   $.get(DASHBOARD_URL, function(data){
     var $src = $(data);
     var day_name = $src.find("a[href^='"+STATUSDETAIL_BASE_URL+"']:first").text();
