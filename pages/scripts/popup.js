@@ -601,6 +601,8 @@ function openLink(urlto) {
   var mturk_pattern = '*://www.mturk.com/*';
   chrome.tabs.query({
     url: mturk_pattern,
+    active: true, 
+    currentWindow: true
   }, function(results) {
     if (results.length)
       chrome.tabs.update(results[0].id, {
