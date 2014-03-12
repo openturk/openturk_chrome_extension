@@ -615,7 +615,7 @@ function openLink(urlto) {
 }
 
 function getStats() {
-  $.get('https://www.mturk.com/mturk/status', {}, function(data) {
+  $.get('https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/status', {}, function(data) {
     var rows = $(data).find('tr');
     console.log(rows);
 

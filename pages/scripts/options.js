@@ -33,7 +33,7 @@ $(function() {
   });
 
   restoreOptions();
-  $('.sandbox-tabs-radio, .reqnotif-tabs-radio, .termnotif-tabs-radio, #RequestInterval').change(function() {
+  $('.sandbox-tabs-radio, .reqnotif-tabs-radio, .termnotif-tabs-radio, #RequestInterval, #target').change(function() {
     saveOptions();
   });
 });
@@ -115,6 +115,7 @@ function initVariables() {
   radioSandbox = document.getElementsByName("Sandbox");
   radioReq = document.getElementsByName("Reqnotif");
   radioTerm = document.getElementsByName("Termnotif");
+  targetField = $("#target");
 }
 
 function plusRequester(requester) {
@@ -155,6 +156,9 @@ function restoreOptions() {
       radioTerm[i].checked = "true";
     }
   }
+  var num = localStorage["Target"];
+  targetField.val(num/100);
+  $("#price").html("$" +num/100);
 }
 
 
@@ -181,4 +185,7 @@ function saveOptions() {
       break;
     }
   }
+
+  localStorage["Target"]= parseInt(targetField.val()) * 100;
+  $("#price").html("$" + targetField.val());
 }
