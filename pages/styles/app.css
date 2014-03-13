@@ -32,6 +32,14 @@ body {
   padding-top:40px;
 }
 
+.login_partial { 
+  width:500px;
+  height:217px;
+  background:#fffbf1; 
+  text-align:center; 
+  padding-top:40px;
+}
+
 .container {
   width:500px;
   height: 257px;

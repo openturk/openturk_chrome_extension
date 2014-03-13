@@ -184,6 +184,7 @@ var OT = {
     $('#search-container').hide();
     $('#header').show();
     $('#footer').show();
+    $('#openturk_login').hide();
   },
   switch_spinner: function() {
     $('#content').hide();
@@ -195,6 +196,7 @@ var OT = {
     $('#search-container').hide();
     $('#header').show();
     $('#footer').show();
+    $('#openturk_login').hide();
   },
   switch_balance: function() {
     $('#content').hide();
@@ -206,6 +208,7 @@ var OT = {
     $('#search-container').hide();
     $('#header').show();
     $('#footer').show();
+    $('#openturk_login').hide();
   },
   switch_recommendation: function() {
     $('#content').hide();
@@ -217,6 +220,7 @@ var OT = {
     $('#search-container').hide();
     $('#header').show();
     $('#footer').show();
+    $('#openturk_login').hide();
   },
   switch_search: function() {
     $('#content').hide();
@@ -228,6 +232,7 @@ var OT = {
     $('#search-container').show();
     $('#header').show();
     $('#footer').show();
+    $('#openturk_login').hide();
   },
   switch_login: function() {
     $('#content').hide();
@@ -239,6 +244,7 @@ var OT = {
     $('#search-container').hide();
     $('#header').hide();
     $('#footer').hide();
+    $('#openturk_login').hide();
   },
   switch_sign: function() {
     $('#content').hide();
@@ -250,6 +256,19 @@ var OT = {
     $('#search-container').hide();
     $('#header').hide();
     $('#footer').hide();
+    $('#openturk_login').hide();
+  },
+  switch_openturk_login: function() {
+    $('#content').hide();
+    $('#login').hide();
+    $('#sign').hide();
+    $('#spinner').hide();
+    $('#balancer').hide();
+    $('#recommendation').hide();
+    $('#search-container').hide();
+    $('#header').show();
+    $('#footer').show();
+    $('#openturk_login').show();
   },
 
   get_worker_id: function() {
@@ -310,11 +329,12 @@ var OT = {
         //   $("#rec-msg").html('There is currently 0 recommendations.');
         // }
       });
+      OT.switch_recommendation();
     } else {
       // TODO: login button somewhere ..
       $("#rec-msg").html('Login to openturk to get recommendations from your peers');
+      OT.switch_openturk_login();
     }
-    OT.switch_recommendation();
   },
 
   get_openturk_username: function() {
@@ -543,7 +563,7 @@ function loadUIObjects() {
       }
     });
     if (count == 0) {
-      $("#content-msg").html('There is currently no batch from your favorite requesters.<br> Subscribe to more requesters on the dashboard.');
+      $("#content-msg").html('There is currently no batch from your favorite requesters.<br> Subscribe to more requesters on the mturk dashboard.');
     }
     indexRequesters();
     $('a#requester_link').click(function(e) { e.preventDefault(); openLink(this.href)});

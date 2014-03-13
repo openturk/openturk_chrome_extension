@@ -339,11 +339,6 @@ function setBadge(text) {
 // Setting an alarm scheduler
 function scheduleRequest() {
   console.log('scheduleRequest');
-  // var randomness = Math.random() * 2;
-  // var exponent = Math.pow(2, localStorage.requestFailureCount || 0);
-  // var multiplier = Math.max(randomness * exponent, 1);
-  // var delay = Math.min(multiplier * pollIntervalMin, pollIntervalMax);
-  // delay = Math.round(delay);
   delay = parseInt(localStorage['RequestInterval']);
   console.log('Scheduling for (in minutes): ' + delay);
 
@@ -419,9 +414,12 @@ function drawIconAtRotation() {
 function updateUnreadCount() {
   var changed = localStorage.unreadCount != updates;
   localStorage.unreadCount = updates;
-  updateIcon();
-  if (changed)
-    animateFlip();
+  if(updates > 0) {
+    updateIcon();
+    if (changed) {
+      animateFlip();
+    }
+  }
 }
 
 function updateIcon() {
@@ -504,7 +502,7 @@ function onInit() {
     // TODO(mpcomplete): We should be able to remove this now, but leaving it
     // for a little while just to be sure the refresh alarm is working nicely.
     chrome.alarms.create('watchdog', {
-      periodInMinutes: 5
+      periodInMinutes: localStorage['RequestInterval']
     });
   }
 }
