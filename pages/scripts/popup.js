@@ -335,6 +335,7 @@ var OT = {
             OT.recCount = results.count;
             OT.stars = results.stars;
             fetchRecommendation();
+            $('a#recommendation_link').click(function(e) { e.preventDefault(); openLink(this.href)});
           } else {
             $('#recspin').hide();
             $('#recMore').prop('disabled', true).html('No more recommendations');
@@ -484,12 +485,13 @@ function fetchRecommendation() {
   if(recommendation) {
     var group_id = recommendation[0];
     var reward = recommendation[1];
+    var shares = recommendation[2];
     var url = 'https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/preview?groupId=' + group_id;
     // FIXME
     // if (results.stars[i][0] == "undefined" || results.stars[i][1] == "undefined") {
     //   continue;
     // }
-    validateRecommendation(url, reward, function() {
+    validateRecommendation(url, reward, shares, function() {
       if (OT.recAppended < 10) {
         console.log(OT.recChecked + ' ' + OT.recAppended + '  .... Not reached 10');
         if (OT.stars.length > 0) {
@@ -504,26 +506,25 @@ function fetchRecommendation() {
           $('#recspin').hide();
           $('#recMore').prop('disabled', true).html('No more recommendations');
         }
-        $('a#recommendation_link').click(function(e) { e.preventDefault(); openLink(this.href)});
       }
     });
   }
 }
 
-function validateRecommendation(url, reward, callback) {
+function validateRecommendation(url, reward, shares, callback) {
   $.get(url, {}, function(data) {
     var title = $(data).find('.capsulelink_bold');
     console.log(url);
     OT.recChecked++;
     if (title.length > 0) {
       OT.recAppended++;
-      insertRecommendation(data, title, reward); 
+      insertRecommendation(data, title, reward, shares); 
     }
     callback();
   });
 }
 
-function insertRecommendation(data, title, reward) {
+function insertRecommendation(data, title, reward, shares) {
   var feed = document.getElementById("recommendation-feed");
   var gid = $(data).find('input[name=groupId]').val();
   var row = document.createElement("tr");
@@ -537,7 +538,7 @@ function insertRecommendation(data, title, reward) {
 
   var rewardSpan = document.createElement("span");
   rewardSpan.className = "hint";
-  rewardSpan.innerText = "($" + reward + ")";
+  rewardSpan.innerText = "($" + reward + ") [" + shares+ " workers]";
 
   // Make as a like button
   var heart = document.createElement("td");
@@ -652,6 +653,7 @@ function openUrl(url, take_focus) {
 }
 
 function openLink(urlto) {
+  console.log("going ", urlto);
   var mturk_pattern = '*://www.mturk.com/*';
   chrome.tabs.query({
     url: mturk_pattern,
