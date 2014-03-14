@@ -272,33 +272,48 @@ var OT = {
   },
 
   get_worker_id: function() {
-    $.ajax({
-      url: 'https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/dashboard',
-      success: function(result) {
-        var spanText = $(result).filter("table").find("span:contains('Worker ID')").text();
-        var workerIdPattern = /Worker ID: (.*)$/;
-        var workerId = spanText.match(workerIdPattern);
-        if (OT.status.workerId === null || workerId === null) {
-          OT.switch_sign();
-        } else {
-          workerId = workerId[1];
-          OT.status.workerId = workerId;
-          $('#mturkusername').html(workerId);
-          $('#mturkuser').html(workerId);
-          if (localStorage.getItem('validated') == 'true') {
-            OT.switch_content();
-          } else {
-            OT.switch_login();
-          }
-        }
-      },
-      error: function(xhr, status) {
-        console.log('you are not logged in MTURK');
-        localStorage.removeItem('workerId');
-        localStorage.setItem('validated', 'false');
-        OT.switch_sign();
+    if (getCookie('wid') != undefined) {
+      var workerId = getCookie('wid');
+      console.log(workerId);
+      OT.status.workerId = workerId;
+      $('#mturkusername').html(workerId);
+      $('#mturkuser').html(workerId);
+      if (localStorage.getItem('validated') == 'true') {
+        OT.switch_content();
+      } else {
+        OT.switch_login();
       }
-    });
+    } else {
+      // Else, go get the cookie
+      $.ajax({
+        url: 'https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/dashboard',
+        success: function(result) {
+          var spanText = $(result).filter("table").find("span:contains('Worker ID')").text();
+          var workerIdPattern = /Worker ID: (.*)$/;
+          var workerId = spanText.match(workerIdPattern);
+          if (OT.status.workerId === null || workerId === null) {
+            OT.switch_sign();
+          } else {
+            workerId = workerId[1];
+            OT.status.workerId = workerId;
+            $('#mturkusername').html(workerId);
+            $('#mturkuser').html(workerId);
+            setCookie('wid',workerId,1);
+            if (localStorage.getItem('validated') == 'true') {
+              OT.switch_content();
+            } else {
+              OT.switch_login();
+            }
+          }
+        },
+        error: function(xhr, status) {
+          console.log('you are not logged in MTURK');
+          localStorage.removeItem('workerId');
+          localStorage.setItem('validated', 'false');
+          OT.switch_sign();
+        }
+      });
+    }
   },
 
   recCurrentPage: 1,
@@ -657,7 +672,6 @@ function openLink(urlto) {
 function getStats() {
   $.get('https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/status', {}, function(data) {
     var rows = $(data).find('tr');
-    console.log(rows);
 
     var submitted_data = [];
     var pending_data = [];
@@ -837,6 +851,35 @@ function statusdetail_loop(next_URL)
         }
     }
 }
+
+//
+//  Cookie functions copied from http://www.w3schools.com/JS/js_cookies.asp
+//
+
+function setCookie(c_name,value,exdays)
+{
+   var exdate=new Date(); 
+   exdate.setDate(exdate.getDate() + exdays);
+   var c_value=escape(value) + ((exdays==null) ? '' : '; expires='+exdate.toUTCString());
+   document.cookie=c_name + '=' + c_value;
+}
+
+
+function getCookie(c_name)
+{
+   var i,x,y,ARRcookies=document.cookie.split(';');
+   for (i=0;i<ARRcookies.length;i++)
+   {
+      x=ARRcookies[i].substr(0,ARRcookies[i].indexOf('='));
+      y=ARRcookies[i].substr(ARRcookies[i].indexOf('=')+1);
+      x=x.replace(/^\s+|\s+$/g,'');
+      if (x==c_name)
+      {
+         return unescape(y);
+      }
+   }
+}
+
 
 // Launching stuff !
 
