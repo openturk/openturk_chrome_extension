@@ -520,6 +520,9 @@ function onAlarm(alarm) {
 }
 
 function onWatchdog() {
+  if(updates == 0){
+    updateUnreadCount();
+  }
   chrome.alarms.get('refresh', function(alarm) {
     if (alarm) {
       console.log('Refresh alarm exists. Yay.');
