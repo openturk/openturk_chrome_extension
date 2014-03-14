@@ -228,6 +228,17 @@ $(document).ready(function() {
         insertAfterElt.after('<a class="ot-subscribe" href="#" data-id="' + requesterId + '" data-name="' + requesterName + '"><span class="ot-subscribe-text">Subscribe</span></a>');
       }
     }
+    //bind events
+    $('.ot-subscribe').click(function(e) {
+      chrome.runtime.sendMessage({
+        addRequester: {
+          "name": $(this).attr('data-name'),
+          "id": $(this).attr('data-id'),
+          "numtask": 0
+        }
+      }, function(response) {});
+      $('.ot-subscribe[data-id=' + $(this).attr('data-id') + ']').hide();
+    });
   });
 
   // MANUAL RECOMMENDATION HIT

@@ -67,7 +67,7 @@ var OT = {
         if (results.length)
           chrome.tabs.update(results[0].id, {
             active: true
-          });
+          }, function(){window.close();});
         else
           chrome.tabs.create({
             url: optionsUrl
@@ -85,7 +85,7 @@ var OT = {
         if (results.length)
           chrome.tabs.update(results[0].id, {
             active: true
-          });
+         }, function(){window.close();});  
         else
           chrome.tabs.create({
             url: optionsUrl
@@ -640,14 +640,13 @@ function openLink(urlto) {
   var mturk_pattern = '*://www.mturk.com/*';
   chrome.tabs.query({
     url: mturk_pattern,
-    active: true, 
     currentWindow: true
   }, function(results) {
     if (results.length)
       chrome.tabs.update(results[0].id, {
         url: urlto,
         active: true
-      });
+      }, function(){window.close();});
     else
       chrome.tabs.create({
         url: urlto

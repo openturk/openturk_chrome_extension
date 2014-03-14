@@ -414,11 +414,9 @@ function drawIconAtRotation() {
 function updateUnreadCount() {
   var changed = localStorage.unreadCount != updates;
   localStorage.unreadCount = updates;
-  if(updates > 0) {
-    updateIcon();
-    if (changed) {
-      animateFlip();
-    }
+  updateIcon();
+  if (changed) {
+    animateFlip();
   }
 }
 
