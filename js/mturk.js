@@ -99,7 +99,7 @@ $(document).ready(function() {
     });
   }
 
-  function star(callback) {
+  function recommend() {
 
     getWorkerId(function(workerId) {
       if (typeof workerId === "undefined") {
@@ -113,21 +113,22 @@ $(document).ready(function() {
         var hitsAvailable = parseFloat($.trim($("table").find("td:contains('HITs Available')").next().text()));
 
         var duration = $.trim($("table").find("td:contains('Duration')").next().text());
+        var hit_name = $.trim($(".capsulelink_bold").find('div').html());
 
         data = {
           worker_id: workerId,
           group_id: getUrlParameters()['groupId'],
           reward: reward,
           duration: duration,
+          hit_name: hit_name,
           hits_available: hitsAvailable,
-          message: $('#star_message').val()
+          message: $('#recommend_message').val()
         };
+
         request = $.ajax({
           url: 'http://alpha.openturk.com/endpoint/recommend',
           type: "POST",
           data: data
-        }).always(function(data) {
-          callback();
         });
     });
   }
@@ -154,7 +155,7 @@ $(document).ready(function() {
         if (typeof result.username !== "undefined") {
           $(el)
             .after('<tr><td><a href="#" class="ot-share" id="sharehit"><span class="ot-subscribe-text">Share HIT</span></a></td></tr>')
-            .after('<div id="modal" style="display:none;z-index:10;position:absolute;background-color:#fff;width:350px;padding:15px;text-align:left;border:2px solid #333;opacity:1;-moz-border-radius:6px;-webkit-border-radius:6px;-moz-box-shadow: 0 0 50px #ccc;-webkit-box-shadow: 0 0 50px #ccc;"><h2>Share this HIT for other workers:</h2><textarea id="star_message" style="width: 340px; height: 100px">OpenTurk user ' + (result.username) + ' recommended the following task: ' + group_id + '</textarea><br /><input id="modal_submit" type="submit" value="ok"><input id="modal_cancel" type="submit" value="cancel"></div>');
+            .after('<div id="modal" style="display:none;z-index:10;position:absolute;background-color:#fff;width:350px;padding:15px;text-align:left;border:2px solid #333;opacity:1;-moz-border-radius:6px;-webkit-border-radius:6px;-moz-box-shadow: 0 0 50px #ccc;-webkit-box-shadow: 0 0 50px #ccc;"><h2>Share this HIT for other workers:</h2><textarea id="recommend_message" style="width: 340px; height: 100px">OpenTurk user ' + (result.username) + ' recommended the following task: ' + group_id + '</textarea><br /><input id="modal_submit" type="submit" value="ok"><input id="modal_cancel" type="submit" value="cancel"></div>');
         } else {
           $(el)
             .after('<tr><td><a href="#" class="ot-share" id="sharehit"><span class="ot-subscribe-text">Share HIT</span></a></td></tr>')
@@ -175,7 +176,7 @@ $(document).ready(function() {
         $('#modal_submit').click(function(e) {
           e.preventDefault();
           $('#modal').toggle();
-          star(function() {});
+          recommend();
         });
         var requesterId = $('input[name=requesterId').val();
         var requesterName = $('input[name=prevRequester').val();
