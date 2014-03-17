@@ -200,9 +200,7 @@ loadWorkHistory();
 function getNewBatchs() {
   storage.get('requesters', function(items) {
     if (typeof items.requesters !== "undefined") {
-      items.requesters.forEach(function(url) {
-        setTimeout(scrapForBatchs(url), 1000);
-      });
+      timeOut(items.requesters, scrapForBatchs);
     }
   });
 }
@@ -210,11 +208,15 @@ function getNewBatchs() {
 function getNewSearch() {
   storage.get('searchterms', function(items) {
     if (typeof items.searchterms !== "undefined") {
-      items.searchterms.forEach(function(phrase) {
-        setTimeout(scrapForSearch(phrase), 1000);
-      });
+      timeOut(items.searchterms, scrapForSearch);
     }
   });
+}
+
+function timeOut(items, call) {
+  if(items.length > 0) {
+    setTimeout(function(){call(items.pop()); timeOut(items, call);}, 3000);
+  }
 }
 
 function getWorkerStats() {
@@ -237,6 +239,9 @@ function printTasks() {
     });
   }
 }
+
+
+//TODO: pop the term from the notification list.
 
 function scrapForBatchs(url) {
   $.ajax({
@@ -269,6 +274,11 @@ function scrapForBatchs(url) {
           }
           saverequesters();
         }
+      } else {
+        //TODO: add maxrate case ...
+        var id = url['id'];
+        index[id].numtask = 0;
+        saverequesters();
       }
     },
     error: function(xhr, status) {
@@ -308,10 +318,14 @@ function scrapForSearch(phrase) {
           }
           savesearchterms();
         }
+      } else {
+        //TODO: add maxrate case ...
+        modifyCount(phrase['phrase'], 0);
+        savesearchterms();
       }
     },
     error: function(xhr, status) {
-      // do something when it's wrong
+      console.log('something went wrong ! ' + phrase) ;
     }
   });
 }
