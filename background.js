@@ -21,7 +21,7 @@ var rotation = 0;
 var loadingAnimation = new LoadingAnimation();
 
 
-SetInitialOption("RequestInterval", 10);
+SetInitialOption("RequestInterval", 5);
 SetInitialOption("Sandbox", false);
 SetInitialOption("Reqnotif", true);
 SetInitialOption("Termnotif", true);
