@@ -514,7 +514,7 @@ function onInit() {
     // TODO(mpcomplete): We should be able to remove this now, but leaving it
     // for a little while just to be sure the refresh alarm is working nicely.
     chrome.alarms.create('watchdog', {
-      periodInMinutes: parseInt(localStorage['RequestInterval'])
+      periodInMinutes: 5
     });
   }
 }
