@@ -335,7 +335,6 @@ var OT = {
             OT.recCount = results.count;
             OT.stars = results.stars;
             fetchRecommendation();
-            $('a#recommendation_link').click(function(e) { e.preventDefault(); openLink(this.href)});
           } else {
             $('#recspin').hide();
             $('#recMore').prop('disabled', true).html('No more recommendations');
@@ -505,6 +504,7 @@ function fetchRecommendation() {
           console.log('Reached last page');
           $('#recspin').hide();
           $('#recMore').prop('disabled', true).html('No more recommendations');
+          $('a#recommendation_link').click(function(e) { e.preventDefault(); openLink(this.href)});
         }
       }
     });
