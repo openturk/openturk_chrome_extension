@@ -153,6 +153,10 @@ $(document).ready(function() {
     return '<div id="modal" style="display:none;z-index:10;position:absolute;background-color:#fff;width:350px;padding:15px;text-align:left;border:2px solid #333;opacity:1;-moz-border-radius:6px;-webkit-border-radius:6px;-moz-box-shadow: 0 0 50px #ccc;-webkit-box-shadow: 0 0 50px #ccc;">' + content + '</div>';
   };
 
+  var modalTplpublish = function(content) {
+    return '<div id="modalpublish" style="display:none;z-index:10;position:absolute;background-color:#fff;width:350px;padding:15px;text-align:left;border:2px solid #333;opacity:1;-moz-border-radius:6px;-webkit-border-radius:6px;-moz-box-shadow: 0 0 50px #ccc;-webkit-box-shadow: 0 0 50px #ccc;">' + content + '</div>';
+  };
+
   //Add the ShareHIT Button
   if ($('td[class="capsulelink_bold"]').length > 0) {
     var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
@@ -194,8 +198,10 @@ $(document).ready(function() {
             already[obj.requesters[j].id] = true;
           }
         }
-        console.log(el);
+        console.log(requesterId);
+        console.log(already);
         if (!(requesterId in already)) {
+          console.log('should add');
           $("#sharehit").parent().after('<td><a class="ot-subscribe" href="#" data-id="' + requesterId + '" data-name="' + requesterName + '"><span class="ot-subscribe-text">subscribe</span></a></td>');
           //bind events
           $('.ot-subscribe').click(function(e) {
@@ -219,24 +225,24 @@ $(document).ready(function() {
       var group_id = getUrlParameters()['groupId'];
       if (typeof group_id !== "undefined") {
         $hitFinished.parent().next()
-          .append('<hr><h6>If you liked this HIT, share it on Openturk. <a href="#" class="ot-share" id="sharehit"><span class="ot-subscribe-text">Share HIT</span></a></h6>')
-          .append(modalTpl('<h2>Share this HIT for other workers:</h2><textarea id="recommend_message" style="width: 340px; height: 100px">OpenTurk user ' + (result.username) + ' recommended the following task: ' + group_id + '</textarea><br /><input id="modal_submit" type="submit" value="ok"><input id="modal_cancel" type="submit" value="cancel">'));
+          .append('<hr><h6>If you liked this HIT, share it on Openturk. <a href="#" class="ot-share" id="sharedonehit"><span class="ot-subscribe-text">Share HIT</span></a></h6>')
+          .append(modalTplpublish('<h2>Share this HIT for other workers:</h2><textarea id="recommend_message" style="width: 340px; height: 100px">OpenTurk user ' + (result.username) + ' recommended the following task: ' + group_id + '</textarea><br /><input id="modalpublish_submit" type="submit" value="ok"><input id="modalpublish_cancel" type="submit" value="cancel">'));
 
-        $('#sharehit').click(function(e) {
+        $('#sharedonehit').click(function(e) {
           e.preventDefault();
           var left = Math.max($(window).width() - $('#modal').outerWidth(), 0) / 2;
-          $('#modal').css({
+          $('#modalpublish').css({
             left: left + $(window).scrollLeft()
           });
-          $('#modal').toggle();
+          $('#modalpublish').toggle();
         });
-        $('#modal_cancel').click(function(e) {
+        $('#modalpublish_cancel').click(function(e) {
           e.preventDefault();
-          $('#modal').toggle();
+          $('#modalpublish').toggle();
         });
-        $('#modal_submit').click(function(e) {
+        $('#modalpublish_submit').click(function(e) {
           e.preventDefault();
-          $('#modal').toggle();
+          $('#modalpublish').toggle();
           recommend();
         });
       }
