@@ -217,27 +217,29 @@ $(document).ready(function() {
   if ($hitFinished.length > 0) {
     var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
       var group_id = getUrlParameters()['groupId'];
-      $hitFinished
-        .append(shareHitButton)
-        .append(modalTpl('<h2>Share this HIT for other workers:</h2><textarea id="recommend_message" style="width: 340px; height: 100px">OpenTurk user ' + (result.username) + ' recommended the following task: ' + group_id + '</textarea><br /><input id="modal_submit" type="submit" value="ok"><input id="modal_cancel" type="submit" value="cancel">'));
+      if (group_id != "undefined") {
+        $hitFinished
+          .append(shareHitButton)
+          .append(modalTpl('<h2>Share this HIT for other workers:</h2><textarea id="recommend_message" style="width: 340px; height: 100px">OpenTurk user ' + (result.username) + ' recommended the following task: ' + group_id + '</textarea><br /><input id="modal_submit" type="submit" value="ok"><input id="modal_cancel" type="submit" value="cancel">'));
 
-      $('#sharehit').click(function(e) {
-        e.preventDefault();
-        var left = Math.max($(window).width() - $('#modal').outerWidth(), 0) / 2;
-        $('#modal').css({
-          left: left + $(window).scrollLeft()
+        $('#sharehit').click(function(e) {
+          e.preventDefault();
+          var left = Math.max($(window).width() - $('#modal').outerWidth(), 0) / 2;
+          $('#modal').css({
+            left: left + $(window).scrollLeft()
+          });
+          $('#modal').toggle();
         });
-        $('#modal').toggle();
-      });
-      $('#modal_cancel').click(function(e) {
-        e.preventDefault();
-        $('#modal').toggle();
-      });
-      $('#modal_submit').click(function(e) {
-        e.preventDefault();
-        $('#modal').toggle();
-        recommend();
-      });
+        $('#modal_cancel').click(function(e) {
+          e.preventDefault();
+          $('#modal').toggle();
+        });
+        $('#modal_submit').click(function(e) {
+          e.preventDefault();
+          $('#modal').toggle();
+          recommend();
+        });
+      }
     });
   }
 
