@@ -218,8 +218,8 @@ $(document).ready(function() {
     var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
       var group_id = getUrlParameters()['groupId'];
       if (typeof group_id !== "undefined") {
-        $hitFinished
-          .append(shareHitButton)
+        $hitFinished.parent().next()
+          .append('<hr><h6>If you liked this HIT, share it on Openturk. <a href="#" class="ot-share" id="sharehit"><span class="ot-subscribe-text">Share HIT</span></a></h6>')
           .append(modalTpl('<h2>Share this HIT for other workers:</h2><textarea id="recommend_message" style="width: 340px; height: 100px">OpenTurk user ' + (result.username) + ' recommended the following task: ' + group_id + '</textarea><br /><input id="modal_submit" type="submit" value="ok"><input id="modal_cancel" type="submit" value="cancel">'));
 
         $('#sharehit').click(function(e) {
