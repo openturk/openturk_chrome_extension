@@ -21,6 +21,7 @@
       "run_at": "document_end"
    },
    {
+      "all_frames": true,
       "js": [ "pages/scripts/jquery-2.0.3.min.js", "js/paste.js" ],
       "matches": [ "\u003Call_urls>" ],
       "run_at": "document_end"

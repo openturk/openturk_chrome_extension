@@ -198,10 +198,7 @@ $(document).ready(function() {
             already[obj.requesters[j].id] = true;
           }
         }
-        console.log(requesterId);
-        console.log(already);
         if (!(requesterId in already)) {
-          console.log('should add');
           $("#sharehit").parent().after('<td><a class="ot-subscribe" href="#" data-id="' + requesterId + '" data-name="' + requesterName + '"><span class="ot-subscribe-text">subscribe</span></a></td>');
           //bind events
           $('.ot-subscribe').click(function(e) {
@@ -305,7 +302,7 @@ $(document).ready(function() {
         }
       });
     } else {
-      console.log('max attempts achieved.' + attempt);
+      console.log('max attempts reached.' + attempt);
       $('#recommendation-button').html('0 for now (try later)');
       $('#recommendation-button-i').removeClass("fa-spinner fa-spin");
     }

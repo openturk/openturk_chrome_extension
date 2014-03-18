@@ -10,7 +10,9 @@ $(function(){
         chrome.runtime.sendMessage({
           get_worker_id: true
         }, function(response) {
-            editable.val(response.workerId);
+            if(editable) {
+               editable.val(response.workerId);
+            }
         });
       }
 
