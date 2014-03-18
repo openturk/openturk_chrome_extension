@@ -70,7 +70,9 @@ chrome.runtime.onMessage.addListener(
     }
 
     if (request.get_worker_id) {
+      // console.log('id requested');
       if(localStorage.workerId) {
+        // console.log('id requested: ' + localStorage.workerId);
         sendResponse({
           workerId: localStorage.workerId
         });

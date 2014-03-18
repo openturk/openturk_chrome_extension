@@ -580,7 +580,7 @@ function loadUIObjects() {
       }
     });
     if (count == 0) {
-      $("#content-msg").html('There is currently no batch from your favorite requesters.<br> Subscribe to more requesters on the mturk dashboard.');
+      $("#content-msg").html('... Waiting for updates from your favorite requesters.<br> Subscribe to more requesters on the mturk dashboard.');
     }
     indexRequesters();
     $('a#requester_link').click(function(e) { e.preventDefault(); openLink(this.href)});
@@ -599,7 +599,7 @@ function loadUIObjects() {
       }
     });
     if (count == 0) {
-      $("#search-msg").html('There is currently 0 search. <br>Add scheduled search on the options page.');
+      $("#search-msg").html('... Waiting for updates from your saved search terms. <br>Add scheduled searches on the settings page.');
     }
     $('a#search_link').click(function(e) { e.preventDefault(); openLink(this.href)});
   });
