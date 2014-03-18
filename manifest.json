@@ -1,7 +1,7 @@
 {
    "name": "Openturk",
    "description": "Complete Toolbox for Amazon Mechanical Turk",
-   "version": "0.2.4",
+   "version": "0.2.5",
    "permissions": [ "alarms", "tabs", "\u003Call_urls\u003E", "storage", "contextMenus"],
    "manifest_version": 2,
    "background": {
