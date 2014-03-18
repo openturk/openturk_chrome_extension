@@ -68,6 +68,12 @@ chrome.runtime.onMessage.addListener(
       });
     }
 
+    if (request.get_worker_id) {
+      sendResponse({
+        workerId: localStorage.workerId
+      });
+    }
+
     if (request.reset === "resetIcon") {
       console.log('msg: reset the icon');
       updates = 0;
@@ -200,23 +206,29 @@ loadWorkHistory();
 function getNewBatchs() {
   storage.get('requesters', function(items) {
     if (typeof items.requesters !== "undefined") {
-      timeOut(items.requesters, scrapForBatchs);
+      items.requesters.forEach(function(url) {
+        setTimeout(function(){scrapForBatchs(url)}, 1000);
+      });
     }
   });
 }
 
 function getNewSearch() {
+  var temp = {}
   storage.get('searchterms', function(items) {
     if (typeof items.searchterms !== "undefined") {
-      timeOut(items.searchterms, scrapForSearch);
+      console.log('fetched ...');
+      temp = items.searchterms;
+      while(temp) {
+        temp.pop();
+        setTimeout(function(){scrapForSearch(phrase)}, 3000);
+      }
+      items.searchterms.forEach(function(phrase) {
+        console.log('fetched ...' +  phrase['phrase']);
+        setTimeout(function(){scrapForSearch(phrase)}, 3000);
+      });
     }
   });
-}
-
-function timeOut(items, call) {
-  if(items.length > 0) {
-    setTimeout(function(){call(items.pop()); timeOut(items, call);}, 3000);
-  }
 }
 
 function getWorkerStats() {
@@ -239,9 +251,6 @@ function printTasks() {
     });
   }
 }
-
-
-//TODO: pop the term from the notification list.
 
 function scrapForBatchs(url) {
   $.ajax({
@@ -274,11 +283,6 @@ function scrapForBatchs(url) {
           }
           saverequesters();
         }
-      } else {
-        //TODO: add maxrate case ...
-        var id = url['id'];
-        index[id].numtask = 0;
-        saverequesters();
       }
     },
     error: function(xhr, status) {
@@ -319,9 +323,7 @@ function scrapForSearch(phrase) {
           savesearchterms();
         }
       } else {
-        //TODO: add maxrate case ...
-        modifyCount(phrase['phrase'], 0);
-        savesearchterms();
+        console.log('no results came back ! ' +  phrase['phrase']) ;
       }
     },
     error: function(xhr, status) {
@@ -514,7 +516,7 @@ function onInit() {
     // TODO(mpcomplete): We should be able to remove this now, but leaving it
     // for a little while just to be sure the refresh alarm is working nicely.
     chrome.alarms.create('watchdog', {
-      periodInMinutes: 5
+      periodInMinutes: parseInt(localStorage['RequestInterval'])
     });
   }
 }
@@ -583,3 +585,16 @@ if (chrome.runtime && chrome.runtime.onStartup) {
     updateIcon();
   });
 }
+
+
+// function genericOnClick(info, tab) {
+//   console.log("item " + info.menuItemId + " was clicked");
+//   console.log("info: " + JSON.stringify(info));
+//   console.log("tab: " + JSON.stringify(tab));
+// }
+
+// chrome.contextMenus.create({"title": "Dj select", "contexts":['selection'],
+//                                        "onclick": genericOnClick});
+
+CTXMenu.generate();
+

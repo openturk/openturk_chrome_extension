@@ -143,8 +143,6 @@ var OT = {
     },
 
     save: function() {
-      var username = $('#mturkusername').val();
-      localStorage.setItem('workerId', username);
       localStorage.setItem('validated', 'true');
       OT.switch_content();
     },
@@ -278,6 +276,7 @@ var OT = {
       OT.status.workerId = workerId;
       $('#mturkusername').html(workerId);
       $('#mturkuser').html(workerId);
+      localStorage.workerId = workerId;
       if (localStorage.getItem('validated') == 'true') {
         OT.switch_content();
       } else {
@@ -299,6 +298,7 @@ var OT = {
             $('#mturkusername').html(workerId);
             $('#mturkuser').html(workerId);
             setCookie('wid',workerId,1);
+            localStorage.workerId = workerId;
             if (localStorage.getItem('validated') == 'true') {
               OT.switch_content();
             } else {
@@ -882,7 +882,6 @@ function getCookie(c_name)
    }
 }
 
-
 // Launching stuff !
 
 $(document).ready(function() {
@@ -894,4 +893,5 @@ $(document).ready(function() {
   });
   getStats();
   getProjection();
+
 });
