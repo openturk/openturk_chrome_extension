@@ -104,7 +104,7 @@ chrome.runtime.onMessage.addListener(
 function subscribe(req, unsubscribe) {
   data = {
     requester_id: req.id,
-    name: req.id
+    name: req.name
   };
   var endpoint = 'http://alpha.openturk.com/endpoint/' + (unsubscribe === true ? 'unsubscribe' : 'subscribe');
   request = $.ajax({
