@@ -143,6 +143,7 @@ var OT = {
     },
 
     save: function() {
+      localStorage.setItem('workerId', getCookie('wid'));
       localStorage.setItem('validated', 'true');
       OT.switch_content();
     },
@@ -893,5 +894,4 @@ $(document).ready(function() {
   });
   getStats();
   getProjection();
-
 });

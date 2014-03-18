@@ -1,11 +1,11 @@
 {
    "name": "Openturk",
    "description": "Complete Toolbox for Amazon Mechanical Turk",
-   "version": "0.2.2",
+   "version": "0.2.3",
    "permissions": [ "alarms", "tabs", "\u003Call_urls\u003E", "storage", "contextMenus"],
    "manifest_version": 2,
    "background": {
-     "persistent": true,
+     "persistent": false,
      "page": "background.html"
    },
    "browser_action": {
