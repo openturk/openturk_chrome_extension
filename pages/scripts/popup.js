@@ -30,11 +30,11 @@ var OT = {
     $('#recos').click(function(e) {
       e.preventDefault();
       $('#recommendation-feed').empty();
-      $('#recMore').prop('disabled', true).html('load more');
+      $('#recMore').prop('disabled', true).html('Loading ...');
       OT.recChecked = 0;
       OT.recAppended = 0;
       OT.recCount = 0;
-      OT.recCurrentPage = 1 ;
+      OT.recCurrentPage = 0 ;
       OT.switch_spinner();
       OT.get_recommendation();
     });
@@ -115,10 +115,10 @@ var OT = {
 
     $('#recMore').click(function() {
       if (OT.recChecked < OT.recCount) {
-        console.log('Loading next page');
-        OT.recCurrentPage++;
+        console.log('Loading ...');
         OT.recAppended = 0;
         OT.get_recommendation(OT.recCurrentPage);
+        $('#recMore').prop('disabled', true).html('Loading ...');
       } else {
         $('#recMore').prop('disabled', true).html('no more recommendations');
         console.log('Reached last page');
@@ -317,34 +317,36 @@ var OT = {
     }
   },
 
-  recCurrentPage: 1,
+  recCurrentPage: 0, // it's incremented just in time
   recCount: 0,
   recAppended: 0,
   recChecked: 0,
   stars: [],
 
   get_recommendation: function() {
-    // $('#recommendation-feed').empty();
     if (OT.status.openturk_username) {
-      var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/recommendations?page=' + OT.recCurrentPage).done(function(results) {
-        console.log('Loading recommendation page #' + OT.recCurrentPage);
-        if (results.stars) {   
-          console.log('stars returned something: ' + results + ' ' + results.stars.length);     
-          if (results.stars.length > 0) {
-            console.log('stars returned something');
-            $('#recspin').show();
-            OT.recCount = results.count;
-            OT.stars = results.stars;
-            fetchRecommendation();
-          } else {
-            $('#recspin').hide();
-            $('#recMore').prop('disabled', true).html('No more recommendations');
-          }
-        } 
-        // else {
-        //   $("#rec-msg").html('There is currently 0 recommendations.');
-        // }
-      });
+      if(OT.stars && OT.stars.length > 0) {
+        console.log('continue with previous set ..');
+        fetchRecommendation();
+      } else {
+        OT.recCurrentPage++;
+        var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/recommendations?page=' + OT.recCurrentPage).done(function(results) {
+          console.log('Loading recommendation page #' + OT.recCurrentPage);
+          if (results.stars) {   
+            console.log('stars returned something: ' + results + ' ' + results.stars.length);     
+            if (results.stars.length > 0) {
+              console.log('stars returned something');
+              $('#recspin').show();
+              OT.recCount = results.count;
+              OT.stars = results.stars;
+              fetchRecommendation();
+            } else {
+              $('#recspin').hide();
+              $('#recMore').prop('disabled', true).html('No more recommendations');
+            }
+          } 
+        });
+      }
       OT.switch_recommendation();
     } else {
       // TODO: login button somewhere ..
@@ -382,20 +384,6 @@ var OT = {
       $("#total_earnings").html(balance['total_earnings']);
       $("#approval_rate").html(balance['approval_rate']);
       OT.switch_balance();
-      // $('#workdone').sparkline(submitted_hist, {
-      //   type: 'line',
-      //   width: '300px',
-      //   chartRangeMin: 0,
-      //   lineColor: '#fb6b5b'
-      // });
-      // $('#earning').sparkline(earning_hist, {
-      //   type: 'line',
-      //   width: '300px',
-      //   chartRangeMin: 0,
-      //   barColor: '#afcf6f'
-      // });
-      // $('#earning').sparkline(submitted_hist, { type: 'bar', barColor: '#fb6b5b', height: '50px'});
-      // $('#earning').sparkline(earning_hist, { composite: true, fillColor: false, lineColor: 'afcf6f' , width: '100px', height: '50px'});
     });
   },
 
@@ -491,15 +479,15 @@ function fetchRecommendation() {
     // if (results.stars[i][0] == "undefined" || results.stars[i][1] == "undefined") {
     //   continue;
     // }
-    validateRecommendation(url, reward, shares, function() {
+    validateRecommendation(url, reward, shares, function(url) {
+      console.log('DONE CHECKING THIS: ' + url);
+      console.log("[RECAP] checked: " + OT.recChecked + ' added:' + OT.recAppended + '  .... Not reached 10');
       if (OT.recAppended < 10) {
-        console.log(OT.recChecked + ' ' + OT.recAppended + '  .... Not reached 10');
         if (OT.stars.length > 0) {
-          fetchRecommendation();
+          setTimeout(function() {fetchRecommendation();}, 1000);
         }
-        else if (OT.recChecked < OT.recCount) {
+        else if (OT.recChecked <= OT.recCount) {
             console.log('Loading next page');
-            OT.recCurrentPage++;
             OT.get_recommendation(OT.recCurrentPage);
         } else {
           console.log('Reached last page');
@@ -507,6 +495,10 @@ function fetchRecommendation() {
           $('#recMore').prop('disabled', true).html('No more recommendations');
           $('a#recommendation_link').click(function(e) { e.preventDefault(); openLink(this.href)});
         }
+      } else {
+        // load more.
+        $('#recMore').prop('disabled', false).html('Load more >>');
+        $('#recspin').hide();
       }
     });
   }
@@ -521,7 +513,7 @@ function validateRecommendation(url, reward, shares, callback) {
       OT.recAppended++;
       insertRecommendation(data, title, reward, shares); 
     }
-    callback();
+    callback(url);
   });
 }
 
@@ -555,8 +547,6 @@ function insertRecommendation(data, title, reward, shares) {
   row.appendChild(link_col);
   feed.appendChild(row);
   console.log(row);
-  $("#rec-msg").hide();
-  $('a#recommendation_link').click(function(e) { e.preventDefault(); openLink(this.href)});
 }
 
 var obj = {};
