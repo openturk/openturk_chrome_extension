@@ -29,6 +29,7 @@ $(document).ready(function() {
     if (typeof link === 'undefined') {
       link = window.location.href;
     }
+    link = link.split('#')[0];
     var params = [],
       hash;
     var hashes = link.slice(window.location.href.indexOf('?') + 1).split('&');
