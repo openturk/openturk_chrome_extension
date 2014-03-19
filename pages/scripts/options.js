@@ -1,15 +1,12 @@
 $(function() {
-  console.log('Hello world');
 
   var $btnAddSearchTerm = $('#btnAddSearchTerm'),
     $terminput= $('#terminput'),
     $searchterms = $('#searchterms');
 
-  console.log('this is ' + $btnAddSearchTerm);
-
   $btnAddSearchTerm.on('click', function(e) {
     e.preventDefault();
-    console.log($('#searchterms').find('.url').size());
+    // console.log($('#searchterms').find('.url').size());
     if ($('#searchterms').find('.url').size() >= 20) {
       alert('You have reached the maximum allowed scheduled search terms');
     } else {
@@ -29,6 +26,7 @@ $(function() {
   $terminput.keyup(function(event) {
     if (event.keyCode == 13) {
       $btnAddSearchTerm.click();
+      $(this).val('');
     }
   });
 
@@ -36,6 +34,45 @@ $(function() {
   $('.sandbox-tabs-radio, .reqnotif-tabs-radio, .termnotif-tabs-radio, #RequestInterval, #target').change(function() {
     saveOptions();
   });
+
+  // autocomplete
+  $.extend( $.ui.autocomplete.prototype, {
+    _renderItem: function( ul, item ) {
+        var term = this.element.val(),
+            html = item.label.concat(' (', item.id, ')' ).replace( new RegExp(term, "ig"), "<b style='color: red;'>$&</b>" );
+        return $( "<li></li>" )
+            .data( "item.autocomplete", item )
+            .append( $("<a></a>").html(html) )
+            .appendTo( ul );
+    }
+  });
+  $("#requester_list").autocomplete({
+        source: function (request, response) {
+            jQuery.get("http://alpha.openturk.com/endpoint/requester", {
+                query: request.term
+            }, function (data) {
+                response(data);
+            }, 'json');
+        },
+        minLength: 3,
+        select: function(event, ui) {
+          event.preventDefault();
+          if(!index[ui.item.id]){
+            var new_req = {
+                "name": ui.item.label,
+                "id": ui.item.id,
+                "numtask": 0
+              };
+            obj.requesters.push(new_req);
+            plusRequester(new_req);
+            indexRequesters();
+            chrome.runtime.sendMessage({
+              addRequester: new_req
+            }, function(response){});
+          }
+          $(this).val('');
+        }
+    });
 });
 
 var obj = {};
@@ -50,7 +87,7 @@ function savesearchterms() {
   chrome.storage.sync.set({
     'searchterms': obj.searchterms
   }, function() {
-    console.log('opt: reload the searchterms');
+    // console.log('opt: reload the searchterms');
     chrome.extension.sendMessage({
       fetch: "true"
     });
@@ -67,6 +104,7 @@ function initVariables() {
       obj.requesters.push(this);
       plusRequester(this);
     });
+    indexRequesters();
     // Setup the requester delete action
     $('.requester-delete').click(function(e) {
       e.preventDefault();
@@ -118,8 +156,13 @@ function initVariables() {
   targetField = $("#target");
 }
 
+function indexRequesters() {
+  $(obj.requesters).each(function() {
+    index[this.id] = this;
+  });
+}
+
 function plusRequester(requester) {
-  console.log(requester['id']);
   var $li = $('<li><img src="http://www.gravatar.com/avatar.php?gravatar_id=' + md5(requester['id']) + '&r=PG&s=15&default=identicon"/> <span class="requester">' + requester['name'] + '</span> <a href="#" class="requester-delete" data-id="' + requester['id'] + '"> unsubscribe</a></li>');
   $('#requesters').append($li);
 }

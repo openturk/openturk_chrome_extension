@@ -430,7 +430,7 @@ function appendRequester(url) {
   batchs.className = "hint";
 
   if (newbatchs && $.inArray(url['id'], newbatchs) > -1) {
-    batchs.innerText = "(" + url['numtask'] + " batchs) new!";
+    batchs.innerText = "(" + url['numtask'] + " batchs) some new!";
     batchs.className = "hint_new  ";
   } else {
     batchs.innerText = "(" + url['numtask'] + " batchs)";
@@ -463,7 +463,7 @@ function appendSearch(url) {
   batchs.className = "hint";
 
   if (newterms && $.inArray(url['phrase'], newterms) > -1) {
-    batchs.innerText = "(" + url['numtask'] + " batchs) new!";
+    batchs.innerText = "(" + url['numtask'] + " batchs) some new!";
     batchs.className = "hint_new";
   } else {
     batchs.innerText = "(" + url['numtask'] + " batchs)";
@@ -556,6 +556,7 @@ function insertRecommendation(data, title, reward, shares) {
   feed.appendChild(row);
   console.log(row);
   $("#rec-msg").hide();
+  $('a#recommendation_link').click(function(e) { e.preventDefault(); openLink(this.href)});
 }
 
 var obj = {};

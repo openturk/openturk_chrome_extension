@@ -4,7 +4,9 @@
 	<title>Openturk Chrome extension Settings</title>
     <link rel="stylesheet" href="styles/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="styles/app.css">
+   	<link rel="stylesheet" href="styles/jquery-ui-1.10.4.custom.min.css">
     <script src="scripts/jquery-2.0.3.min.js"></script>
+    <script src="scripts/jquery-ui-1.10.4.custom.min.js"></script>	
     <script src="scripts/options.js"></script>
     <script src="scripts/md5.js"></script>
     <style>
@@ -52,10 +54,8 @@
 			<hr class="break">
 
 			<p>:: Edit Favorite Requesters</p>
-			<input id="requester" disabled style="display: none;"/>
-			<button id="add-requester" disabled style="display: none;">
-		        <span class="adding-requester">Add</span>
-		    </button>
+			<input type="text" id="requester_list"></input>
+			<label for="requester_list"> (search by name or id) </label>
 			<ul id="requesters">
 			    <li><img src="images/spin.gif"></li>
 			</ul>
