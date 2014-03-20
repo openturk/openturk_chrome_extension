@@ -3,6 +3,7 @@ var storage = chrome.storage.sync;
 var obj = {};
 var index = {};
 var updates = 0;
+var captcha = false;
 
 // Legacy support for pre-event-pages.
 var oldChromeVersion = !chrome.runtime;
@@ -67,6 +68,12 @@ chrome.runtime.onMessage.addListener(
       sendResponse({
         autoaccept: autoaccept
       });
+    }
+
+    if (request.captcha == true) {
+      captcha = true;
+    } else {
+      captcha = false;
     }
 
     if (request.get_worker_id) {
@@ -235,16 +242,18 @@ function timeOut(items, call) {
 }
 
 function getWorkerStats() {
-  $.get('https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/dashboard', {}, function(data) {
-    var rewards = $(data).find('.reward');
-    var hit_submitted = $(data).filter("table").find("td.metrics-table-first-value:contains('HITs Submitted')").next().text();
-    var balance = {
-      total_earnings: parseInt($(rewards[2]).html().replace('$', '')),
-      hit_submitted: parseInt(hit_submitted)
-    };
-    //obj.workhistory.push(balance);
-    //saveworkhist();
-  });
+  if(!captcha) {
+    $.get('https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/dashboard', {}, function(data) {
+      var rewards = $(data).find('.reward');
+      var hit_submitted = $(data).filter("table").find("td.metrics-table-first-value:contains('HITs Submitted')").next().text();
+      var balance = {
+        total_earnings: parseInt($(rewards[2]).html().replace('$', '')),
+        hit_submitted: parseInt(hit_submitted)
+      };
+      //obj.workhistory.push(balance);
+      //saveworkhist();
+    });
+  }
 }
 
 function printTasks() {
@@ -259,90 +268,94 @@ function printTasks() {
 //TODO: pop the term from the notification list.
 
 function scrapForBatchs(url) {
-  $.ajax({
-    url: 'https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&requesterId=' + url['id'],
-    success: function(result) {
-      var spanText = $(result).find("td:contains('Results')").text();
-      var resPattern = /of (.*) Results/;
-      var res = spanText.match(resPattern);
-      if (res) {
-        res = res[1];
-        var id = url['id'];
-        var old_res = index[id].numtask;
-        console.log('Checking requester : ' + id);
-        if (res != old_res) {
-          index[id].numtask = res;
-          console.log('REQUESTER. Before: ' + old_res + ' After: ' + res);
-          if (res > old_res) {
-            var diff = res - old_res;
-            if (localStorage['Reqnotif'] == "true") {
-              updates = updates + diff;
+  if(!captcha) {
+    $.ajax({
+      url: 'https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&requesterId=' + url['id'],
+      success: function(result) {
+        var spanText = $(result).find("td:contains('Results')").text();
+        var resPattern = /of (.*) Results/;
+        var res = spanText.match(resPattern);
+        if (res) {
+          res = res[1];
+          var id = url['id'];
+          var old_res = index[id].numtask;
+          console.log('Checking requester : ' + id);
+          if (res != old_res) {
+            index[id].numtask = res;
+            console.log('REQUESTER. Before: ' + old_res + ' After: ' + res);
+            if (res > old_res) {
+              var diff = res - old_res;
+              if (localStorage['Reqnotif'] == "true") {
+                updates = updates + diff;
+              }
+              localStorage['batchs'] = true;
+              var diff = res - old_res;
+              console.log('Requester diff: ' + diff);
+              updateUnreadCount();
+              if (!(id in newbatchs)) {
+                newbatchs.push(id);
+              }
+              localStorage['newbatchs'] = JSON.stringify(newbatchs);
             }
-            localStorage['batchs'] = true;
-            var diff = res - old_res;
-            console.log('Requester diff: ' + diff);
-            updateUnreadCount();
-            if (!(id in newbatchs)) {
-              newbatchs.push(id);
-            }
-            localStorage['newbatchs'] = JSON.stringify(newbatchs);
+            saverequesters();
           }
+        } else {
+          //TODO: add maxrate case ...
+          var id = url['id'];
+          index[id].numtask = 0;
           saverequesters();
         }
-      } else {
-        //TODO: add maxrate case ...
-        var id = url['id'];
-        index[id].numtask = 0;
-        saverequesters();
+      },
+      error: function(xhr, status) {
+        // do something when it's wrong
       }
-    },
-    error: function(xhr, status) {
-      // do something when it's wrong
-    }
-  });
+    });
+  }
 }
 
 function scrapForSearch(phrase) {
-  $.ajax({
-    url: 'https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&searchWords=' + phrase['phrase'],
-    success: function(result) {
-      var spanText = $(result).find("td:contains('Results')").text();
-      var resPattern = /of (.*) Results/;
-      console.log('https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&searchWords=' + phrase['phrase']);
-      var res = spanText.match(resPattern);
-      if (res) {
-        res = res[1];
-        var old_res = phrase['numtask'];
-        console.log('Checking phrase : ' + phrase['phrase']);
-        if (res != old_res) {
-          console.log('SEARCH. Before: ' + old_res + ' After: ' + res);
-          phrase['numtask'] = res;
-          modifyCount(phrase['phrase'], res);
-          if (res > old_res) {
-            var diff = res - old_res;
-            if (localStorage['Termnotif'] == "true") {
-              updates = updates + diff;
+  if(!captcha) {
+    $.ajax({
+      url: 'https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&searchWords=' + phrase['phrase'],
+      success: function(result) {
+        var spanText = $(result).find("td:contains('Results')").text();
+        var resPattern = /of (.*) Results/;
+        console.log('https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&searchWords=' + phrase['phrase']);
+        var res = spanText.match(resPattern);
+        if (res) {
+          res = res[1];
+          var old_res = phrase['numtask'];
+          console.log('Checking phrase : ' + phrase['phrase']);
+          if (res != old_res) {
+            console.log('SEARCH. Before: ' + old_res + ' After: ' + res);
+            phrase['numtask'] = res;
+            modifyCount(phrase['phrase'], res);
+            if (res > old_res) {
+              var diff = res - old_res;
+              if (localStorage['Termnotif'] == "true") {
+                updates = updates + diff;
+              }
+              localStorage['search'] = true;
+              console.log('Search diff: ' + diff);
+              updateUnreadCount();
+              if (!(phrase in newterms)) {
+                newterms.push(phrase['phrase']);
+              }
+              localStorage['newterms'] = JSON.stringify(newterms);
             }
-            localStorage['search'] = true;
-            console.log('Search diff: ' + diff);
-            updateUnreadCount();
-            if (!(phrase in newterms)) {
-              newterms.push(phrase['phrase']);
-            }
-            localStorage['newterms'] = JSON.stringify(newterms);
+            savesearchterms();
           }
-          savesearchterms();
+        } else {
+           //TODO: add maxrate case ...
+           modifyCount(phrase['phrase'], 0);
+           savesearchterms();
         }
-      } else {
-         //TODO: add maxrate case ...
-         modifyCount(phrase['phrase'], 0);
-         savesearchterms();
+      },
+      error: function(xhr, status) {
+        console.log('something went wrong ! ' + phrase) ;
       }
-    },
-    error: function(xhr, status) {
-      console.log('something went wrong ! ' + phrase) ;
-    }
-  });
+    });
+  }
 }
 
 // chrome.storage.onChanged.addListener(function(changes, namespace) {

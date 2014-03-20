@@ -1,4 +1,13 @@
 $(document).ready(function() {
+
+  // The captcha is here !
+  // if ($('#captcha').length == 1 || $('#userCaptchaResponse').length ==1) {
+  if ($('#sharehit').length == 1) {
+    chrome.runtime.sendMessage({ captcha: true }, function() {});
+  } else {
+    chrome.runtime.sendMessage({ captcha: false }, function() {});
+  }
+
   var storage = chrome.storage.sync;
   var form = '';
   var openturk_endpoint = 'http://alpha.openturk.com/endpoint/redirect';
