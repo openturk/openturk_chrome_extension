@@ -71,8 +71,10 @@ chrome.runtime.onMessage.addListener(
     }
 
     if (request.captcha == true) {
+      console.log('[msg]captach detected!');
       captcha = true;
     } else {
+      console.log('[msg]captach clear!');
       captcha = false;
     }
 
@@ -253,7 +255,7 @@ function getWorkerStats() {
       //obj.workhistory.push(balance);
       //saveworkhist();
     });
-  }
+  } else {      console.log('[msg]captach detected! stats request blocked');}
 }
 
 function printTasks() {
@@ -310,7 +312,7 @@ function scrapForBatchs(url) {
         // do something when it's wrong
       }
     });
-  }
+  } else {      console.log('[msg]captach detected! requester request blocked');}
 }
 
 function scrapForSearch(phrase) {
@@ -355,7 +357,7 @@ function scrapForSearch(phrase) {
         console.log('something went wrong ! ' + phrase) ;
       }
     });
-  }
+  } else {      console.log('[msg]captach on! keyword request blocked');}
 }
 
 // chrome.storage.onChanged.addListener(function(changes, namespace) {
