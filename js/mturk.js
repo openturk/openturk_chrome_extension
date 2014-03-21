@@ -43,7 +43,7 @@ $(document).ready(function() {
       link = link.split('#')[0];
       var params = [],
         hash;
-      var hashes = link.slice(window.location.href.indexOf('?') + 1).split('&');
+      var hashes = link.slice(link.indexOf('?') + 1).split('&');
       for (var i = 0; i < hashes.length; i++) {
         hash = hashes[i].split('=');
         params.push(hash[0]);
@@ -138,6 +138,7 @@ $(document).ready(function() {
           reward: reward,
           duration: duration,
           hit_name: hit_name,
+          requester_id: $('input[name=requesterId]').val(),
           hits_available: hitsAvailable,
           message: $('#recommend_message').val()
         };
