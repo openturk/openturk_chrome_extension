@@ -1,12 +1,15 @@
 $(document).ready(function() {
 
   // The captcha is here !
-  if ($('#captcha').length == 1 || $('#userCaptchaResponse').length ==1) {
-  // if ($('#sharehit').length == 1) {
+  if ($("[name='captcha']").length ==1 || $("[name='userCaptchaResponse']").length ==1) {
     chrome.runtime.sendMessage({ captcha: true }, function() {});
   } else {
     chrome.runtime.sendMessage({ captcha: false }, function() {});
   }
+  //     console.log('cap');
+  // } else {
+  //   console.log('clear');
+  // }
 
   var storage = chrome.storage.sync;
   var form = '';
