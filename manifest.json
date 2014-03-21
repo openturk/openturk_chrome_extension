@@ -1,7 +1,7 @@
 {
    "name": "Openturk",
-   "description": "Complete Toolbox for Amazon Mechanical Turk",
-   "version": "0.2.9",
+   "description": "The Definitive Toolbox for Amazon Mechanical Turk",
+   "version": "0.3.0",
    "permissions": [ "alarms", "tabs", "\u003Call_urls\u003E", "storage", "contextMenus"],
    "manifest_version": 2,
    "background": {
@@ -14,7 +14,6 @@
       "default_popup": "pages/popup.html"
    },
    "content_scripts": [ {
-      // "all_frames": true,
       "js": ["pages/scripts/jquery-2.0.3.min.js", "js/mturk.js"],
       "matches": [ "http://*.mturk.com/*", "https://*.mturk.com/*"  ],
       "css": [ "pages/styles/content.css"],

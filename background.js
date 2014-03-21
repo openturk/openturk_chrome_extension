@@ -36,6 +36,26 @@ localStorage['newterms'] = [];
 var newbatchs = [];
 var newterms = [];
 
+// setting the worker for the first time if possible.
+$.ajax({
+  url: 'https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/dashboard',
+  success: function(result) {
+    var spanText = $(result).filter("table").find("span:contains('Worker ID')").text();
+    var workerIdPattern = /Worker ID: (.*)$/;
+    var workerId = spanText.match(workerIdPattern);
+    if (workerId.length){
+      localStorage.workerId  = workerId[1];
+    } else {
+      localStorage.workerId  = 'Not yet set'; 
+    }
+  },
+  error: function(xhr, status) {
+    localStorage.workerId  = 'Not yet set'; 
+  }
+});
+
+// Functions !
+
 function SetInitialOption(key, value) {
   if (localStorage[key] == null) {
     localStorage[key] = value;
