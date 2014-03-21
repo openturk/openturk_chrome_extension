@@ -1,7 +1,7 @@
 $(function() {
 
   var $btnAddSearchTerm = $('#btnAddSearchTerm'),
-    $terminput= $('#terminput'),
+    $terminput = $('#terminput'),
     $searchterms = $('#searchterms');
 
   $btnAddSearchTerm.on('click', function(e) {
@@ -13,9 +13,9 @@ $(function() {
       var term = $('#terminput').val().trim();
       if (term) {
         var termobj = {
-            'phrase': term,
-            'numtask': 0
-          }
+          'phrase': term,
+          'numtask': 0
+        };
         obj.searchterms.push(termobj);
         plusSearchTerm(term);
         savesearchterms();
@@ -36,43 +36,43 @@ $(function() {
   });
 
   // autocomplete
-  $.extend( $.ui.autocomplete.prototype, {
-    _renderItem: function( ul, item ) {
-        var term = this.element.val(),
-            html = item.label.concat(' (', item.id, ')' ).replace( new RegExp(term, "ig"), "<b style='color: red;'>$&</b>" );
-        return $( "<li></li>" )
-            .data( "item.autocomplete", item )
-            .append( $("<a></a>").html(html) )
-            .appendTo( ul );
+  $.extend($.ui.autocomplete.prototype, {
+    _renderItem: function(ul, item) {
+      var term = this.element.val(),
+        html = item.label.concat(' (', item.id, ')').replace(new RegExp(term, "ig"), "<b style='color: red;'>$&</b>");
+      return $("<li></li>")
+        .data("item.autocomplete", item)
+        .append($("<a></a>").html(html))
+        .appendTo(ul);
     }
   });
   $("#requester_list").autocomplete({
-        source: function (request, response) {
-            jQuery.get("http://alpha.openturk.com/endpoint/requester", {
-                query: request.term
-            }, function (data) {
-                response(data);
-            }, 'json');
-        },
-        minLength: 3,
-        select: function(event, ui) {
-          event.preventDefault();
-          if(!index[ui.item.id]){
-            var new_req = {
-                "name": ui.item.label,
-                "id": ui.item.id,
-                "numtask": 0
-              };
-            obj.requesters.push(new_req);
-            plusRequester(new_req);
-            indexRequesters();
-            chrome.runtime.sendMessage({
-              addRequester: new_req
-            }, function(response){});
-          }
-          $(this).val('');
-        }
-    });
+    source: function(request, response) {
+      jQuery.get("http://alpha.openturk.com/endpoint/requester", {
+        query: request.term
+      }, function(data) {
+        response(data);
+      }, 'json');
+    },
+    minLength: 3,
+    select: function(event, ui) {
+      event.preventDefault();
+      if (!index[ui.item.id]) {
+        var new_req = {
+          "name": ui.item.label,
+          "id": ui.item.id,
+          "numtask": 0
+        };
+        obj.requesters.push(new_req);
+        plusRequester(new_req);
+        indexRequesters();
+        chrome.runtime.sendMessage({
+          addRequester: new_req
+        }, function(response) {});
+      }
+      $(this).val('');
+    }
+  });
 });
 
 var obj = {};
@@ -144,7 +144,7 @@ function initVariables() {
       });
       savesearchterms();
       var $a = $(this),
-      $li = $a.closest('li');
+        $li = $a.closest('li');
       $li.remove();
     });
   });
@@ -163,8 +163,21 @@ function indexRequesters() {
 }
 
 function plusRequester(requester) {
-  var $li = $('<li><img src="http://www.gravatar.com/avatar.php?gravatar_id=' + md5(requester['id']) + '&r=PG&s=15&default=identicon"/> <span class="requester">' + requester['name'] + '</span> <a href="#" class="requester-delete" data-id="' + requester['id'] + '"> unsubscribe</a></li>');
+  var rid = requester['id'];
+  var $li = $('<li><img src="http://www.gravatar.com/avatar.php?gravatar_id=' + md5(rid) + '&r=PG&s=15&default=identicon"/> <span class="requester">' + requester['name'] + '</span> <a href="#" class="requester-delete" data-id="' + rid + '"> unsubscribe</a></li>');
+  var TOEndpoint = 'http://api.turkopticon-devel.differenceengines.com/multi-attrs.php?ids=' + rid;
   $('#requesters').append($li);
+  var jqxhr = $.getJSON(TOEndpoint).done(function(data) {
+    var d = [];
+    if (data[rid]) {
+      d[0] = data[rid].attrs['comm'];
+      d[1] = data[rid].attrs['pay'];
+      d[2] = data[rid].attrs['fair'];
+      d[3] = data[rid].attrs['fast'];
+
+      $('#requesters').append('<img src="http://data.istrack.in/turkopticon.php?data=' + d.join(',') + '">');
+    }
+  });
 }
 
 function plusSearchTerm(phrase) {
@@ -182,26 +195,26 @@ function restoreOptions() {
     }
   }
   var sandboxTabs = localStorage["Sandbox"];
-  for (var i = 0; i < radioSandbox.length; i++) {
+  for (i = 0; i < radioSandbox.length; i++) {
     if (radioSandbox[i].value == sandboxTabs) {
       radioSandbox[i].checked = "true";
     }
   }
   var reqTabs = localStorage["Reqnotif"];
-  for (var i = 0; i < radioReq.length; i++) {
+  for (i = 0; i < radioReq.length; i++) {
     if (radioReq[i].value == reqTabs) {
       radioReq[i].checked = "true";
     }
   }
   var termTabs = localStorage["Termnotif"];
-  for (var i = 0; i < radioTerm.length; i++) {
+  for (i = 0; i < radioTerm.length; i++) {
     if (radioTerm[i].value == termTabs) {
       radioTerm[i].checked = "true";
     }
   }
   var num = localStorage["Target"];
-  targetField.val(num/100);
-  $("#price").html("$" +num/100);
+  targetField.val(num / 100);
+  $("#price").html("$" + num / 100);
 }
 
 
@@ -216,19 +229,19 @@ function saveOptions() {
       break;
     }
   }
-  for (var i = 0; i < radioReq.length; i++) {
+  for (i = 0; i < radioReq.length; i++) {
     if (radioReq[i].checked) {
       localStorage["Reqnotif"] = radioReq[i].value;
       break;
     }
   }
-  for (var i = 0; i < radioTerm.length; i++) {
+  for (i = 0; i < radioTerm.length; i++) {
     if (radioTerm[i].checked) {
       localStorage["Termnotif"] = radioTerm[i].value;
       break;
     }
   }
 
-  localStorage["Target"]= parseInt(targetField.val()) * 100;
+  localStorage["Target"] = parseInt(targetField.val()) * 100;
   $("#price").html("$" + targetField.val());
 }

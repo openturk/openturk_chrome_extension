@@ -34,7 +34,7 @@ var OT = {
       OT.recChecked = 0;
       OT.recAppended = 0;
       OT.recCount = 0;
-      OT.recCurrentPage = 0 ;
+      OT.recCurrentPage = 0;
       OT.switch_spinner();
       OT.get_recommendation();
     });
@@ -61,36 +61,40 @@ var OT = {
       var optionsUrl = chrome.extension.getURL('pages/options.html');
       chrome.tabs.query({
         url: optionsUrl,
-        active: true, 
+        active: true,
         currentWindow: true
       }, function(results) {
         if (results.length)
           chrome.tabs.update(results[0].id, {
             active: true
-          }, function(){window.close();});
+          }, function() {
+            window.close();
+          });
         else
           chrome.tabs.create({
             url: optionsUrl
           });
-      })
+      });
     });
     $('a#target-projection').click(function(e) {
       e.preventDefault();
       var optionsUrl = chrome.extension.getURL('pages/options.html');
       chrome.tabs.query({
         url: optionsUrl,
-        active: true, 
+        active: true,
         currentWindow: true
       }, function(results) {
         if (results.length)
           chrome.tabs.update(results[0].id, {
             active: true
-         }, function(){window.close();});  
+          }, function() {
+            window.close();
+          });
         else
           chrome.tabs.create({
             url: optionsUrl
           });
-      })
+      });
     });
     $('.hint a').click(function(e) {
       e.preventDefault();
@@ -271,7 +275,7 @@ var OT = {
   },
 
   get_worker_id: function() {
-    if (getCookie('wid') != undefined) {
+    if (getCookie('wid') !== undefined) {
       var workerId = getCookie('wid');
       console.log(workerId);
       OT.status.workerId = workerId;
@@ -298,7 +302,7 @@ var OT = {
             OT.status.workerId = workerId;
             $('#mturkusername').html(workerId);
             $('#mturkuser').html(workerId);
-            setCookie('wid',workerId,1);
+            setCookie('wid', workerId, 1);
             localStorage.workerId = workerId;
             if (localStorage.getItem('validated') == 'true') {
               OT.switch_content();
@@ -325,15 +329,15 @@ var OT = {
 
   get_recommendation: function() {
     if (OT.status.openturk_username) {
-      if(OT.stars && OT.stars.length > 0) {
+      if (OT.stars && OT.stars.length > 0) {
         console.log('continue with previous set ..');
         fetchRecommendation();
       } else {
         OT.recCurrentPage++;
         var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/recommendations?page=' + OT.recCurrentPage).done(function(results) {
           console.log('Loading recommendation page #' + OT.recCurrentPage);
-          if (results.stars) {   
-            console.log('stars returned something: ' + results + ' ' + results.stars.length);     
+          if (results.stars) {
+            console.log('stars returned something: ' + results + ' ' + results.stars.length);
             if (results.stars.length > 0) {
               console.log('stars returned something');
               $('#recspin').show();
@@ -344,7 +348,7 @@ var OT = {
               $('#recspin').hide();
               $('#recMore').prop('disabled', true).html('No more recommendations');
             }
-          } 
+          }
         });
       }
       OT.switch_recommendation();
@@ -470,7 +474,7 @@ function fetchRecommendation() {
   console.log(OT.stars);
   console.log(OT.stars.length);
   var recommendation = OT.stars.pop();
-  if(recommendation) {
+  if (recommendation) {
     var group_id = recommendation[0];
     var reward = recommendation[1];
     var shares = recommendation[2];
@@ -484,16 +488,20 @@ function fetchRecommendation() {
       console.log("[RECAP] checked: " + OT.recChecked + ' added:' + OT.recAppended + '  .... Not reached 10');
       if (OT.recAppended < 10) {
         if (OT.stars.length > 0) {
-          setTimeout(function() {fetchRecommendation();}, 1000);
-        }
-        else if (OT.recChecked <= OT.recCount) {
-            console.log('Loading next page');
-            OT.get_recommendation(OT.recCurrentPage);
+          setTimeout(function() {
+            fetchRecommendation();
+          }, 1000);
+        } else if (OT.recChecked <= OT.recCount) {
+          console.log('Loading next page');
+          OT.get_recommendation(OT.recCurrentPage);
         } else {
           console.log('Reached last page');
           $('#recspin').hide();
           $('#recMore').prop('disabled', true).html('No more recommendations');
-          $('a#recommendation_link').click(function(e) { e.preventDefault(); openLink(this.href)});
+          $('a#recommendation_link').click(function(e) {
+            e.preventDefault();
+            openLink(this.href);
+          });
         }
       } else {
         // load more.
@@ -511,7 +519,7 @@ function validateRecommendation(url, reward, shares, callback) {
     OT.recChecked++;
     if (title.length > 0) {
       OT.recAppended++;
-      insertRecommendation(data, title, reward, shares); 
+      insertRecommendation(data, title, reward, shares);
     }
     callback(url);
   });
@@ -524,14 +532,14 @@ function insertRecommendation(data, title, reward, shares) {
   row.className = "link";
   var link_col = document.createElement("td");
   var task = document.createElement("a");
-  task.id = "recommendation_link"
+  task.id = "recommendation_link";
   task.className = "link_title";
   task.innerText = $(title).text().trim();
   task.href = 'https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/preview?groupId=' + gid;
 
   var rewardSpan = document.createElement("span");
   rewardSpan.className = "hint";
-  rewardSpan.innerText = "($" + reward + ") [" + shares+ " workers]";
+  rewardSpan.innerText = "($" + reward + ") [" + shares + " workers]";
 
   // Make as a like button
   var heart = document.createElement("td");
@@ -570,11 +578,14 @@ function loadUIObjects() {
         $("#content-msg").hide();
       }
     });
-    if (count == 0) {
+    if (count === 0) {
       $("#content-msg").html('... Waiting for updates from your favorite requesters.<br> Subscribe to more requesters on the mturk dashboard.');
     }
     indexRequesters();
-    $('a#requester_link').click(function(e) { e.preventDefault(); openLink(this.href)});
+    $('a#requester_link').click(function(e) {
+      e.preventDefault();
+      openLink(this.href);
+    });
   });
   chrome.storage.sync.get('searchterms', function(items) {
     if (!obj.searchterms) {
@@ -589,10 +600,13 @@ function loadUIObjects() {
         $("#search-msg").hide();
       }
     });
-    if (count == 0) {
+    if (count === 0) {
       $("#search-msg").html('... Waiting for updates from your saved search terms. <br>Add scheduled searches on the settings page.');
     }
-    $('a#search_link').click(function(e) { e.preventDefault(); openLink(this.href)});
+    $('a#search_link').click(function(e) {
+      e.preventDefault();
+      openLink(this.href);
+    });
   });
   // chrome.storage.sync.get('workhistory', function(items) {
   //   if (!obj.workhistory) {
@@ -655,7 +669,9 @@ function openLink(urlto) {
       chrome.tabs.update(results[0].id, {
         url: urlto,
         active: true
-      }, function(){window.close();});
+      }, function() {
+        window.close();
+      });
     else
       chrome.tabs.create({
         url: urlto
@@ -687,10 +703,10 @@ function getStats() {
       }
 
       var odd = row.className.match('odd');
-      var submitted = parseInt(row.cells[1].innerHTML);
-      var approved = parseInt(row.cells[2].innerHTML);
-      var rejected = parseInt(row.cells[3].innerHTML);
-      var pending = parseInt(row.cells[4].innerHTML);
+      var submitted = parseInt(row.cells[1].innerHTML, 10);
+      var approved = parseInt(row.cells[2].innerHTML, 10);
+      var rejected = parseInt(row.cells[3].innerHTML, 10);
+      var pending = parseInt(row.cells[4].innerHTML, 10);
       var earnings = row.cells[5].childNodes[0].innerHTML;
       var dollars = parseFloat(earnings.slice(earnings.search('\\$') + 1));
       var date = row.cells[0].childNodes[1].href.substr(53);
@@ -706,57 +722,53 @@ function getStats() {
     }
 
     var data = {
-      labels : dates_data,
-      datasets : [
-        {
-          fillColor : "rgba(220,220,220,0.5)",
-          strokeColor : "rgba(220,220,220,1)",
-          pointColor : "rgba(220,220,220,1)",
-          pointStrokeColor : "#fff",
-          data : submitted_data,
-          title : 'Submitted'
-        },
-        {
-          fillColor : "rgba(163, 191, 63,0.5)",
-          strokeColor : "rgba(163, 191, 63,1)",
-          pointColor : "rgba(163, 191, 63,1)",
-          pointStrokeColor : "#fff",
-          data : approved_data,
-          title : 'Approved'
-        },
-        {
-          fillColor : "rgba(237, 124, 60, 0.5)",
-          strokeColor : "rgba(237, 124, 60, 1)",
-          pointColor : "rgba(237, 124, 60, 1)",
-          pointStrokeColor : "#fff",
-          data : pending_data ,
-          title : 'Pendings'
-        }
-      ]
-    }
+      labels: dates_data,
+      datasets: [{
+        fillColor: "rgba(220,220,220,0.5)",
+        strokeColor: "rgba(220,220,220,1)",
+        pointColor: "rgba(220,220,220,1)",
+        pointStrokeColor: "#fff",
+        data: submitted_data,
+        title: 'Submitted'
+      }, {
+        fillColor: "rgba(163, 191, 63,0.5)",
+        strokeColor: "rgba(163, 191, 63,1)",
+        pointColor: "rgba(163, 191, 63,1)",
+        pointStrokeColor: "#fff",
+        data: approved_data,
+        title: 'Approved'
+      }, {
+        fillColor: "rgba(237, 124, 60, 0.5)",
+        strokeColor: "rgba(237, 124, 60, 1)",
+        pointColor: "rgba(237, 124, 60, 1)",
+        pointStrokeColor: "#fff",
+        data: pending_data,
+        title: 'Pendings'
+      }]
+    };
     var options = {
-        animation: false
+      animation: false
     };
     var ctx = document.getElementById("stats").getContext("2d");
-    var myNewChart = new Chart(ctx).Line(data,options);
+    var myNewChart = new Chart(ctx).Line(data, options);
     legend(document.getElementById("lineLegend"), data);
   });
 }
 
 function legend(parent, data) {
-    parent.className = 'legend';
-    var datas = data.hasOwnProperty('datasets') ? data.datasets : data;
+  parent.className = 'legend';
+  var datas = data.hasOwnProperty('datasets') ? data.datasets : data;
 
-    datas.forEach(function(d) {
-        var title = document.createElement('span');
-        title.className = 'title';
-        title.style.borderColor = d.hasOwnProperty('strokeColor') ? d.strokeColor : d.color;
-        title.style.borderStyle = 'solid';
-        parent.appendChild(title);
+  datas.forEach(function(d) {
+    var title = document.createElement('span');
+    title.className = 'title';
+    title.style.borderColor = d.hasOwnProperty('strokeColor') ? d.strokeColor : d.color;
+    title.style.borderStyle = 'solid';
+    parent.appendChild(title);
 
-        var text = document.createTextNode(d.title);
-        title.appendChild(text);
-    });
+    var text = document.createTextNode(d.title);
+    title.appendChild(text);
+  });
 }
 
 
@@ -764,9 +776,9 @@ function legend(parent, data) {
 var STATUSDETAIL_DELAY = 500;
 var MPRE_DELAY = 2000;
 var STD_DAILY = localStorage['Target'];
-var DASHBOARD_URL = 'https://'+ ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") +'/mturk/dashboard';
+var DASHBOARD_URL = 'https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/dashboard';
 var STATUSDETAIL_BASE_URL = '/mturk/statusdetail?encodedDate=';
-var STATUSDETAIL_FULL_URL = 'https://'+ ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/statusdetail?encodedDate=';
+var STATUSDETAIL_FULL_URL = 'https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/statusdetail?encodedDate=';
 var page_num = 0;
 var date_header = '';
 var page_total = 0;
@@ -774,104 +786,90 @@ var subtotal = 0;
 
 function getProjection() {
   var num = localStorage["Target"];
-  $("#target-projection").html("$" +num/100);
-  $.get(DASHBOARD_URL, function(data){
+  $("#target-projection").html("$" + num / 100);
+  $.get(DASHBOARD_URL, function(data) {
     var $src = $(data);
-    var day_name = $src.find("a[href^='"+STATUSDETAIL_BASE_URL+"']:first").text();
-    if (day_name == 'Today')
-    {
-        var last_date_worked = $src.find("a[href^='"+STATUSDETAIL_BASE_URL+"']:first").attr('href').replace(STATUSDETAIL_BASE_URL, '');
-        var date_URLs = STATUSDETAIL_FULL_URL + last_date_worked + '&sortType=All&pageNumber=' + page_num;
-        statusdetail_loop(date_URLs);
-    }
-    else
-    {
-        $('#projection').html( '$0.00' );
+    var day_name = $src.find("a[href^='" + STATUSDETAIL_BASE_URL + "']:first").text();
+    if (day_name == 'Today') {
+      var last_date_worked = $src.find("a[href^='" + STATUSDETAIL_BASE_URL + "']:first").attr('href').replace(STATUSDETAIL_BASE_URL, '');
+      var date_URLs = STATUSDETAIL_FULL_URL + last_date_worked + '&sortType=All&pageNumber=' + page_num;
+      statusdetail_loop(date_URLs);
+    } else {
+      $('#projection').html('$0.00');
     }
   });
 }
 
-function scrape($src)
-{
-    var $reward = $src.find("td[class='statusdetailAmountColumnValue']");
-    var $approval = $src.find("td[class='statusdetailStatusColumnValue']");
-    page_total = 0;
+function scrape($src) {
+  var $reward = $src.find("td[class='statusdetailAmountColumnValue']");
+  var $approval = $src.find("td[class='statusdetailStatusColumnValue']");
+  page_total = 0;
 
-    for (var j = 0; j < $reward.length; j++)
-    {
-        // I"m worried if I use parseFloat errors will accumulate because floats are inexact
-        var reward = parseInt($reward.eq(j).text().replace(/[^0-9]/g,''), 10);
-        var approval = $approval.eq(j).text();
+  for (var j = 0; j < $reward.length; j++) {
+    // I"m worried if I use parseFloat errors will accumulate because floats are inexact
+    var reward = parseInt($reward.eq(j).text().replace(/[^0-9]/g, ''), 10);
+    var approval = $approval.eq(j).text();
 
-        if (approval != 'Rejected')
-        {
-            page_total += reward;
-        }                
+    if (approval != 'Rejected') {
+      page_total += reward;
     }
+  }
 }
 
-function statusdetail_loop(next_URL)
-{
-    if (next_URL.length != 0)
-    {
-        $.get(next_URL, function(data)
-        {
-            var $src = $(data);
-            var maxpagerate = $src.find("td[class='error_title']:contains('You have exceeded the maximum allowed page request rate for this website.')");
-            if (maxpagerate.length == 0)
-            {
-                subtotal += page_total;
-                date_header = $src.find("td[class='white_text_14_bold']:contains('HITs You Worked On For')").clone().children().remove().end().text().trim();
-                page_num++;
-                scrape($src);
+function statusdetail_loop(next_URL) {
+  if (next_URL.length !== 0) {
+    $.get(next_URL, function(data) {
+      var $src = $(data);
+      var maxpagerate = $src.find("td[class='error_title']:contains('You have exceeded the maximum allowed page request rate for this website.')");
+      if (maxpagerate.length === 0) {
+        subtotal += page_total;
+        date_header = $src.find("td[class='white_text_14_bold']:contains('HITs You Worked On For')").clone().children().remove().end().text().trim();
+        page_num++;
+        scrape($src);
 
-                $next_URL = $src.find("a[href^='/mturk/statusdetail']:contains('Next')");
-                next_URL = ($next_URL.length != 0) ? (STATUSDETAIL_FULL_URL + $next_URL.attr('href')) : '';
+        $next_URL = $src.find("a[href^='/mturk/statusdetail']:contains('Next')");
+        next_URL = ($next_URL.length !== 0) ? (STATUSDETAIL_FULL_URL + $next_URL.attr('href')) : '';
 
-                setTimeout(function(){statusdetail_loop(next_URL);}, STATUSDETAIL_DELAY);
-            }
-            else
-            {
-                setTimeout(function(){statusdetail_loop(next_URL);}, MPRE_DELAY);
-            }
-        });
+        setTimeout(function() {
+          statusdetail_loop(next_URL);
+        }, STATUSDETAIL_DELAY);
+      } else {
+        setTimeout(function() {
+          statusdetail_loop(next_URL);
+        }, MPRE_DELAY);
+      }
+    });
+  } else {
+    $('#projection').html('$' + ((subtotal + page_total) / 100).toFixed(2));
+    if ((subtotal + page_total) >= STD_DAILY) {
+      $('#projection').removeClass("red");
+      $('#projection').addClass("green");
     }
-    else
-    {
-        $('#projection').html( '$' + ((subtotal+page_total)/100).toFixed(2) );
-        if ((subtotal+page_total) >= STD_DAILY) {
-          $('#projection').removeClass("red");
-          $('#projection').addClass("green");
-        }
-    }
+  }
 }
 
 //
 //  Cookie functions copied from http://www.w3schools.com/JS/js_cookies.asp
 //
 
-function setCookie(c_name,value,exdays)
-{
-   var exdate=new Date(); 
-   exdate.setDate(exdate.getDate() + exdays);
-   var c_value=escape(value) + ((exdays==null) ? '' : '; expires='+exdate.toUTCString());
-   document.cookie=c_name + '=' + c_value;
+function setCookie(c_name, value, exdays) {
+  var exdate = new Date();
+  exdate.setDate(exdate.getDate() + exdays);
+  var c_value = escape(value) + ((exdays == null) ? '' : '; expires=' + exdate.toUTCString());
+  document.cookie = c_name + '=' + c_value;
 }
 
 
-function getCookie(c_name)
-{
-   var i,x,y,ARRcookies=document.cookie.split(';');
-   for (i=0;i<ARRcookies.length;i++)
-   {
-      x=ARRcookies[i].substr(0,ARRcookies[i].indexOf('='));
-      y=ARRcookies[i].substr(ARRcookies[i].indexOf('=')+1);
-      x=x.replace(/^\s+|\s+$/g,'');
-      if (x==c_name)
-      {
-         return unescape(y);
-      }
-   }
+function getCookie(c_name) {
+  var i, x, y, ARRcookies = document.cookie.split(';');
+  for (i = 0; i < ARRcookies.length; i++) {
+    x = ARRcookies[i].substr(0, ARRcookies[i].indexOf('='));
+    y = ARRcookies[i].substr(ARRcookies[i].indexOf('=') + 1);
+    x = x.replace(/^\s+|\s+$/g, '');
+    if (x == c_name) {
+      return unescape(y);
+    }
+  }
 }
 
 // Launching stuff !
