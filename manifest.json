@@ -14,7 +14,7 @@
       "default_popup": "pages/popup.html"
    },
    "content_scripts": [ {
-      "all_frames": true,
+      // "all_frames": true,
       "js": ["pages/scripts/jquery-2.0.3.min.js", "js/mturk.js"],
       "matches": [ "http://*.mturk.com/*", "https://*.mturk.com/*"  ],
       "css": [ "pages/styles/content.css"],

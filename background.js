@@ -71,10 +71,10 @@ chrome.runtime.onMessage.addListener(
     }
 
     if (request.captcha == true) {
-      console.log('[msg]captach detected!');
+      console.log('[msg]captcha detected!');
       captcha = true;
     } else {
-      console.log('[msg]captach clear!');
+      console.log('[msg]captcha clear!');
       captcha = false;
     }
 
@@ -312,7 +312,9 @@ function scrapForBatchs(url) {
         // do something when it's wrong
       }
     });
-  } else {      console.log('[msg]captach detected! requester request blocked');}
+  } else {      
+    console.log('[msg]captach detected! requester request blocked');
+  }
 }
 
 function scrapForSearch(phrase) {
