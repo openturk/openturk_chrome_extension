@@ -199,3 +199,27 @@ margin-left: -10px;
 * html .ui-autocomplete {
     height: 250px;
 }
+
+
+// Turkopticon:
+.tob, .tom { list-style-type: none; padding-left: 0; }
+.tob { float: right; margin-right: 5px;}
+.tob > .tom { width: 320px; display: none; position: absolute; background-color: #ebe5ff; border: 1px solid #aaa; padding: 5px; }
+.tob:hover > .tom { display: block; }
+.tob > span { border: 1px solid #9db9d1; background-color: #ebe5ff; color: #00c; padding: 3px 3px 1px 3px; }
+.del { float: right; margin-right: 5px; color: #f33; }
+.tob > span.toc { color: #f33; }
+@media screen and (-webkit-min-device-pixel-ratio:0) { \n .tob { margin-top: -5px; } \n}\n"
+.attr { font-family: Monaco, Courier, monospace; color: #333; }
+.bar { font-size: 0.6em; }
+.gray_link { margin-bottom: 15px; }
+.gray_link a { color: #666; }
+
+
+#requesters > li {
+  height: 22px;
+}
+
+input[type="range"] {
+width: 310px;
+}

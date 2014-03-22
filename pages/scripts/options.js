@@ -162,26 +162,32 @@ function indexRequesters() {
   });
 }
 
+var TURKOPTICON_BASE = "http://turkopticon.differenceengines.com/";
+
 function plusRequester(requester) {
   var rid = requester['id'];
-  var $li = $('<li><img src="http://www.gravatar.com/avatar.php?gravatar_id=' + md5(rid) + '&r=PG&s=15&default=identicon"/> <span class="requester">' + requester['name'] + '</span> <a href="#" class="requester-delete" data-id="' + rid + '"> unsubscribe</a></li>');
+  var rname = requester['name'];
+  var $li = $('<li><img src="http://www.gravatar.com/avatar.php?gravatar_id=' + md5(rid) + '&r=PG&s=15&default=identicon"></img> <span class="requester">' + requester['name'] + '</span> <a href="#" class="requester-delete" data-id="' + rid + '"> <span class="del fa fa-trash-o"></span></a></li>');
   var TOEndpoint = 'http://api.turkopticon-devel.differenceengines.com/multi-attrs.php?ids=' + rid;
   $('#requesters').append($li);
-  var jqxhr = $.getJSON(TOEndpoint).done(function(data) {
+  var jqxhr = $.getJSON(TOEndpoint).done(rid,rname, function(data) {
     var d = [];
     if (data[rid]) {
+      console.log(d[rid]);
       d[0] = data[rid].attrs['comm'];
       d[1] = data[rid].attrs['pay'];
       d[2] = data[rid].attrs['fair'];
       d[3] = data[rid].attrs['fast'];
 
-      $('#requesters').append('<img src="http://data.istrack.in/turkopticon.php?data=' + d.join(',') + '">');
+      $("[data-id='"+rid+"']").after('<div class="tob"><span class="toc">&#9660;</span> <span class="tom"><img src="http://data.istrack.in/turkopticon.php?data=' + d.join(',') + '"><a href="' + TURKOPTICON_BASE + 'report?requester[amzn_id]=' + rid + '&requester[amzn_name]=' + rname + '">Report your experience with this requester &raquo;</a><br>Scores based on <a href="' + TURKOPTICON_BASE + rid +'"> these reviews</a></span></div>');
+    } else {
+      $("[data-id='"+rid+"']").after('<div class="tob"><span>&#9660;</span> <span class="tom"><a href="' + TURKOPTICON_BASE + 'report?requester[amzn_id]=' + rid + '&requester[amzn_name]=' + rname + '">Report your experience with this requester &raquo;</a></span></div>');
     }
   });
 }
 
 function plusSearchTerm(phrase) {
-  var $li = $('<li><span class="url">' + phrase.replace('+', ' ') + '</span> <a href="#" class="term-delete" data-name="' + phrase + '"> delete</a></li>');
+  var $li = $('<li><span class="url">' + phrase.replace('+', ' ') + '</span> <a href="#" class="term-delete" data-name="' + phrase + '"> <span class="del fa fa-trash-o"></span></a></li>');
   $('#searchterms').append($li);
 }
 

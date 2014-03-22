@@ -422,7 +422,7 @@ function appendRequester(url) {
   batchs.className = "hint";
 
   if (newbatchs && $.inArray(url['id'], newbatchs) > -1) {
-    batchs.innerText = "(" + url['numtask'] + " batchs) some new!";
+    batchs.innerText = "(" + url['numtask'] + " batchs) updated!";
     batchs.className = "hint_new  ";
   } else {
     batchs.innerText = "(" + url['numtask'] + " batchs)";
