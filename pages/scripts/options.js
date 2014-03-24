@@ -1,5 +1,7 @@
 $(function() {
 
+  $('.inlinebar').sparkline([100,localStorage.TGP,100,75,50], {type: 'bullet',width: '215', performanceColor:'green',  tooltipContainer: 'moneytooltip'});
+
   var $btnAddSearchTerm = $('#btnAddSearchTerm'),
     $terminput = $('#terminput'),
     $searchterms = $('#searchterms');
@@ -187,7 +189,7 @@ function plusRequester(requester) {
 }
 
 function plusSearchTerm(phrase) {
-  var $li = $('<li><span class="url">' + phrase.replace('+', ' ') + '</span> <a href="#" class="term-delete" data-name="' + phrase + '"> <span class="del fa fa-trash-o"></span></a></li>');
+  var $li = $('<li><span class="url">' + phrase.replace('+', ' ') + '</span> <a href="#" class="term-delete" data-name="' + phrase + '" title="delete"> <span class="del fa fa-trash-o" alt="delete"></span></a></li>');
   $('#searchterms').append($li);
 }
 

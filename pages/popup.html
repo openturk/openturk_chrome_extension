@@ -9,10 +9,14 @@
     <script src="scripts/md5.js"></script>
     <script src="scripts/popup.js"></script>
     <script src="scripts/Chart.js"></script>
+    <script src="scripts/jquery.sparkline.min.js"></script>
     <base target="_blank" />
 </head>
 <body>
     <div id="header">
+        <div class="left">
+            <span class="inlinebar"></span>
+        </div>
         <div class="right">
             <a id="favorites" href="">Favorites<span id="favorites-notification" class="badge up bg-info" style="display: none;">!</span></a>
             <span>|</span>
@@ -63,8 +67,10 @@
                 <td><b>Projected Earning for Today:</b></td>
                 <td> <label class="red" id="projection">$0.00</label></td>
                 <td> / <a href="#" id="target-projection" style="color: green;  ">$10.00</a><sup style="color: green; font-size: 8;">target</sup></td>
+                <td> <span class="inlinebar2"></span></td>
             </tr>
         </table>
+        <p><span class="inlinebar"></span></p>
         <hr class="break">
         <table class="feed" cellspacing="3" cellpadding="0">
             <tr class="link">
@@ -133,6 +139,9 @@
         </form>
     </div>
     <div id="footer">
+        <div class="left">
+            <span class="moneytooltip"></span>
+        </div>
         <div class="right">
             <a href="http://alpha.openturk.com" id="ot-connect">Connect to openturk |</a> <a href="https://chrome.google.com/webstore/support/kjcgglnfcafddffbkghnlhongefbcjil#feature" id="suggestion">Feedback?</a> | <a href="#" id="logout">Logout</a>
         </div>

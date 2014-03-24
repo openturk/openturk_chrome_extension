@@ -27,6 +27,7 @@ SetInitialOption("Sandbox", false);
 SetInitialOption("Reqnotif", true);
 SetInitialOption("Termnotif", true);
 SetInitialOption("Target", 1000);
+SetInitialOption("TGP", 0);
 localStorage.setItem('workerId', 'undefined');
 
 localStorage['batchs'] = false;

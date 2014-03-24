@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="styles/jquery-ui-1.10.4.custom.min.css">
   <script src="scripts/jquery-2.0.3.min.js"></script>
   <script src="scripts/jquery-ui-1.10.4.custom.min.js"></script>
+  <script src="scripts/jquery.sparkline.min.js"></script>
+
   <script src="scripts/options.js"></script>
   <script src="scripts/md5.js"></script>
   <style>
@@ -50,7 +52,10 @@
       <hr class="break">
 
       <p>:: Daily Target Earning = <label id="price" style="color: red;"></label></p>
-      $1 <input type="range" name="target" id="target" min="1" max="1000"> $1000
+      $1 <input type="range" name="target" id="target" min="1" max="300"> $300
+      <p>Daily progress bar: 
+      <span class="inlinebar"></span>
+      </p>
       <hr class="break">
 
       <p>:: Edit Favorite Requesters</p>

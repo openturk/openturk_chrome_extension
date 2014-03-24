@@ -342,7 +342,7 @@ var OT = {
               console.log('stars returned something');
               $('#recspin').show();
               OT.recCount = results.count;
-              OT.stars = results.stars;
+              OT.stars = results.stars.reverse();
               fetchRecommendation();
             } else {
               $('#recspin').hide();
@@ -388,6 +388,7 @@ var OT = {
       $("#total_earnings").html(balance['total_earnings']);
       $("#approval_rate").html(balance['approval_rate']);
       OT.switch_balance();
+      $('.inlinebar2').sparkline([100,TGP,100,75,50], {type: 'bullet',width: '50', performanceColor:'green', tooltipContainer: 'body.moneytooltip'});
     });
   },
 
@@ -562,6 +563,7 @@ var index = {};
 
 var earning_hist = [];
 var submitted_hist = [];
+var TGP = 0;
 
 function loadUIObjects() {
   chrome.storage.sync.get('requesters', function(items) {
@@ -841,6 +843,7 @@ function statusdetail_loop(next_URL) {
     });
   } else {
     $('#projection').html('$' + ((subtotal + page_total) / 100).toFixed(2));
+    TGP = (((subtotal + page_total) / 100).toFixed(2) )/ STD_DAILY;
     if ((subtotal + page_total) >= STD_DAILY) {
       $('#projection').removeClass("red");
       $('#projection').addClass("green");
@@ -883,4 +886,9 @@ $(document).ready(function() {
   });
   getStats();
   getProjection();
+  localStorage.TGP = TGP;
+  $('.inlinebar').sparkline([100,TGP,100,75,50], {type: 'bullet',width: '50', performanceColor:'green',  tooltipContainer: 'moneytooltip'});
+  $('.inlinebar').bind('sparklineClick', function(ev) {
+      $('#balance').click();
+  });
 });
