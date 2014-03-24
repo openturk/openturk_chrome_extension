@@ -467,7 +467,7 @@ function animateFlip() {
     setTimeout(animateFlip, animationSpeed);
   } else {
     rotation = 0;
-    updateIcon();
+    // updateIcon();
   }
 }
 
@@ -516,7 +516,7 @@ function updateIcon(money) {
     chrome.browserAction.setIcon({
       path: "icons/icon19.png"
     });
-    if(money) {
+    if(money && money == true) {
       chrome.browserAction.setBadgeBackgroundColor({ color: "#00FF00"});
       chrome.browserAction.setBadgeText({
       text: "$"
