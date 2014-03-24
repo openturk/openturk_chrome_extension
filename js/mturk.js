@@ -89,7 +89,7 @@ $(document).ready(function() {
       window.top.location.href = redirectUrl;
     }
 
-    function log(callback, hitSkipped, batchSkipped) {
+    function log(callback, hitSkipped, batchSkipped, autoAccepted) {
       getWorkerId(function(workerId) {
         if (typeof workerId === "undefined") {
           workerId = "undefined";
@@ -117,6 +117,7 @@ $(document).ready(function() {
           hit_name: hit_name,
           requester_id: $('input[name=requesterId]').val(),
           hits_available: hitsAvailable,
+          autoaccepted: autoAccepted,
           hit_skipped: hitSkipped,
           batch_skipped: batchSkipped
         };
@@ -178,14 +179,14 @@ $(document).ready(function() {
           getAutoAccept(function(autoaccept) {
             log(function() {
               $('input[name="/accept"]').trigger("click", true);
-            }, false, false);
+            }, false, false, false);
           });
         }
       });
 
       //if autoacceptenabled=true
       if ($('input[name="/accept"]').length === 0 && getUrlParameters()['autoAcceptEnabled'] == 'true') {
-        log(function() {}, false, false);
+        log(function() {}, false, false, true);
       }
     }
 
