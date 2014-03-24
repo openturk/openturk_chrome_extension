@@ -74,7 +74,7 @@ $(document).ready(function() {
         type: "POST",
         data: form.serialize()
       }).done(function() {
-        log(redirect, false, false);
+        log(redirect, false, false, false);
       });
     }
 
@@ -89,15 +89,35 @@ $(document).ready(function() {
       window.top.location.href = redirectUrl;
     }
 
-    function log(callback, hitSkipped, batchSkipped) {
+    function log(callback, hitSkipped, batchSkipped, autoAccepted) {
       getWorkerId(function(workerId) {
         if (typeof workerId === "undefined") {
           workerId = "undefined";
         }
 
+        var rewardText = $("table").find("td:contains('Reward')").next().text();
+        var rewardPattern = /([0-9\.]*) per/;
+        var reward = parseFloat(rewardText.match(rewardPattern)[1]);
+
+        var hitsAvailable = parseFloat($.trim($("table").find("td:contains('HITs Available')").next().text()));
+
+        var duration = $.trim($("table").find("td:contains('Duration')").next().text());
+        var hit_name = $.trim($(".capsulelink_bold").find('div').html());
+
+        var groupId = getUrlParameters()['groupId'];
+        if (!groupId) {
+          groupId = $('input[name="groupId"]').val();
+        }
+
         data = {
           worker_id: workerId,
-          group_id: getUrlParameters()['groupId'],
+          group_id: groupId,
+          reward: reward,
+          duration: duration,
+          hit_name: hit_name,
+          requester_id: $('input[name=requesterId]').val(),
+          hits_available: hitsAvailable,
+          autoaccepted: autoAccepted,
           hit_skipped: hitSkipped,
           batch_skipped: batchSkipped
         };
@@ -159,10 +179,15 @@ $(document).ready(function() {
           getAutoAccept(function(autoaccept) {
             log(function() {
               $('input[name="/accept"]').trigger("click", true);
-            }, false, false);
+            }, false, false, false);
           });
         }
       });
+
+      //if autoacceptenabled=true
+      if ($('input[name="/accept"]').length === 0 && getUrlParameters()['autoAcceptEnabled'] == 'true') {
+        log(function() {}, false, false, true);
+      }
     }
 
     var shareHitButton = '<tr><td><a href="#" class="ot-share" id="sharehit"><span class="ot-subscribe-text">Share HIT</span></a></td></tr>';
