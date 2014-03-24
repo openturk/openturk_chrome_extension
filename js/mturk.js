@@ -74,7 +74,7 @@ $(document).ready(function() {
         type: "POST",
         data: form.serialize()
       }).done(function() {
-        log(redirect, false, false);
+        log(redirect, false, false, false);
       });
     }
 
