@@ -182,6 +182,11 @@ $(document).ready(function() {
           });
         }
       });
+
+      //if autoacceptenabled=true
+      if ($('input[name="/accept"]').length === 0 && getUrlParameters()['autoAcceptEnabled'] == 'true') {
+        log(function() {}, false, false);
+      }
     }
 
     var shareHitButton = '<tr><td><a href="#" class="ot-share" id="sharehit"><span class="ot-subscribe-text">Share HIT</span></a></td></tr>';
