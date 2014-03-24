@@ -15,6 +15,9 @@ var OT = {
     if (localStorage['search'] == "true") {
       $('#search-notification').show();
     }
+    if (localStorage['money'] == "true") {
+      $('#money-notification').show();
+    }
 
     OT.get_worker_id();
     OT.get_openturk_username();
@@ -388,7 +391,7 @@ var OT = {
       $("#total_earnings").html(balance['total_earnings']);
       $("#approval_rate").html(balance['approval_rate']);
       OT.switch_balance();
-      $('.inlinebar2').sparkline([100,localStorage.TGP,100,75,50], {type: 'bullet',width: '50', performanceColor:'green', tooltipContainer: 'body.moneytooltip'});
+      $('.inlinebar2').sparkline([100,localStorage.TGP,100,66,33], {type: 'bullet',width: '50', performanceColor:'green', tooltipContainer: 'body.moneytooltip'});
     });
   },
 
@@ -885,7 +888,7 @@ $(document).ready(function() {
   });
   getStats();
   getProjection();
-  $('.inlinebar').sparkline([100,localStorage.TGP,100,75,50], {type: 'bullet',width: '50', performanceColor:'green',  tooltipContainer: 'moneytooltip'});
+  $('.inlinebar').sparkline([100,localStorage.TGP,100,66,33], {type: 'bullet',width: '50', performanceColor:'green',  tooltipContainer: 'moneytooltip'});
   $('.inlinebar').bind('sparklineClick', function(ev) {
       $('#balance').click();
   });

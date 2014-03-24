@@ -1,6 +1,6 @@
 $(function() {
 
-  $('.inlinebar').sparkline([100,localStorage.TGP,100,75,50], {type: 'bullet',width: '215', performanceColor:'green',  tooltipContainer: 'moneytooltip'});
+  $('.inlinebar').sparkline([100,localStorage.TGP,100,66,33], {type: 'bullet',width: '215', performanceColor:'green',  tooltipContainer: 'moneytooltip'});
 
   var $btnAddSearchTerm = $('#btnAddSearchTerm'),
     $terminput = $('#terminput'),

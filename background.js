@@ -28,10 +28,13 @@ SetInitialOption("Reqnotif", true);
 SetInitialOption("Termnotif", true);
 SetInitialOption("Target", 1000);
 SetInitialOption("TGP", 0);
+SetInitialOption("earnings", 0);
+
 localStorage.setItem('workerId', 'undefined');
 
 localStorage['batchs'] = false;
 localStorage['search'] = false;
+localStorage['money'] =  false;
 localStorage['newbatchs'] = [];
 localStorage['newterms'] = [];
 var newbatchs = [];
@@ -118,6 +121,7 @@ chrome.runtime.onMessage.addListener(
       updates = 0;
       localStorage['batchs'] = false;
       localStorage['search'] = false;
+      localStorage['money'] = false;
       localStorage['newbatchs'] = [];
       localStorage['newterms'] = [];
       newbatchs = [];
@@ -268,13 +272,19 @@ function getWorkerStats() {
   if(!captcha) {
     $.get('https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/dashboard', {}, function(data) {
       var rewards = $(data).find('.reward');
-      var hit_submitted = $(data).filter("table").find("td.metrics-table-first-value:contains('HITs Submitted')").next().text();
-      var balance = {
-        total_earnings: parseInt($(rewards[2]).html().replace('$', '')),
-        hit_submitted: parseInt(hit_submitted)
-      };
-      //obj.workhistory.push(balance);
-      //saveworkhist();
+      // var hit_submitted = $(data).filter("table").find("td.metrics-table-first-value:contains('HITs Submitted')").next().text();
+      // var balance = {
+      //   total_earnings: parseInt($(rewards[2]).html().replace('$', '')),
+      //   hit_submitted: parseInt(hit_submitted)
+      // };
+      // //obj.workhistory.push(balance);
+      // //saveworkhist();
+      var total_earnings = parseInt($(rewards[2]).html().replace('$', ''));
+      if(total_earnings > localStorage.earnings) {
+        updateNewMoney();
+        localStorage.earnings = total_earnings;
+        localStorage.money = true;
+      }
     });
   } else {      console.log('[msg]captach detected! stats request blocked');}
 }
@@ -441,7 +451,6 @@ function startRequest(params) {
   stopLoadingAnimation();
   getNewBatchs();
   getNewSearch();
-  //getWorkerStats();
 }
 
 // Beautyfication
@@ -487,7 +496,12 @@ function updateUnreadCount() {
   }
 }
 
-function updateIcon() {
+function updateNewMoney() {
+  updateIcon(true);
+  animateFlip();
+}
+
+function updateIcon(money) {
   if (!localStorage.hasOwnProperty('unreadCount')) {
     chrome.browserAction.setIcon({
       path: "icons/browser_action_disabled.png"
@@ -502,12 +516,19 @@ function updateIcon() {
     chrome.browserAction.setIcon({
       path: "icons/icon19.png"
     });
-    chrome.browserAction.setBadgeBackgroundColor({
-      color: [208, 0, 24, 255]
-    });
-    chrome.browserAction.setBadgeText({
-      text: localStorage.unreadCount != "0" ? "new" : ""
-    });
+    if(money) {
+      chrome.browserAction.setBadgeBackgroundColor({ color: "#00FF00"});
+      chrome.browserAction.setBadgeText({
+      text: "$"
+      });
+    } else {
+      chrome.browserAction.setBadgeBackgroundColor({
+        color: [208, 0, 24, 255]
+      });
+      chrome.browserAction.setBadgeText({
+        text: localStorage.unreadCount != "0" ? "new" : ""
+      });
+    }
   }
 }
 
@@ -587,6 +608,7 @@ function onAlarm(alarm) {
 }
 
 function onWatchdog() {
+  getWorkerStats();
   if(updates == 0){
     updateUnreadCount();
   }
