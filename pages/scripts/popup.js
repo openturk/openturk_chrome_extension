@@ -800,6 +800,7 @@ function getProjection() {
       statusdetail_loop(date_URLs);
     } else {
       $('#projection').html('$0.00');
+      localStorage.TGP = 0;
     }
   });
 }
