@@ -624,6 +624,9 @@ function onWatchdog() {
       });
     }
   });
+  // re-init the random watchdog
+  var delay = Math.floor(Math.random()*6)+1;
+  chrome.alarms.create('watchdog', {periodInMinutes: delay});
 }
 
 if (oldChromeVersion) {
