@@ -32,6 +32,8 @@
       <br>
       <p>:: Check for updates every</p>
       <select id="RequestInterval" name="RequestInterval">
+        <option value="1">1 minute</option>
+        <option value="3">3 minutes</option>
         <option value="5">5 minutes</option>
         <option value="10">10 minutes</option>
         <option value="15">15 minutes</option>
@@ -39,7 +41,9 @@
         <option value="30">30 minutes</option>
         <option value="45">45 minutes</option>
         <option value="60">1 hour</option>
-      </select><br/><br>
+      </select>
+      <span id="rateWarning">Checking more frequently than every 5 minutes may cause "Exceed rate" errors.</span>
+      <br><br>
       <hr class="break">
       <p>:: Activate notifications for new requesters</p>
       <input type="radio" class='reqnotif-tabs-radio' name="Reqnotif" value="true"> Yes
@@ -53,7 +57,7 @@
 
       <p>:: Daily Target Earning = <label id="price" style="color: red;"></label></p>
       $1 <input type="range" name="target" id="target" min="1" max="300"> $300
-      <p>Daily progress bar: 
+      <p>Daily progress bar:
       <span class="inlinebar"></span>
       </p>
       <hr class="break">
