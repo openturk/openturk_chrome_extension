@@ -89,50 +89,53 @@ $(document).ready(function() {
       window.top.location.href = redirectUrl;
     }
 
+    // Log accepted task to the server
     function log(callback, hitSkipped, batchSkipped, autoAccepted) {
-      getWorkerId(function(workerId) {
-        if (typeof workerId === "undefined") {
-          workerId = "undefined";
-        }
+      if (localStorage['Logging']) {
+        getWorkerId(function(workerId) {
+          if (typeof workerId === "undefined") {
+            workerId = "undefined";
+          }
 
-        var rewardText = $("table").find("td:contains('Reward')").next().text();
-        var rewardPattern = /([0-9\.]*) per/;
-        var reward = parseFloat(rewardText.match(rewardPattern)[1]);
+          var rewardText = $("table").find("td:contains('Reward')").next().text();
+          var rewardPattern = /([0-9\.]*) per/;
+          var reward = parseFloat(rewardText.match(rewardPattern)[1]);
 
-        var hitsAvailable = parseFloat($.trim($("table").find("td:contains('HITs Available')").next().text()));
+          var hitsAvailable = parseFloat($.trim($("table").find("td:contains('HITs Available')").next().text()));
 
-        var duration = $.trim($("table").find("td:contains('Duration')").next().text());
-        var hit_name = $.trim($(".capsulelink_bold").find('div').html());
+          var duration = $.trim($("table").find("td:contains('Duration')").next().text());
+          var hit_name = $.trim($(".capsulelink_bold").find('div').html());
 
-        var groupId = getUrlParameters()['groupId'];
-        if (!groupId) {
-          groupId = $('input[name="groupId"]').val();
-        }
+          var groupId = getUrlParameters()['groupId'];
+          if (!groupId) {
+            groupId = $('input[name="groupId"]').val();
+          }
 
-        data = {
-          worker_id: workerId,
-          group_id: groupId,
-          reward: reward,
-          duration: duration,
-          hit_name: hit_name,
-          requester_id: $('input[name=requesterId]').val(),
-          hits_available: hitsAvailable,
-          autoaccepted: autoAccepted,
-          hit_skipped: hitSkipped,
-          batch_skipped: batchSkipped
-        };
-        request = $.ajax({
-          url: 'http://alpha.openturk.com/endpoint/log',
-          type: "POST",
-          data: data
-        }).always(function() {
-          callback();
+          data = {
+            worker_id: workerId,
+            group_id: groupId,
+            reward: reward,
+            duration: duration,
+            hit_name: hit_name,
+            requester_id: $('input[name=requesterId]').val(),
+            hits_available: hitsAvailable,
+            autoaccepted: autoAccepted,
+            hit_skipped: hitSkipped,
+            batch_skipped: batchSkipped
+          };
+          request = $.ajax({
+            url: 'http://alpha.openturk.com/endpoint/log',
+            type: "POST",
+            data: data
+          }).always(function() {
+            callback();
+          });
         });
-      });
+      }
     }
 
+    // Send recommendation to the server
     function recommend() {
-
       getWorkerId(function(workerId) {
         if (typeof workerId === "undefined") {
           workerId = "undefined";
@@ -350,10 +353,6 @@ $(document).ready(function() {
         $('#recommendation-button-i').removeClass("fa-spinner fa-spin");
       }
     }
-    // Alerts if needed ...
-    // if(cond) {
-    //   $('#subtabs_and_searchbar').after('<div class="message info"><span class="icon"></span><h6><span id="alertboxHeader">HITs that need your attention.</span></h6></div>');
-    // }
 
     function validateRecommendation(url, callback) {
       $.get(url, {}, function(data) {

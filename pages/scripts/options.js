@@ -160,6 +160,7 @@ function initVariables() {
   radioSandbox = document.getElementsByName("Sandbox");
   radioReq = document.getElementsByName("Reqnotif");
   radioTerm = document.getElementsByName("Termnotif");
+  radioLog = document.getElementsByName("Logging");
   targetField = $("#target");
 }
 
@@ -225,6 +226,12 @@ function restoreOptions() {
       radioTerm[i].checked = "true";
     }
   }
+  var logTabs = localStorage["Termnotif"];
+  for (i = 0; i < radioLog.length; i++) {
+    if (radioLog[i].value == logTabs) {
+      radioLog[i].checked = "true";
+    }
+  }
   var num = localStorage["Target"];
   targetField.val(num / 100);
   $("#price").html("$" + num / 100);
@@ -256,6 +263,12 @@ function saveOptions() {
   for (i = 0; i < radioTerm.length; i++) {
     if (radioTerm[i].checked) {
       localStorage["Termnotif"] = radioTerm[i].value;
+      break;
+    }
+  }
+  for (i = 0; i < radioLog.length; i++) {
+    if (radioLog[i].checked) {
+      localStorage["Logging"] = radioLog[i].value;
       break;
     }
   }
