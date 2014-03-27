@@ -3,8 +3,7 @@ $(function() {
   $('.inlinebar').sparkline([100, localStorage.TGP, 100, 66, 33], {
     type: 'bullet',
     width: '215',
-    performanceColor: 'green',
-    tooltipContainer: 'moneytooltip'
+    performanceColor: 'green'
   });
 
   var $btnAddSearchTerm = $('#btnAddSearchTerm'),
@@ -38,7 +37,7 @@ $(function() {
   });
 
   restoreOptions();
-  $('.sandbox-tabs-radio, .reqnotif-tabs-radio, .termnotif-tabs-radio, #RequestInterval, #target').change(function() {
+  $('.sandbox-tabs-radio, .reqnotif-tabs-radio, .termnotif-tabs-radio, #RequestInterval, #target, .logging-tabs-radio').change(function() {
     saveOptions();
   });
 
@@ -181,7 +180,6 @@ function plusRequester(requester) {
   var jqxhr = $.getJSON(TOEndpoint).done(rid, rname, function(data) {
     var d = [];
     if (data[rid]) {
-      console.log(d[rid]);
       d[0] = data[rid].attrs['comm'];
       d[1] = data[rid].attrs['pay'];
       d[2] = data[rid].attrs['fair'];
@@ -208,6 +206,12 @@ function restoreOptions() {
       break;
     }
   }
+  if (reqInterval < 5) {
+    $('#rateWarning').show();
+  } else {
+    $('#rateWarning').hide();
+  }
+
   var sandboxTabs = localStorage["Sandbox"];
   for (i = 0; i < radioSandbox.length; i++) {
     if (radioSandbox[i].value == sandboxTabs) {
@@ -226,7 +230,7 @@ function restoreOptions() {
       radioTerm[i].checked = "true";
     }
   }
-  var logTabs = localStorage["Termnotif"];
+  var logTabs = localStorage["Logging"];
   for (i = 0; i < radioLog.length; i++) {
     if (radioLog[i].value == logTabs) {
       radioLog[i].checked = "true";

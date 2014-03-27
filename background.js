@@ -26,6 +26,7 @@ SetInitialOption("RequestInterval", 5);
 SetInitialOption("Sandbox", false);
 SetInitialOption("Reqnotif", true);
 SetInitialOption("Termnotif", true);
+SetInitialOption("Logging", true);
 SetInitialOption("Target", 1000);
 SetInitialOption("TGP", 0);
 SetInitialOption("earnings", 0);

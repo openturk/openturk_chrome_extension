@@ -91,7 +91,7 @@ $(document).ready(function() {
 
     // Log accepted task to the server
     function log(callback, hitSkipped, batchSkipped, autoAccepted) {
-      if (localStorage['Logging']) {
+      if (localStorage['Logging'] == true) {
         getWorkerId(function(workerId) {
           if (typeof workerId === "undefined") {
             workerId = "undefined";

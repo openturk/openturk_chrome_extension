@@ -31,6 +31,7 @@
     <div id="feed" class="feed">
       <br>
       <p>:: Check for updates every</p>
+      <span id="rateWarning" class="hint_danger">(Warning: checking more frequently than every 5 minutes may cause "Exceed Rate" errors if you are subscribed to too many requesters and search terms.)</span>
       <select id="RequestInterval" name="RequestInterval">
         <option value="1">1 minute</option>
         <option value="3">3 minutes</option>
@@ -42,8 +43,7 @@
         <option value="45">45 minutes</option>
         <option value="60">1 hour</option>
       </select>
-      <span id="rateWarning">Checking more frequently than every 5 minutes may cause "Exceed rate" errors.</span>
-      <br><br>
+      <br>
       <hr class="break">
       <p>:: Activate notifications for new requesters</p>
       <input type="radio" class='reqnotif-tabs-radio' name="Reqnotif" value="true"> Yes
@@ -56,7 +56,7 @@
       <hr class="break">
 
       <p>:: Daily Target Earning = <label id="price" style="color: red;"></label></p>
-      $1 <input type="range" name="target" id="target" min="1" max="300"> $300
+      $1 <input type="range" name="target" id="target" min="1" max="100"> $100
       <p>Daily progress bar:
       <span class="inlinebar"></span>
       </p>
@@ -78,7 +78,8 @@
       </ul>
       <hr class="break">
 
-      <p>:: Activate logging</p>
+      <p>:: Enable automatic and anonymous HIT sharing in order to create better recommendations.
+      </p>
       <input type="radio" class='logging-tabs-radio' name="Logging" value="true"> Yes
       <input type="radio" class="second-radio logging-tabs-radio" name="Logging" value="false"> No<br/>
       <hr class="break">

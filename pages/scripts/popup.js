@@ -17,6 +17,7 @@ var OT = {
     }
     if (localStorage['money'] == "true") {
       $('#money-notification').show();
+      $('#gotpaid').show();
     }
 
     OT.get_worker_id();
