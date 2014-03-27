@@ -68,15 +68,15 @@ $(document).ready(function() {
       });
     }
 
-    function postAndRedirect(form) {
-      request = $.ajax({
-        url: form.attr('action'),
-        type: "POST",
-        data: form.serialize()
-      }).done(function() {
-        log(redirect, false, false, false);
-      });
-    }
+    // function postAndRedirect(form) {
+    //   request = $.ajax({
+    //     url: form.attr('action'),
+    //     type: "POST",
+    //     data: form.serialize()
+    //   }).done(function() {
+    //     log(redirect, false, false, false);
+    //   });
+    // }
 
     function redirect() {
       var jqxhr = $.getJSON(openturk_endpoint).done(function(data) {
@@ -91,7 +91,6 @@ $(document).ready(function() {
 
     // Log accepted task to the server
     function log(callback, hitSkipped, batchSkipped, autoAccepted) {
-      if (localStorage['Logging'] == true) {
         getWorkerId(function(workerId) {
           if (typeof workerId === "undefined") {
             workerId = "undefined";
@@ -131,7 +130,6 @@ $(document).ready(function() {
             callback();
           });
         });
-      }
     }
 
     // Send recommendation to the server
@@ -179,22 +177,24 @@ $(document).ready(function() {
       });
     }
 
-    if ($('form[name=hitForm]').length > 0) {
-      form = $('form[name=hitForm]')[0];
-      $('input[name="/accept"]').on("click", function(e, hint) {
-        if (typeof hint === "undefined") {
-          e.preventDefault();
-          getAutoAccept(function(autoaccept) {
-            log(function() {
-              $('input[name="/accept"]').trigger("click", true);
-            }, false, false, false);
-          });
-        }
-      });
+    if (localStorage['Logging'] == true) {
+      if ($('form[name=hitForm]').length > 0) {
+        form = $('form[name=hitForm]')[0];
+        $('input[name="/accept"]').on("click", function(e, hint) {
+          if (typeof hint === "undefined") {
+            e.preventDefault();
+            getAutoAccept(function(autoaccept) {
+              log(function() {
+                $('input[name="/accept"]').trigger("click", true);
+              }, false, false, false);
+            });
+          }
+        });
 
-      //if autoacceptenabled=true
-      if ($('input[name="/accept"]').length === 0 && getUrlParameters()['autoAcceptEnabled'] == 'true') {
-        log(function() {}, false, false, true);
+        //if autoacceptenabled=true
+        if ($('input[name="/accept"]').length === 0 && getUrlParameters()['autoAcceptEnabled'] == 'true') {
+          log(function() {}, false, false, true);
+        }
       }
     }
 
