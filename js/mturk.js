@@ -177,7 +177,7 @@ $(document).ready(function() {
       });
     }
 
-    if (localStorage['Logging'] == true) {
+    if (localStorage['Logging'] == "true") {
       if ($('form[name=hitForm]').length > 0) {
         form = $('form[name=hitForm]')[0];
         $('input[name="/accept"]').on("click", function(e, hint) {
