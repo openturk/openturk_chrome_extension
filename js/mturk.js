@@ -152,13 +152,18 @@ $(document).ready(function() {
           groupId = $('input[name="groupId"]').val();
         }
 
+        var requesterId = $('input[name=requesterId]').val();
+        if (!requesterId) {
+          requesterId = getUrlParameters()['requesterId'];
+        }
+
         var data = {
           worker_id: workerId,
           group_id: groupId,
           reward: reward,
           duration: duration,
           hit_name: hit_name,
-          requester_id: $('input[name=requesterId]').val(),
+          requester_id: requesterId,
           hits_available: hitsAvailable,
           message: $('#recommend_message').val()
         };
