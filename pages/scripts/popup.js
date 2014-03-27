@@ -392,7 +392,12 @@ var OT = {
       $("#total_earnings").html(balance['total_earnings']);
       $("#approval_rate").html(balance['approval_rate']);
       OT.switch_balance();
-      $('.inlinebar2').sparkline([100,localStorage.TGP,100,66,33], {type: 'bullet',width: '50', performanceColor:'green', tooltipContainer: 'body.moneytooltip'});
+      $('.inlinebar2').sparkline([100, localStorage.TGP, 100, 66, 33], {
+        type: 'bullet',
+        width: '50',
+        performanceColor: 'green',
+        tooltipContainer: 'body.moneytooltip'
+      });
     });
   },
 
@@ -518,11 +523,51 @@ function fetchRecommendation() {
 }
 
 function validateRecommendation(url, reward, shares, callback) {
+  var qualifications = {
+    cat_master: false,
+    photo_master: false,
+    master: false,
+    approved_hit: {
+      sign: '',
+      value: null
+    },
+    hit_approval_rate: {
+      sign: '',
+      value: null
+    }
+  };
+
   $.get(url, {}, function(data) {
     var title = $(data).find('.capsulelink_bold');
     console.log(url);
     OT.recChecked++;
-    if (title.length > 0) {
+    if (title.length > 0) { //then user can preview
+      var found, qualif;
+      found = $(data).find("td.capsule_field_text:contains('Categorization Masters has been granted')");
+      if (found.length > 0) {
+        qualifications['cat_master'] = true;
+      }
+      found = $(data).find("td.capsule_field_text:contains('Photo Moderation Masters has been granted')");
+      if (found.length > 0) {
+        qualifications['photo_master'] = true;
+      }
+      found = $(data).find("td.capsule_field_text:contains('Masters has been granted')");
+      if (found.length > 0) {
+        qualifications['master'] = true;
+      }
+      found = $(data).find("td.capsule_field_text:contains('Total approved HITs is')");
+      if (found.length > 0) {
+        var matchPattern = /is ([a-z ]+) ([0-9]+)/;
+        qualifications['approved_hit']['sign'] = $(found).eq(0).html().match(matchPattern)[1];
+        qualifications['approved_hit']['value'] = $(found).eq(0).html().match(matchPattern)[2];
+      }
+      found = $(data).find("td.capsule_field_text:contains('HIT approval rate (%) is')");
+      if (found.length > 0) {
+        var matchPattern = /is ([a-z ]+) ([0-9]+)/;
+        qualifications['approved_hit']['sign'] = $(found).eq(0).html().match(matchPattern)[1];
+        qualifications['approved_hit']['value'] = $(found).eq(0).html().match(matchPattern)[2];
+      }
+
       OT.recAppended++;
       insertRecommendation(data, title, reward, shares);
     }
@@ -847,7 +892,7 @@ function statusdetail_loop(next_URL) {
     });
   } else {
     $('#projection').html('$' + ((subtotal + page_total) / 100).toFixed(2));
-    localStorage.TGP = ((subtotal + page_total) * 100 ) / STD_DAILY;
+    localStorage.TGP = ((subtotal + page_total) * 100) / STD_DAILY;
     if ((subtotal + page_total) >= STD_DAILY) {
       $('#projection').removeClass("red");
       $('#projection').addClass("green");
@@ -890,8 +935,13 @@ $(document).ready(function() {
   });
   getStats();
   getProjection();
-  $('.inlinebar').sparkline([100,localStorage.TGP,100,66,33], {type: 'bullet',width: '50', performanceColor:'green',  tooltipContainer: 'moneytooltip'});
+  $('.inlinebar').sparkline([100, localStorage.TGP, 100, 66, 33], {
+    type: 'bullet',
+    width: '50',
+    performanceColor: 'green',
+    tooltipContainer: 'moneytooltip'
+  });
   $('.inlinebar').bind('sparklineClick', function(ev) {
-      $('#balance').click();
+    $('#balance').click();
   });
 });
