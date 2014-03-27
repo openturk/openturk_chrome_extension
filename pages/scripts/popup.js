@@ -526,8 +526,14 @@ function validateRecommendation(url, reward, shares, callback) {
     cat_master: false,
     photo_master: false,
     master: false,
-    approved_hit_gt: 0,
-    hit_approval_rate_nlt: 0
+    approved_hit: {
+      sign: '',
+      value: null
+    },
+    hit_approval_rate: {
+      sign: '',
+      value: null
+    }
   };
 
   $.get(url, {}, function(data) {
@@ -548,17 +554,19 @@ function validateRecommendation(url, reward, shares, callback) {
       if (found.length > 0) {
         qualifications['master'] = true;
       }
-      found = $(data).find("td.capsule_field_text:contains('Total approved HITs is greater than')");
+      found = $(data).find("td.capsule_field_text:contains('Total approved HITs is')");
       if (found.length > 0) {
-        var matchPattern = /than ([0-9]+)/;
-        qualifications['approved_hit_gt'] = $(found).eq(0).html().match(matchPattern)[1];
+        var matchPattern = /is ([a-z ]+) ([0-9]+)/;
+        qualifications['approved_hit']['sign'] = $(found).eq(0).html().match(matchPattern)[1];
+        qualifications['approved_hit']['value'] = $(found).eq(0).html().match(matchPattern)[2];
       }
-      found = $(data).find("td.capsule_field_text:contains('HIT approval rate (%) is not less than')");
+      found = $(data).find("td.capsule_field_text:contains('HIT approval rate (%) is')");
       if (found.length > 0) {
-        var matchPattern = /than ([0-9]+)/;
-        qualifications['hit_approval_rate_nlt'] = $(found).eq(0).html().match(matchPattern)[1];
+        var matchPattern = /is ([a-z ]+) ([0-9]+)/;
+        qualifications['approved_hit']['sign'] = $(found).eq(0).html().match(matchPattern)[1];
+        qualifications['approved_hit']['value'] = $(found).eq(0).html().match(matchPattern)[2];
       }
-      console.log(qualifications);
+
       OT.recAppended++;
       insertRecommendation(data, title, reward, shares);
     }
