@@ -11,7 +11,7 @@ $(function(){
           get_worker_id: true
         }, function(response) {
             if(editable) {
-               editable.val(response.workerId);
+               editable.val(editable.val() + response.workerId);
             }
         });
       }
