@@ -589,7 +589,7 @@ function insertRecommendation(data, title, reward, shares) {
 
   var rewardSpan = document.createElement("span");
   rewardSpan.className = "hint";
-  rewardSpan.innerText = "($" + reward + ") [" + shares + " workers]";
+  rewardSpan.innerText = "($" + reward + ") [" + shares + " shares]";
 
   // Make as a like button
   var heart = document.createElement("td");
