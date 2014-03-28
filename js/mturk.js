@@ -1,7 +1,7 @@
 $(document).ready(function() {
 
-  // The captcha is here !
   if ($("[name='captcha']").length > 0 || $("[name='userCaptchaResponse']").length > 0) {
+    // The captcha is here !
     chrome.runtime.sendMessage({
       captcha: true
     }, function() {});
@@ -23,6 +23,7 @@ $(document).ready(function() {
       document.head.appendChild(fontAwesomeLink);
     }
 
+    // Retrieves worker ID from user's dashboard
     var getWorkerId = function(callback) {
       chrome.runtime.sendMessage({
         get_mturk_host: true
@@ -36,6 +37,7 @@ $(document).ready(function() {
       });
     };
 
+    // Parses the current url or the one passed as argument
     var getUrlParameters = function(link) {
       if (typeof link === 'undefined') {
         link = window.location.href;
@@ -225,6 +227,8 @@ $(document).ready(function() {
         bindModalEvents('modal');
         var requesterId = $('input[name=requesterId').val();
         var requesterName = $('input[name=prevRequester').val();
+
+        // Add subscribe button to HIT page
         storage.get('requesters', function(items) {
           var obj = items;
           var already = {};
@@ -258,9 +262,7 @@ $(document).ready(function() {
         $hitFinished.parent().next()
           .append('<hr><h6>If you liked this HIT, share it on Openturk. <a href="#" class="ot-share" id="sharedonehit"><span class="ot-subscribe-text">Share HIT</span></a></h6>')
           .append(modalTpl('modalpublish', '<h2>Share this HIT for other workers:</h2><textarea id="recommend_message" style="width: 340px; height: 100px">I enjoyed this task!</textarea><br /><input id="modalpublish_submit" type="submit" value="ok"><input id="modalpublish_cancel" type="submit" value="cancel">'));
-
         bindModalEvents('modalpublish');
-
       });
     }
 
