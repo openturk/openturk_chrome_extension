@@ -54,28 +54,6 @@ $(document).ready(function() {
       return params;
     };
 
-<<<<<<< HEAD
-    // function postAndRedirect(form) {
-    //   request = $.ajax({
-    //     url: form.attr('action'),
-    //     type: "POST",
-    //     data: form.serialize()
-    //   }).done(function() {
-    //     log(redirect, false, false, false);
-    //   });
-    // }
-=======
-    var postAndRedirect = function(form) {
-      request = $.ajax({
-        url: form.attr('action'),
-        type: "POST",
-        data: form.serialize()
-      }).done(function() {
-        log(redirect, false, false, false);
-      });
-    };
->>>>>>> 022da8c831251713c7095a1f29cf9d93b67cece3
-
     var redirect = function() {
       var jqxhr = $.getJSON(openturk_endpoint).done(function(data) {
         var redirectUrl = data.url[0];
@@ -88,12 +66,7 @@ $(document).ready(function() {
     };
 
     // Log accepted task to the server
-<<<<<<< HEAD
     function log(callback, hitSkipped, batchSkipped, autoAccepted) {
-=======
-    var log = function(callback, hitSkipped, batchSkipped, autoAccepted) {
-      if (localStorage['Logging']) {
->>>>>>> 022da8c831251713c7095a1f29cf9d93b67cece3
         getWorkerId(function(workerId) {
           if (typeof workerId === "undefined") {
             workerId = "undefined";
@@ -133,14 +106,7 @@ $(document).ready(function() {
             callback();
           });
         });
-<<<<<<< HEAD
     }
-=======
-      } else {
-        callback();
-      }
-    };
->>>>>>> 022da8c831251713c7095a1f29cf9d93b67cece3
 
     // Send recommendation to the server
     var recommend = function() {
@@ -187,7 +153,6 @@ $(document).ready(function() {
       });
     };
 
-<<<<<<< HEAD
     if (localStorage['Logging'] == "true") {
       if ($('form[name=hitForm]').length > 0) {
         form = $('form[name=hitForm]')[0];
@@ -201,18 +166,6 @@ $(document).ready(function() {
             });
           }
         });
-=======
-    if ($('form[name=hitForm]').length > 0) {
-      form = $('form[name=hitForm]')[0];
-      $('input[name="/accept"]').on("click", function(e, hint) {
-        if (typeof hint === "undefined") {
-          e.preventDefault();
-          log(function() {
-            $('input[name="/accept"]').trigger("click", true);
-          }, false, false, false);
-        }
-      });
->>>>>>> 022da8c831251713c7095a1f29cf9d93b67cece3
 
         //if autoacceptenabled=true
         if ($('input[name="/accept"]').length === 0 && getUrlParameters()['autoAcceptEnabled'] == 'true') {
