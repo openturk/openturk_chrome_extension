@@ -43,7 +43,7 @@ var newterms = [];
 
 // setting the worker for the first time if possible.
 $.ajax({
-  url: 'https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/dashboard',
+  url: 'https://' + ((localStorage['Sandbox']) ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/dashboard',
   success: function(result) {
     var spanText = $(result).filter("table").find("span:contains('Worker ID')").text();
     var workerIdPattern = /Worker ID: (.*)$/;
@@ -51,11 +51,11 @@ $.ajax({
     if (workerId.length){
       localStorage.workerId  = workerId[1];
     } else {
-      localStorage.workerId  = 'Not yet set'; 
+      localStorage.workerId  = 'Not yet set';
     }
   },
   error: function(xhr, status) {
-    localStorage.workerId  = 'Not yet set'; 
+    localStorage.workerId  = 'Not yet set';
   }
 });
 
@@ -81,7 +81,7 @@ chrome.runtime.onMessage.addListener(
 
     if (request.get_mturk_host) {
       sendResponse({
-        mturk_host: (localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com"
+        mturk_host: (localStorage['Sandbox']) ? "workersandbox.mturk.com" : "www.mturk.com"
       });
     }
 
@@ -271,7 +271,7 @@ function timeOut(items, call) {
 
 function getWorkerStats() {
   if(!captcha) {
-    $.get('https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/dashboard', {}, function(data) {
+    $.get('https://' + ((localStorage['Sandbox']) ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/dashboard', {}, function(data) {
       var rewards = $(data).find('.reward');
       // var hit_submitted = $(data).filter("table").find("td.metrics-table-first-value:contains('HITs Submitted')").next().text();
       // var balance = {
@@ -304,7 +304,7 @@ function printTasks() {
 function scrapForBatchs(url) {
   if(!captcha) {
     $.ajax({
-      url: 'https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&requesterId=' + url['id'],
+      url: 'https://' + ((localStorage['Sandbox']) ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&requesterId=' + url['id'],
       success: function(result) {
         var spanText = $(result).find("td:contains('Results')").text();
         var resPattern = /of (.*) Results/;
@@ -319,7 +319,7 @@ function scrapForBatchs(url) {
             console.log('REQUESTER. Before: ' + old_res + ' After: ' + res);
             if (res > old_res) {
               var diff = res - old_res;
-              if (localStorage['Reqnotif'] == "true") {
+              if (localStorage['Reqnotif']) {
                 updates = updates + diff;
               }
               localStorage['batchs'] = true;
@@ -344,7 +344,7 @@ function scrapForBatchs(url) {
         // do something when it's wrong
       }
     });
-  } else {      
+  } else {
     console.log('[msg]captach detected! requester request blocked');
   }
 }
@@ -352,11 +352,11 @@ function scrapForBatchs(url) {
 function scrapForSearch(phrase) {
   if(!captcha) {
     $.ajax({
-      url: 'https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&searchWords=' + phrase['phrase'],
+      url: 'https://' + ((localStorage['Sandbox']) ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&searchWords=' + phrase['phrase'],
       success: function(result) {
         var spanText = $(result).find("td:contains('Results')").text();
         var resPattern = /of (.*) Results/;
-        console.log('https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&searchWords=' + phrase['phrase']);
+        console.log('https://' + ((localStorage['Sandbox']) ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&searchWords=' + phrase['phrase']);
         var res = spanText.match(resPattern);
         if (res) {
           res = res[1];
@@ -368,7 +368,7 @@ function scrapForSearch(phrase) {
             modifyCount(phrase['phrase'], res);
             if (res > old_res) {
               var diff = res - old_res;
-              if (localStorage['Termnotif'] == "true") {
+              if (localStorage['Termnotif']) {
                 updates = updates + diff;
               }
               localStorage['search'] = true;

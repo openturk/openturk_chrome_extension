@@ -153,7 +153,7 @@ $(document).ready(function() {
       });
     };
 
-    if (localStorage['Logging'] == "true") {
+    if (localStorage['Logging']) {
       if ($('form[name=hitForm]').length > 0) {
         form = $('form[name=hitForm]')[0];
         $('input[name="/accept"]').on("click", function(e, hint) {
@@ -307,7 +307,7 @@ $(document).ready(function() {
         var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/schedule').done(function(result) {
           if (result) {
             var groupId = result.next;
-            var url = 'https://' + ((localStorage['Sandbox'] == "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/preview?groupId=' + groupId;
+            var url = 'https://' + ((localStorage['Sandbox']) ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/preview?groupId=' + groupId;
             validateRecommendation(url, redirectme);
           }
         });
