@@ -880,7 +880,6 @@ function statusdetail_loop(next_URL) {
 
         $next_URL = $src.find("a[href^='/mturk/statusdetail']:contains('Next')");
         next_URL = ($next_URL.length !== 0) ? ('https://' + ((localStorage['Sandbox']) ? "workersandbox.mturk.com" : "www.mturk.com") + $next_URL.attr('href')) : '';
-        console.log(next_URL);
 
         setTimeout(function() {
           statusdetail_loop(next_URL);
