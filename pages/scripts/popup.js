@@ -522,6 +522,63 @@ function fetchRecommendation() {
   }
 }
 
+function workerQualified(requiredQualifications) {
+  var workerQualification = {
+    cat_master: false,
+    photo_master: false,
+    master: false,
+    approved_hit: {
+      value: 100
+    },
+    hit_approval_rate: {
+      value: null
+    }
+  };
+
+  if(requiredQualifications['cat_master'] && !workerQualification['cat_master']) {
+    return false;
+  }
+
+  if(requiredQualifications['photo_master'] && !workerQualification['photo_master']) {
+    return false;
+  }
+
+  if(requiredQualifications['master'] && !workerQualification['master']) {
+    return false;
+  }
+
+  if(requiredQualifications['master'] && !workerQualification['master']) {
+    return false;
+  }
+
+  if(requiredQualifications['approved_hit']['value'] !== null) {
+    reqVal = requiredQualifications['approved_hit']['value'];
+    reqSign = requiredQualifications['approved_hit']['sign'];
+    workVal = workerQualification['approved_hit']['value'];
+    if(reqSign == "greater than" && workVal <= reqVal) {
+      return false;
+    }
+    if(reqSign == "not less than" && workVal < reqVal) {
+      return false;
+    }
+  }
+
+  if(requiredQualifications['hit_approval_rate']['value'] !== null) {
+    reqVal = requiredQualifications['hit_approval_rate']['value'];
+    reqSign = requiredQualifications['hit_approval_rate']['sign'];
+    workVal = workerQualification['hit_approval_rate']['value'];
+    if(reqSign == "greater than" && workVal <= reqVal) {
+      return false;
+    }
+    if(reqSign == "not less than" && workVal < reqVal) {
+      return false;
+    }
+  }
+  // All comparison done, worker seems qualified
+  return true;
+
+}
+
 function validateRecommendation(url, reward, shares, callback) {
   var qualifications = {
     cat_master: false,
