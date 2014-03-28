@@ -66,46 +66,46 @@ $(document).ready(function() {
     };
 
     // Log accepted task to the server
-    function log(callback, hitSkipped, batchSkipped, autoAccepted) {
-        getWorkerId(function(workerId) {
-          if (typeof workerId === "undefined") {
-            workerId = "undefined";
-          }
+    var log = function(callback, hitSkipped, batchSkipped, autoAccepted) {
+      getWorkerId(function(workerId) {
+        if (typeof workerId === "undefined") {
+          workerId = "undefined";
+        }
 
-          var rewardText = $("table").find("td:contains('Reward')").next().text();
-          var rewardPattern = /([0-9\.]*) per/;
-          var reward = parseFloat(rewardText.match(rewardPattern)[1]);
+        var rewardText = $("table").find("td:contains('Reward')").next().text();
+        var rewardPattern = /([0-9\.]*) per/;
+        var reward = parseFloat(rewardText.match(rewardPattern)[1]);
 
-          var hitsAvailable = parseFloat($.trim($("table").find("td:contains('HITs Available')").next().text()));
+        var hitsAvailable = parseFloat($.trim($("table").find("td:contains('HITs Available')").next().text()));
 
-          var duration = $.trim($("table").find("td:contains('Duration')").next().text());
-          var hit_name = $.trim($(".capsulelink_bold").find('div').html());
+        var duration = $.trim($("table").find("td:contains('Duration')").next().text());
+        var hit_name = $.trim($(".capsulelink_bold").find('div').html());
 
-          var groupId = getUrlParameters()['groupId'];
-          if (!groupId) {
-            groupId = $('input[name="groupId"]').val();
-          }
+        var groupId = getUrlParameters()['groupId'];
+        if (!groupId) {
+          groupId = $('input[name="groupId"]').val();
+        }
 
-          data = {
-            worker_id: workerId,
-            group_id: groupId,
-            reward: reward,
-            duration: duration,
-            hit_name: hit_name,
-            requester_id: $('input[name=requesterId]').val(),
-            hits_available: hitsAvailable,
-            autoaccepted: autoAccepted,
-            hit_skipped: hitSkipped,
-            batch_skipped: batchSkipped
-          };
-          request = $.ajax({
-            url: 'http://alpha.openturk.com/endpoint/log',
-            type: "POST",
-            data: data
-          }).always(function() {
-            callback();
-          });
+        data = {
+          worker_id: workerId,
+          group_id: groupId,
+          reward: reward,
+          duration: duration,
+          hit_name: hit_name,
+          requester_id: $('input[name=requesterId]').val(),
+          hits_available: hitsAvailable,
+          autoaccepted: autoAccepted,
+          hit_skipped: hitSkipped,
+          batch_skipped: batchSkipped
+        };
+        request = $.ajax({
+          url: 'http://alpha.openturk.com/endpoint/log',
+          type: "POST",
+          data: data
+        }).always(function() {
+          callback();
         });
+      });
     }
 
     // Send recommendation to the server
@@ -153,26 +153,28 @@ $(document).ready(function() {
       });
     };
 
-    if (localStorage['Logging']) {
-      if ($('form[name=hitForm]').length > 0) {
-        form = $('form[name=hitForm]')[0];
-        $('input[name="/accept"]').on("click", function(e, hint) {
-          if (typeof hint === "undefined") {
-            e.preventDefault();
-            getAutoAccept(function(autoaccept) {
+    chrome.runtime.sendMessage({
+      get_logging: true
+    }, function(response) {
+      if (response.logging === "true") {
+        if ($('form[name=hitForm]').length > 0) {
+          form = $('form[name=hitForm]')[0];
+          $('input[name="/accept"]').on("click", function(e, hint) {
+            if (typeof hint === "undefined") {
+              e.preventDefault();
               log(function() {
                 $('input[name="/accept"]').trigger("click", true);
               }, false, false, false);
-            });
-          }
-        });
+            }
+          });
 
-        //if autoacceptenabled=true
-        if ($('input[name="/accept"]').length === 0 && getUrlParameters()['autoAcceptEnabled'] == 'true') {
-          log(function() {}, false, false, true);
+          //if autoacceptenabled=true
+          if ($('input[name="/accept"]').length === 0 && getUrlParameters()['autoAcceptEnabled'] == 'true') {
+            log(function() {}, false, false, true);
+          }
         }
       }
-    }
+    });
 
     var shareHitButton = '<tr><td><a href="#" class="ot-share" id="sharehit"><span class="ot-subscribe-text">Share HIT</span></a></td></tr>';
 
@@ -307,7 +309,7 @@ $(document).ready(function() {
         var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/schedule').done(function(result) {
           if (result) {
             var groupId = result.next;
-            var url = 'https://' + ((localStorage['Sandbox']) ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/preview?groupId=' + groupId;
+            var url = 'https://www.mturk.com/mturk/preview?groupId=' + groupId;
             validateRecommendation(url, redirectme);
           }
         });

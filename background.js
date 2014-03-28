@@ -72,10 +72,8 @@ function SetInitialOption(key, value) {
 // obj['requesters'] = [{"name":"CrowdSource","id":"A2SUM2D7EOAK1T","numtask":0},{"name":"Philippe Cudre-Mauroux","id":"A28PIN9Y6KHR3H","numtask":0},{"name":"Roman","id":"A165LMPFHNTKFG","numtask":0}];
 // storage.set(obj);
 
-// Variables for the content script
-var autoaccept;
 
-// Set the Listener for the autoaccept
+// Set the Listeners
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
 
@@ -85,13 +83,9 @@ chrome.runtime.onMessage.addListener(
       });
     }
 
-    if (request.autoaccept !== null) {
-      autoaccept = request.autoaccept;
-    }
-
-    if (request.autoaccept_get) {
+    if (request.get_logging) {
       sendResponse({
-        autoaccept: autoaccept
+        logging: localStorage['Logging']
       });
     }
 
