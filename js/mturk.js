@@ -5,7 +5,7 @@ $(document).ready(function() {
     chrome.runtime.sendMessage({
       captcha: true
     }, function() {});
-  } else {
+  } else { // No captcha, run the scripts
     chrome.runtime.sendMessage({
       captcha: false
     }, function() {});
@@ -15,7 +15,7 @@ $(document).ready(function() {
     var openturk_endpoint = 'http://alpha.openturk.com/endpoint/redirect';
     var autoaccept = true;
 
-    if ($('#font-awesome-style').length == 0) {
+    if ($('#font-awesome-style').length === 0) {
       var fontAwesomeLink = document.createElement('link');
       fontAwesomeLink.rel = 'stylesheet';
       fontAwesomeLink.id = 'font-awesome-style';
@@ -23,7 +23,7 @@ $(document).ready(function() {
       document.head.appendChild(fontAwesomeLink);
     }
 
-    function getWorkerId(callback) {
+    var getWorkerId = function(callback) {
       chrome.runtime.sendMessage({
         get_mturk_host: true
       }, function(response) {
@@ -34,9 +34,9 @@ $(document).ready(function() {
           callback(workerId);
         });
       });
-    }
+    };
 
-    function getUrlParameters(link) {
+    var getUrlParameters = function(link) {
       if (typeof link === 'undefined') {
         link = window.location.href;
       }
@@ -50,25 +50,9 @@ $(document).ready(function() {
         params[hash[0]] = hash[1];
       }
       return params;
-    }
+    };
 
-    function setAutoAccept(autoaccept) {
-      if ($('input[name=autoAcceptEnabled]').length > 0) {
-        chrome.runtime.sendMessage({
-          autoaccept: autoaccept
-        });
-      }
-    }
-
-    function getAutoAccept(callback) {
-      chrome.runtime.sendMessage({
-        autoaccept_get: true
-      }, function(response) {
-        callback(response.autoaccept);
-      });
-    }
-
-    function postAndRedirect(form) {
+    var postAndRedirect = function(form) {
       request = $.ajax({
         url: form.attr('action'),
         type: "POST",
@@ -76,22 +60,22 @@ $(document).ready(function() {
       }).done(function() {
         log(redirect, false, false, false);
       });
-    }
+    };
 
-    function redirect() {
+    var redirect = function() {
       var jqxhr = $.getJSON(openturk_endpoint).done(function(data) {
         var redirectUrl = data.url[0];
         window.top.location.href = redirectUrl;
       });
-    }
+    };
 
-    function redirectme(redirectUrl) {
+    var redirectme = function(redirectUrl) {
       window.top.location.href = redirectUrl;
-    }
+    };
 
     // Log accepted task to the server
-    function log(callback, hitSkipped, batchSkipped, autoAccepted) {
-      if (localStorage['Logging'] == true) {
+    var log = function(callback, hitSkipped, batchSkipped, autoAccepted) {
+      if (localStorage['Logging']) {
         getWorkerId(function(workerId) {
           if (typeof workerId === "undefined") {
             workerId = "undefined";
@@ -131,11 +115,13 @@ $(document).ready(function() {
             callback();
           });
         });
+      } else {
+        callback();
       }
-    }
+    };
 
     // Send recommendation to the server
-    function recommend() {
+    var recommend = function() {
       getWorkerId(function(workerId) {
         if (typeof workerId === "undefined") {
           workerId = "undefined";
@@ -177,18 +163,16 @@ $(document).ready(function() {
           data: data
         });
       });
-    }
+    };
 
     if ($('form[name=hitForm]').length > 0) {
       form = $('form[name=hitForm]')[0];
       $('input[name="/accept"]').on("click", function(e, hint) {
         if (typeof hint === "undefined") {
           e.preventDefault();
-          getAutoAccept(function(autoaccept) {
-            log(function() {
-              $('input[name="/accept"]').trigger("click", true);
-            }, false, false, false);
-          });
+          log(function() {
+            $('input[name="/accept"]').trigger("click", true);
+          }, false, false, false);
         }
       });
 
@@ -204,7 +188,28 @@ $(document).ready(function() {
       return '<div id="' + id + '" style="display:none;z-index:10;position:absolute;background-color:#fff;width:350px;padding:15px;text-align:left;border:2px solid #333;opacity:1;-moz-border-radius:6px;-webkit-border-radius:6px;-moz-box-shadow: 0 0 50px #ccc;-webkit-box-shadow: 0 0 50px #ccc;">' + content + '</div>';
     };
 
-    //Add the ShareHIT Button
+    var bindModalEvents = function(modal) {
+      var $modal = $('#' + modal);
+      $('#sharehit').click(function(e) {
+        e.preventDefault();
+        var left = Math.max($(window).width() - $modal.outerWidth(), 0) / 2;
+        $modal.css({
+          left: left + $(window).scrollLeft()
+        });
+        $modal.toggle();
+      });
+      $('#' + modal + '_cancel').click(function(e) {
+        e.preventDefault();
+        $modal.toggle();
+      });
+      $('#' + modal + '_submit').click(function(e) {
+        e.preventDefault();
+        $modal.toggle();
+        recommend();
+      });
+    };
+
+    // Add shareHit button and modal to HIT pages
     if ($('td[class="capsulelink_bold"]').length > 0) {
       var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
         var el = $('div > table > tbody > tr > td > table > tbody > tr').last();
@@ -217,24 +222,7 @@ $(document).ready(function() {
             .after(shareHitButton)
             .after(modalTpl('modal', '<h2>Please log in on <a href="http://alpha.openturk.com/accounts/login/">OpenTurk.com</a></h2>'));
         }
-        var $modal = $('#modal');
-        $('#sharehit').click(function(e) {
-          e.preventDefault();
-          var left = Math.max($(window).width() - $('#modal').outerWidth(), 0) / 2;
-          $modal.css({
-            left: left + $(window).scrollLeft()
-          });
-          $modal.toggle();
-        });
-        $('#modal_cancel').click(function(e) {
-          e.preventDefault();
-          $modal.toggle();
-        });
-        $('#modal_submit').click(function(e) {
-          e.preventDefault();
-          $modal.toggle();
-          recommend();
-        });
+        bindModalEvents('modal');
         var requesterId = $('input[name=requesterId').val();
         var requesterName = $('input[name=prevRequester').val();
         storage.get('requesters', function(items) {
@@ -263,6 +251,7 @@ $(document).ready(function() {
       });
     }
 
+    // Add shareHit button and modal to HIT finished screen
     $hitFinished = $('#alertboxHeader');
     if ($hitFinished.length > 0) {
       var jqxhr1 = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
@@ -270,24 +259,7 @@ $(document).ready(function() {
           .append('<hr><h6>If you liked this HIT, share it on Openturk. <a href="#" class="ot-share" id="sharedonehit"><span class="ot-subscribe-text">Share HIT</span></a></h6>')
           .append(modalTpl('modalpublish', '<h2>Share this HIT for other workers:</h2><textarea id="recommend_message" style="width: 340px; height: 100px">I enjoyed this task!</textarea><br /><input id="modalpublish_submit" type="submit" value="ok"><input id="modalpublish_cancel" type="submit" value="cancel">'));
 
-        var $modalpublish = $('#modalpublish');
-        $('#sharedonehit').click(function(e) {
-          e.preventDefault();
-          var left = Math.max($(window).width() - $('#modal').outerWidth(), 0) / 2;
-          $modalpublish.css({
-            left: left + $(window).scrollLeft()
-          });
-          $modalpublish.toggle();
-        });
-        $('#modalpublish_cancel').click(function(e) {
-          e.preventDefault();
-          $modalpublish.toggle();
-        });
-        $('#modalpublish_submit').click(function(e) {
-          e.preventDefault();
-          $modalpublish.toggle();
-          recommend();
-        });
+        bindModalEvents('modalpublish');
 
       });
     }
@@ -338,7 +310,7 @@ $(document).ready(function() {
     var attempt = 0;
     var max_attempt = 20;
 
-    function fetchHit() {
+    var fetchHit = function() {
       if (attempt < max_attempt) {
         var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/schedule').done(function(result) {
           if (result) {
@@ -352,9 +324,9 @@ $(document).ready(function() {
         $('#recommendation-button').html('0 for now (try later)');
         $('#recommendation-button-i').removeClass("fa-spinner fa-spin");
       }
-    }
+    };
 
-    function validateRecommendation(url, callback) {
+    var validateRecommendation = function(url, callback) {
       $.get(url, {}, function(data) {
         var title = $(data).find('.capsulelink_bold');
         attempt++;
@@ -367,6 +339,6 @@ $(document).ready(function() {
           fetchHit();
         }
       });
-    }
+    };
   }
 });
