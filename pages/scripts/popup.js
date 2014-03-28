@@ -2,20 +2,20 @@ var OT = {
   init: function() {
     OT.status.container = $('header.footer');
 
-    if (localStorage['Sandbox']) {
+    if (localStorage['Sandbox'] === "true") {
       $('#login_mturk').attr('href', 'https://www.amazon.com/gp/aws/ssop/index.html?awscbctx=&awscbid=urn%3Aaws%3Asid%3A0N1A8324EEG1142T9G02&awscredential=&awsnoclientpipeline=true&awsstrict=false&awsturknosubway=true&wa=wsignin1.0&wctx=&wreply=https%3A%2F%2Fworkersandbox.mturk.com%3A443%2Fmturk%2Fendsignin&wtrealm=urn%3Aaws%3Asid%3A0N1A8324EEG1142T9G02&awssig=UlH2xRjIlr69pdR3kpZEtiCTN1I%3D');
       $('#signout').attr('href', 'https://workersandbox.mturk.com/mturk/beginsignout');
     } else {
       $('#login_mturk').attr('href', 'https://www.amazon.com/gp/aws/ssop/index.html?awscbctx=&awscbid=urn%3Aaws%3Asid%3A027Y0TCSPRG5XHFYJSR2&awscredential=&awsnoclientpipeline=true&awsstrict=false&awsturknosubway=true&wa=wsignin1.0&wctx=&wreply=https%3A%2F%2Fwww.mturk.com%2Fmturk%2Fendsignin&wtrealm=urn%3Aaws%3Asid%3A027Y0TCSPRG5XHFYJSR2&awssig=B%2BG7QiQm8L9a0G5RMeOrw0IHASk%3D');
       $('#signout').attr('href', 'https://www.mturk.com/mturk/beginsignout');
     }
-    if (localStorage['batchs']) {
+    if (localStorage['batchs'] === "true") {
       $('#favorites-notification').show();
     }
-    if (localStorage['search']) {
+    if (localStorage['search'] === "true") {
       $('#search-notification').show();
     }
-    if (localStorage['money']) {
+    if (localStorage['money'] === "true") {
       $('#money-notification').show();
       $('#gotpaid').show();
     }
@@ -136,7 +136,7 @@ var OT = {
 
   creds: {
     populate: function() {
-      if (localStorage.getItem('validated') == 'true') {
+      if (localStorage.getItem('validated') === "true") {
         OT.status.workerId = localStorage.getItem('workerId');
       }
     },
@@ -286,7 +286,7 @@ var OT = {
       $('#mturkusername').html(workerId);
       $('#mturkuser').html(workerId);
       localStorage.workerId = workerId;
-      if (localStorage.getItem('validated')) {
+      if (localStorage.getItem('validated') === "true") {
         OT.switch_content();
       } else {
         OT.switch_login();
@@ -294,7 +294,7 @@ var OT = {
     } else {
       // Else, go get the cookie
       $.ajax({
-        url: 'https://' + ((localStorage['Sandbox']) ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/dashboard',
+        url: 'https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/dashboard',
         success: function(result) {
           var spanText = $(result).filter("table").find("span:contains('Worker ID')").text();
           var workerIdPattern = /Worker ID: (.*)$/;
@@ -308,7 +308,7 @@ var OT = {
             $('#mturkuser').html(workerId);
             setCookie('wid', workerId, 1);
             localStorage.workerId = workerId;
-            if (localStorage.getItem('validated')) {
+            if (localStorage.getItem('validated') === "true") {
               OT.switch_content();
             } else {
               OT.switch_login();
@@ -377,7 +377,7 @@ var OT = {
   },
 
   get_worker_stats: function() {
-    $.get('https://' + ((localStorage['Sandbox']) ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/dashboard', {}, function(data) {
+    $.get('https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/dashboard', {}, function(data) {
       var rewards = $(data).find('.reward');
       var approval_rate = $(data).filter("table").find("td.metrics-table-first-value:contains('... Approved')").next().next().text();
       var balance = {
@@ -427,7 +427,7 @@ function appendRequester(url) {
   title.className = "link_title";
   title.innerText = url['name'];
 
-  title.href = 'https://' + ((localStorage['Sandbox']) ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar?selectedSearchType=hitgroups&requesterId=' + url['id'] + '&qualifiedFor=on';
+  title.href = 'https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar?selectedSearchType=hitgroups&requesterId=' + url['id'] + '&qualifiedFor=on';
   var batchs = document.createElement("span");
   batchs.className = "hint";
 
@@ -460,7 +460,7 @@ function appendSearch(url) {
   title.id = "search_link";
   title.className = "link_title";
   title.innerText = url['phrase'].replace('+', ' ');
-  title.href = 'https://' + ((localStorage['Sandbox']) ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar?selectedSearchType=hitgroups&qualifiedFor=on&searchWords=' + url['phrase'];
+  title.href = 'https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar?selectedSearchType=hitgroups&qualifiedFor=on&searchWords=' + url['phrase'];
   var batchs = document.createElement("span");
   batchs.className = "hint";
 
@@ -488,7 +488,7 @@ function fetchRecommendation() {
     var group_id = recommendation[0];
     var reward = recommendation[1];
     var shares = recommendation[2];
-    var url = 'https://' + ((localStorage['Sandbox']) ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/preview?groupId=' + group_id;
+    var url = 'https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/preview?groupId=' + group_id;
     // FIXME
     // if (results.stars[i][0] == "undefined" || results.stars[i][1] == "undefined") {
     //   continue;
@@ -585,7 +585,7 @@ function insertRecommendation(data, title, reward, shares) {
   task.id = "recommendation_link";
   task.className = "link_title";
   task.innerText = $(title).text().trim();
-  task.href = 'https://' + ((localStorage['Sandbox']) ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/preview?groupId=' + gid;
+  task.href = 'https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/preview?groupId=' + gid;
 
   var rewardSpan = document.createElement("span");
   rewardSpan.className = "hint";
@@ -691,7 +691,7 @@ function search() {
   var keywords = searchBox.value;
 
   if (keywords.length > 0) {
-    var search_url = "https://" + ((localStorage['Sandbox']) ? "workersandbox.mturk.com" : "www.mturk.com") + "/mturk/searchbar?selectedSearchType=hitgroups&searchWords=" + keywords.replace(" ", "+");
+    var search_url = "https://" + ((localStorage['Sandbox'] === "true") ? "workersandbox.mturk.com" : "www.mturk.com") + "/mturk/searchbar?selectedSearchType=hitgroups&searchWords=" + keywords.replace(" ", "+");
     openUrl(search_url, true);
   }
 }
@@ -730,7 +730,7 @@ function openLink(urlto) {
 }
 
 function getStats() {
-  $.get('https://' + ((localStorage['Sandbox']) ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/status', {}, function(data) {
+  $.get('https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/status', {}, function(data) {
     var rows = $(data).find('tr');
 
     var submitted_data = [];
@@ -826,9 +826,9 @@ function legend(parent, data) {
 var STATUSDETAIL_DELAY = 500;
 var MPRE_DELAY = 2000;
 var STD_DAILY = parseInt(localStorage['Target']);
-var DASHBOARD_URL = 'https://' + ((localStorage['Sandbox']) ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/dashboard';
+var DASHBOARD_URL = 'https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/dashboard';
 var STATUSDETAIL_BASE_URL = '/mturk/statusdetail?encodedDate=';
-var STATUSDETAIL_FULL_URL = 'https://' + ((localStorage['Sandbox']) ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/statusdetail?encodedDate=';
+var STATUSDETAIL_FULL_URL = 'https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/statusdetail?encodedDate=';
 var page_num = 1;
 var date_header = '';
 var page_total = 0;
@@ -879,7 +879,7 @@ function statusdetail_loop(next_URL) {
         scrape($src);
 
         $next_URL = $src.find("a[href^='/mturk/statusdetail']:contains('Next')");
-        next_URL = ($next_URL.length !== 0) ? ('https://' + ((localStorage['Sandbox']) ? "workersandbox.mturk.com" : "www.mturk.com") + $next_URL.attr('href')) : '';
+        next_URL = ($next_URL.length !== 0) ? ('https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox.mturk.com" : "www.mturk.com") + $next_URL.attr('href')) : '';
 
         setTimeout(function() {
           statusdetail_loop(next_URL);

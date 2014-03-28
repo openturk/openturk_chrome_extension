@@ -23,19 +23,19 @@ var loadingAnimation = new LoadingAnimation();
 
 
 SetInitialOption("RequestInterval", 5);
-SetInitialOption("Sandbox", false);
-SetInitialOption("Reqnotif", true);
-SetInitialOption("Termnotif", true);
-SetInitialOption("Logging", true);
+SetInitialOption("Sandbox", "false");
+SetInitialOption("Reqnotif", "true");
+SetInitialOption("Termnotif", "true");
+SetInitialOption("Logging", "true");
 SetInitialOption("Target", 1000);
 SetInitialOption("TGP", 0);
 SetInitialOption("earnings", 0);
 
 localStorage.setItem('workerId', 'undefined');
 
-localStorage['batchs'] = false;
-localStorage['search'] = false;
-localStorage['money'] =  false;
+localStorage['batchs'] = "false";
+localStorage['search'] = "false";
+localStorage['money'] = "false";
 localStorage['newbatchs'] = [];
 localStorage['newterms'] = [];
 var newbatchs = [];
@@ -43,19 +43,19 @@ var newterms = [];
 
 // setting the worker for the first time if possible.
 $.ajax({
-  url: 'https://' + ((localStorage['Sandbox']) ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/dashboard',
+  url: 'https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/dashboard',
   success: function(result) {
     var spanText = $(result).filter("table").find("span:contains('Worker ID')").text();
     var workerIdPattern = /Worker ID: (.*)$/;
     var workerId = spanText.match(workerIdPattern);
-    if (workerId.length){
-      localStorage.workerId  = workerId[1];
+    if (workerId.length) {
+      localStorage.workerId = workerId[1];
     } else {
-      localStorage.workerId  = 'Not yet set';
+      localStorage.workerId = 'Not yet set';
     }
   },
   error: function(xhr, status) {
-    localStorage.workerId  = 'Not yet set';
+    localStorage.workerId = 'Not yet set';
   }
 });
 
@@ -81,7 +81,7 @@ chrome.runtime.onMessage.addListener(
 
     if (request.get_mturk_host) {
       sendResponse({
-        mturk_host: (localStorage['Sandbox']) ? "workersandbox.mturk.com" : "www.mturk.com"
+        mturk_host: (localStorage['Sandbox'] === "true") ? "workersandbox.mturk.com" : "www.mturk.com"
       });
     }
 
@@ -105,7 +105,7 @@ chrome.runtime.onMessage.addListener(
 
     if (request.get_worker_id) {
       // console.log('id requested');
-      if(localStorage.workerId) {
+      if (localStorage.workerId) {
         // console.log('id requested: ' + localStorage.workerId);
         sendResponse({
           workerId: localStorage.workerId
@@ -120,9 +120,9 @@ chrome.runtime.onMessage.addListener(
     if (request.reset === "resetIcon") {
       console.log('msg: reset the icon');
       updates = 0;
-      localStorage['batchs'] = false;
-      localStorage['search'] = false;
-      localStorage['money'] = false;
+      localStorage['batchs'] = "false";
+      localStorage['search'] = "false";
+      localStorage['money'] = "false";
       localStorage['newbatchs'] = [];
       localStorage['newterms'] = [];
       newbatchs = [];
@@ -164,7 +164,7 @@ function addRequester(req) {
     obj['requesters'] = []
   }
   obj.requesters.push(req);
-  saverequesters();
+  saveRequesters();
   getNewBatchs();
   indexRequesters();
   subscribe(req);
@@ -175,7 +175,7 @@ function deleteRequester(req) {
   obj.requesters = obj.requesters.filter(function(el) {
     return el.id != req.id;
   });
-  saverequesters();
+  saveRequesters();
   indexRequesters();
   subscribe(req, true);
 }
@@ -225,19 +225,19 @@ function modifyCount(phrase, count) {
   });
 }
 
-function savesearchterms() {
+function saveSearchTerms() {
   chrome.storage.sync.set({
     'searchterms': obj.searchterms
   });
 }
 
-function saverequesters() {
+function saveRequesters() {
   chrome.storage.sync.set({
     'requesters': obj.requesters
   });
 }
 
-function saveworkhist() {
+function saveWorkHist() {
   chrome.storage.sync.set({
     'workhistory': obj.workhistory
   });
@@ -264,14 +264,17 @@ function getNewSearch() {
 }
 
 function timeOut(items, call) {
-  if(items.length > 0) {
-    setTimeout(function(){call(items.pop()); timeOut(items, call);}, 3000);
+  if (items.length > 0) {
+    setTimeout(function() {
+      call(items.pop());
+      timeOut(items, call);
+    }, 3000);
   }
 }
 
 function getWorkerStats() {
-  if(!captcha) {
-    $.get('https://' + ((localStorage['Sandbox']) ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/dashboard', {}, function(data) {
+  if (!captcha) {
+    $.get('https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/dashboard', {}, function(data) {
       var rewards = $(data).find('.reward');
       // var hit_submitted = $(data).filter("table").find("td.metrics-table-first-value:contains('HITs Submitted')").next().text();
       // var balance = {
@@ -279,15 +282,17 @@ function getWorkerStats() {
       //   hit_submitted: parseInt(hit_submitted)
       // };
       // //obj.workhistory.push(balance);
-      // //saveworkhist();
+      // //saveWorkHist();
       var total_earnings = parseInt($(rewards[2]).html().replace('$', ''));
-      if(total_earnings > localStorage.earnings) {
+      if (total_earnings > localStorage.earnings) {
         updateNewMoney();
         localStorage.earnings = total_earnings;
         localStorage.money = true;
       }
     });
-  } else {      console.log('[msg]captach detected! stats request blocked');}
+  } else {
+    console.log('[msg]captach detected! stats request blocked');
+  }
 }
 
 function printTasks() {
@@ -302,9 +307,9 @@ function printTasks() {
 //TODO: pop the term from the notification list.
 
 function scrapForBatchs(url) {
-  if(!captcha) {
+  if (!captcha) {
     $.ajax({
-      url: 'https://' + ((localStorage['Sandbox']) ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&requesterId=' + url['id'],
+      url: 'https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&requesterId=' + url['id'],
       success: function(result) {
         var spanText = $(result).find("td:contains('Results')").text();
         var resPattern = /of (.*) Results/;
@@ -319,10 +324,10 @@ function scrapForBatchs(url) {
             console.log('REQUESTER. Before: ' + old_res + ' After: ' + res);
             if (res > old_res) {
               var diff = res - old_res;
-              if (localStorage['Reqnotif']) {
+              if (localStorage['Reqnotif'] === "true") {
                 updates = updates + diff;
               }
-              localStorage['batchs'] = true;
+              localStorage['batchs'] = "true";
               var diff = res - old_res;
               console.log('Requester diff: ' + diff);
               updateUnreadCount();
@@ -331,13 +336,13 @@ function scrapForBatchs(url) {
               }
               localStorage['newbatchs'] = JSON.stringify(newbatchs);
             }
-            saverequesters();
+            saveRequesters();
           }
         } else {
           //TODO: add maxrate case ...
           var id = url['id'];
           index[id].numtask = 0;
-          saverequesters();
+          saveRequesters();
         }
       },
       error: function(xhr, status) {
@@ -350,13 +355,13 @@ function scrapForBatchs(url) {
 }
 
 function scrapForSearch(phrase) {
-  if(!captcha) {
+  if (!captcha) {
     $.ajax({
-      url: 'https://' + ((localStorage['Sandbox']) ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&searchWords=' + phrase['phrase'],
+      url: 'https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&searchWords=' + phrase['phrase'],
       success: function(result) {
         var spanText = $(result).find("td:contains('Results')").text();
         var resPattern = /of (.*) Results/;
-        console.log('https://' + ((localStorage['Sandbox']) ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&searchWords=' + phrase['phrase']);
+        console.log('https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&searchWords=' + phrase['phrase']);
         var res = spanText.match(resPattern);
         if (res) {
           res = res[1];
@@ -368,10 +373,10 @@ function scrapForSearch(phrase) {
             modifyCount(phrase['phrase'], res);
             if (res > old_res) {
               var diff = res - old_res;
-              if (localStorage['Termnotif']) {
+              if (localStorage['Termnotif'] === "true") {
                 updates = updates + diff;
               }
-              localStorage['search'] = true;
+              localStorage['search'] = "true";
               console.log('Search diff: ' + diff);
               updateUnreadCount();
               if (!(phrase in newterms)) {
@@ -379,19 +384,21 @@ function scrapForSearch(phrase) {
               }
               localStorage['newterms'] = JSON.stringify(newterms);
             }
-            savesearchterms();
+            saveSearchTerms();
           }
         } else {
-           //TODO: add maxrate case ...
-           modifyCount(phrase['phrase'], 0);
-           savesearchterms();
+          //TODO: add maxrate case ...
+          modifyCount(phrase['phrase'], 0);
+          saveSearchTerms();
         }
       },
       error: function(xhr, status) {
-        console.log('something went wrong ! ' + phrase) ;
+        console.log('something went wrong ! ' + phrase);
       }
     });
-  } else {      console.log('[msg]captach on! keyword request blocked');}
+  } else {
+    console.log('[msg]captach on! keyword request blocked');
+  }
 }
 
 // chrome.storage.onChanged.addListener(function(changes, namespace) {
@@ -517,10 +524,12 @@ function updateIcon(money) {
     chrome.browserAction.setIcon({
       path: "icons/icon19.png"
     });
-    if(money && money == true) {
-      chrome.browserAction.setBadgeBackgroundColor({ color: "#00FF00"});
+    if (money && money == true) {
+      chrome.browserAction.setBadgeBackgroundColor({
+        color: "#00FF00"
+      });
       chrome.browserAction.setBadgeText({
-      text: "$"
+        text: "$"
       });
     } else {
       chrome.browserAction.setBadgeBackgroundColor({
@@ -610,7 +619,7 @@ function onAlarm(alarm) {
 
 function onWatchdog() {
   getWorkerStats();
-  if(updates == 0){
+  if (updates == 0) {
     updateUnreadCount();
   }
   chrome.alarms.get('refresh', function(alarm) {
@@ -626,8 +635,10 @@ function onWatchdog() {
     }
   });
   // re-init the random watchdog
-  var delay = Math.floor(Math.random()*6)+1;
-  chrome.alarms.create('watchdog', {periodInMinutes: delay});
+  var delay = Math.floor(Math.random() * 6) + 1;
+  chrome.alarms.create('watchdog', {
+    periodInMinutes: delay
+  });
 }
 
 if (oldChromeVersion) {
