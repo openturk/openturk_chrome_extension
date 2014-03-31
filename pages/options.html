@@ -15,7 +15,6 @@
   body {
     font-family: verdana,helvetica, arial, sans-serif;
     font-size: 10pt;
-    -webkit-font-smoothing:antialiased;
     margin: 0 auto;
     float: center;
     width: 400px;
@@ -58,7 +57,7 @@
       <p>:: Daily Target Earning = <label id="price" style="color: red;"></label></p>
       $1 <input type="range" name="target" id="target" min="1" max="100"> $100
       <p>Daily progress bar:
-      <span class="inlinebar"></span>
+        <span class="inlinebar"></span>
       </p>
       <hr class="break">
 
@@ -76,6 +75,36 @@
       <ul id="searchterms">
         <li><img src="images/spin.gif"></li>
       </ul>
+      <hr class="break">
+
+      <p>:: Edit your qualifications</p>
+      <table>
+        <tr>
+          <td>Master</td>
+          <td><input type="radio" class='qualif-tabs-radio' name="Master" value="true"> Yes</td>
+          <td><input type="radio" class="second-radio qualif-tabs-radio" name="Master" value="false"> No</td>
+        </tr>
+        <tr>
+          <td>Categorization Master</td>
+          <td><input type="radio" class='qualif-tabs-radio' name="CatMaster" value="true"> Yes</td>
+          <td><input type="radio" class="second-radio qualif-tabs-radio" name="CatMaster" value="false"> No</td>
+        </tr>
+        <tr>
+          <td>Photo Moderation Master</td>
+          <td><input type="radio" class='qualif-tabs-radio' name="PhotoMaster" value="true"> Yes</td>
+          <td><input type="radio" class="second-radio qualif-tabs-radio" name="PhotoMaster" value="false"> No</td>
+        </tr>
+        <tr>
+          <td>Total approved HITs</td>
+          <td><input type="number" id="HITTotal" style="width: 50px"></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>HIT approval rate (%)</td>
+          <td><input type="number" id="HITApproval" style="width: 50px"></td>
+          <td>%</td>
+        </tr>
+      </table>
       <hr class="break">
 
       <p>:: Enable automatic and anonymous HIT sharing in order to create better recommendations.

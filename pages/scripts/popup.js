@@ -524,30 +524,26 @@ function fetchRecommendation() {
 
 function workerQualified(requiredQualifications) {
   var workerQualification = {
-    cat_master: false,
-    photo_master: false,
-    master: false,
+    cat_master: localStorage['CatMaster'],
+    photo_master: localStorage['PhotoMaster'],
+    master: localStorage['Master'],
     approved_hit: {
-      value: 100
+      value: localStorage['HITTotal']
     },
     hit_approval_rate: {
-      value: null
+      value: localStorage['HITApproval']
     }
   };
 
-  if(requiredQualifications['cat_master'] && !workerQualification['cat_master']) {
+  if(requiredQualifications['cat_master'] && workerQualification['cat_master'] === "false") {
     return false;
   }
 
-  if(requiredQualifications['photo_master'] && !workerQualification['photo_master']) {
+  if(requiredQualifications['photo_master'] && workerQualification['photo_master'] === "false") {
     return false;
   }
 
-  if(requiredQualifications['master'] && !workerQualification['master']) {
-    return false;
-  }
-
-  if(requiredQualifications['master'] && !workerQualification['master']) {
+  if(requiredQualifications['master'] && workerQualification['master'] === "false") {
     return false;
   }
 

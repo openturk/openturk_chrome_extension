@@ -37,7 +37,10 @@ $(function() {
   });
 
   restoreOptions();
-  $('.sandbox-tabs-radio, .reqnotif-tabs-radio, .termnotif-tabs-radio, #RequestInterval, #target, .logging-tabs-radio').change(function() {
+  $('.sandbox-tabs-radio, .reqnotif-tabs-radio, .termnotif-tabs-radio, #RequestInterval').change(function() {
+    saveOptions();
+  });
+  $('#target, .logging-tabs-radio, .qualif-tabs-radio, #HITTotal, #HITApproval').change(function() {
     saveOptions();
   });
 
@@ -88,6 +91,11 @@ var selectReqInterval;
 var radioSandbox;
 var radioReq;
 var radioTerm;
+var radioMaster;
+var radioCatMaster;
+var radioPhotoMaster;
+var HITTotal;
+var HITApproval;
 
 function savesearchterms() {
   chrome.storage.sync.set({
@@ -160,6 +168,11 @@ function initVariables() {
   radioReq = document.getElementsByName("Reqnotif");
   radioTerm = document.getElementsByName("Termnotif");
   radioLog = document.getElementsByName("Logging");
+  radioMaster = document.getElementsByName("Master");
+  radioCatMaster = document.getElementsByName("CatMaster");
+  radioPhotoMaster = document.getElementsByName("PhotoMaster");
+  HITTotal = document.getElementById("HITTotal");
+  HITApproval = document.getElementById("HITApproval");
   targetField = $("#target");
 }
 
@@ -236,6 +249,30 @@ function restoreOptions() {
       radioLog[i].checked = "true";
     }
   }
+  var masterTabs = localStorage["Master"];
+  for (i = 0; i < radioMaster.length; i++) {
+    if (radioMaster[i].value == masterTabs) {
+      radioMaster[i].checked = "true";
+    }
+  }
+  var catMasterTabs = localStorage["CatMaster"];
+  for (i = 0; i < radioCatMaster.length; i++) {
+    if (radioCatMaster[i].value == catMasterTabs) {
+      radioCatMaster[i].checked = "true";
+    }
+  }
+  var photoMasterTabs = localStorage["PhotoMaster"];
+  for (i = 0; i < radioPhotoMaster.length; i++) {
+    if (radioPhotoMaster[i].value == photoMasterTabs) {
+      radioPhotoMaster[i].checked = "true";
+    }
+  }
+
+  var HITTotalField = localStorage["HITTotal"];
+  HITTotal.value = HITTotalField;
+  var HITApprovalField = localStorage["HITApproval"];
+  HITApproval.value = HITApprovalField;
+
   var num = localStorage["Target"];
   targetField.val(num / 100);
   $("#price").html("$" + num / 100);
@@ -276,6 +313,27 @@ function saveOptions() {
       break;
     }
   }
+  for (i = 0; i < radioMaster.length; i++) {
+    if (radioMaster[i].checked) {
+      localStorage["Master"] = radioMaster[i].value;
+      break;
+    }
+  }
+  for (i = 0; i < radioCatMaster.length; i++) {
+    if (radioCatMaster[i].checked) {
+      localStorage["CatMaster"] = radioCatMaster[i].value;
+      break;
+    }
+  }
+  for (i = 0; i < radioPhotoMaster.length; i++) {
+    if (radioPhotoMaster[i].checked) {
+      localStorage["PhotoMaster"] = radioPhotoMaster[i].value;
+      break;
+    }
+  }
+
+  localStorage["HITTotal"] = HITTotal.value;
+  localStorage["HITApproval"] = HITApproval.value;
 
   localStorage["Target"] = parseInt(targetField.val()) * 100;
   $("#price").html("$" + targetField.val());
