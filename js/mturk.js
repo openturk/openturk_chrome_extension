@@ -81,6 +81,20 @@ $(document).ready(function() {
         var duration = $.trim($("table").find("td:contains('Duration')").next().text());
         var hit_name = $.trim($(".capsulelink_bold").find('div').html());
 
+        var found, master;
+        found = $('body').find("td.capsule_field_text:contains('Categorization Masters has been granted')");
+        if (found.length > 0) {
+          master = 'Categorization Master';
+        }
+        found = $('body').find("td.capsule_field_text:contains('Photo Moderation Masters has been granted')");
+        if (found.length > 0) {
+          master = 'Photo Moderation Master';
+        }
+        found = $('body').find("td.capsule_field_text:contains('Masters has been granted')");
+        if (found.length > 0) {
+          master = 'Master';
+        }
+
         var groupId = getUrlParameters()['groupId'];
         if (!groupId) {
           groupId = $('input[name="groupId"]').val();
@@ -96,7 +110,8 @@ $(document).ready(function() {
           hits_available: hitsAvailable,
           autoaccepted: autoAccepted,
           hit_skipped: hitSkipped,
-          batch_skipped: batchSkipped
+          batch_skipped: batchSkipped,
+          master: master
         };
         request = $.ajax({
           url: 'http://alpha.openturk.com/endpoint/log',
@@ -134,6 +149,20 @@ $(document).ready(function() {
           requesterId = getUrlParameters()['requesterId'];
         }
 
+        var found, master;
+        found = $('body').find("td.capsule_field_text:contains('Categorization Masters has been granted')");
+        if (found.length > 0) {
+          master = 'Categorization Master';
+        }
+        found = $('body').find("td.capsule_field_text:contains('Photo Moderation Masters has been granted')");
+        if (found.length > 0) {
+          master = 'Photo Moderation Master';
+        }
+        found = $('body').find("td.capsule_field_text:contains('Masters has been granted')");
+        if (found.length > 0) {
+          master = 'Master';
+        }
+
         var data = {
           worker_id: workerId,
           group_id: groupId,
@@ -142,6 +171,7 @@ $(document).ready(function() {
           hit_name: hit_name,
           requester_id: requesterId,
           hits_available: hitsAvailable,
+          master: master,
           message: $('#recommend_message').val()
         };
 
