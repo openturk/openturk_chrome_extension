@@ -535,38 +535,38 @@ function workerQualified(requiredQualifications) {
     }
   };
 
-  if(requiredQualifications['cat_master'] && workerQualification['cat_master'] === "false") {
+  if (requiredQualifications['cat_master'] && workerQualification['cat_master'] === "false") {
     return false;
   }
 
-  if(requiredQualifications['photo_master'] && workerQualification['photo_master'] === "false") {
+  if (requiredQualifications['photo_master'] && workerQualification['photo_master'] === "false") {
     return false;
   }
 
-  if(requiredQualifications['master'] && workerQualification['master'] === "false") {
+  if (requiredQualifications['master'] && workerQualification['master'] === "false") {
     return false;
   }
 
-  if(requiredQualifications['approved_hit']['value'] !== null) {
+  if (requiredQualifications['approved_hit']['value'] !== null) {
     reqVal = requiredQualifications['approved_hit']['value'];
     reqSign = requiredQualifications['approved_hit']['sign'];
     workVal = workerQualification['approved_hit']['value'];
-    if(reqSign == "greater than" && workVal <= reqVal) {
+    if (reqSign == "greater than" && workVal <= reqVal) {
       return false;
     }
-    if(reqSign == "not less than" && workVal < reqVal) {
+    if (reqSign == "not less than" && workVal < reqVal) {
       return false;
     }
   }
 
-  if(requiredQualifications['hit_approval_rate']['value'] !== null) {
+  if (requiredQualifications['hit_approval_rate']['value'] !== null) {
     reqVal = requiredQualifications['hit_approval_rate']['value'];
     reqSign = requiredQualifications['hit_approval_rate']['sign'];
     workVal = workerQualification['hit_approval_rate']['value'];
-    if(reqSign == "greater than" && workVal <= reqVal) {
+    if (reqSign == "greater than" && workVal <= reqVal) {
       return false;
     }
-    if(reqSign == "not less than" && workVal < reqVal) {
+    if (reqSign == "not less than" && workVal < reqVal) {
       return false;
     }
   }
@@ -621,8 +621,10 @@ function validateRecommendation(url, reward, shares, callback) {
         qualifications['approved_hit']['value'] = $(found).eq(0).html().match(matchPattern)[2];
       }
 
-      OT.recAppended++;
-      insertRecommendation(data, title, reward, shares);
+      if (workerQualified(qualifications)) {
+        OT.recAppended++;
+        insertRecommendation(data, title, reward, shares);
+      }
     }
     callback(url);
   });
