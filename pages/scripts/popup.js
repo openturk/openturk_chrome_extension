@@ -592,7 +592,7 @@ function validateRecommendation(url, reward, shares, callback) {
 
   $.get(url, {}, function(data) {
     var title = $(data).find('.capsulelink_bold');
-    console.log(url);
+    var matchPattern;
     OT.recChecked++;
     if (title.length > 0) { //then user can preview
       var found, qualif;
@@ -610,13 +610,13 @@ function validateRecommendation(url, reward, shares, callback) {
       }
       found = $(data).find("td.capsule_field_text:contains('Total approved HITs is')");
       if (found.length > 0) {
-        var matchPattern = /is ([a-z ]+) ([0-9]+)/;
+        matchPattern = /is ([a-z ]+) ([0-9]+)/;
         qualifications['approved_hit']['sign'] = $(found).eq(0).html().match(matchPattern)[1];
         qualifications['approved_hit']['value'] = $(found).eq(0).html().match(matchPattern)[2];
       }
       found = $(data).find("td.capsule_field_text:contains('HIT approval rate (%) is')");
       if (found.length > 0) {
-        var matchPattern = /is ([a-z ]+) ([0-9]+)/;
+        matchPattern = /is ([a-z ]+) ([0-9]+)/;
         qualifications['approved_hit']['sign'] = $(found).eq(0).html().match(matchPattern)[1];
         qualifications['approved_hit']['value'] = $(found).eq(0).html().match(matchPattern)[2];
       }
@@ -803,7 +803,7 @@ function getStats() {
       if (row.className.match('grayHead')) {
         continue;
       }
-      if (row.className.match('odd|even') == null) {
+      if (row.className.match('odd|even') === null) {
         continue;
       }
 
@@ -826,7 +826,7 @@ function getStats() {
 
     }
 
-    var data = {
+    data = {
       labels: dates_data,
       datasets: [{
         fillColor: "rgba(220,220,220,0.5)",
@@ -880,7 +880,7 @@ function legend(parent, data) {
 // Earning Projection Function
 var STATUSDETAIL_DELAY = 500;
 var MPRE_DELAY = 2000;
-var STD_DAILY = parseInt(localStorage['Target']);
+var STD_DAILY = parseInt(localStorage['Target'], 10);
 var DASHBOARD_URL = 'https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/dashboard';
 var STATUSDETAIL_BASE_URL = '/mturk/statusdetail?encodedDate=';
 var STATUSDETAIL_FULL_URL = 'https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/statusdetail?encodedDate=';
@@ -962,7 +962,7 @@ function statusdetail_loop(next_URL) {
 function setCookie(c_name, value, exdays) {
   var exdate = new Date();
   exdate.setDate(exdate.getDate() + exdays);
-  var c_value = escape(value) + ((exdays == null) ? '' : '; expires=' + exdate.toUTCString());
+  var c_value = escape(value) + ((exdays === null) ? '' : '; expires=' + exdate.toUTCString());
   document.cookie = c_name + '=' + c_value;
 }
 
