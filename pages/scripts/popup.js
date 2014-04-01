@@ -338,7 +338,20 @@ var OT = {
         fetchRecommendation();
       } else {
         OT.recCurrentPage++;
-        var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/recommendations?page=' + OT.recCurrentPage).done(function(results) {
+        var master = [];
+        if(localStorage['Master'] == "true") {
+          master.push('Master');
+        }
+        if(localStorage['CatMaster'] == "true") {
+          master.push('CatMaster');
+        }
+        if(localStorage['PhotoMaster'] == "true") {
+          master.push('PhotoMaster');
+        }
+        master = master.join(',');
+        console.log(master);
+        var recommendationUrl = 'http://alpha.openturk.com/endpoint/recommendations';
+        var jqxhr = $.getJSON(recommendationUrl + '?page=' + OT.recCurrentPage + '&master=' + master).done(function(results) {
           console.log('Loading recommendation page #' + OT.recCurrentPage);
           if (results.stars) {
             console.log('stars returned something: ' + results + ' ' + results.stars.length);

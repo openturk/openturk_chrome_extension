@@ -84,11 +84,11 @@ $(document).ready(function() {
         var found, master;
         found = $('body').find("td.capsule_field_text:contains('Categorization Masters has been granted')");
         if (found.length > 0) {
-          master = 'Categorization Master';
+          master = 'CatMaster';
         }
         found = $('body').find("td.capsule_field_text:contains('Photo Moderation Masters has been granted')");
         if (found.length > 0) {
-          master = 'Photo Moderation Master';
+          master = 'PhotoMaster';
         }
         found = $('body').find("td.capsule_field_text:contains('Masters has been granted')");
         if (found.length > 0) {
@@ -152,11 +152,11 @@ $(document).ready(function() {
         var found, master;
         found = $('body').find("td.capsule_field_text:contains('Categorization Masters has been granted')");
         if (found.length > 0) {
-          master = 'Categorization Master';
+          master = 'CatMaster';
         }
         found = $('body').find("td.capsule_field_text:contains('Photo Moderation Masters has been granted')");
         if (found.length > 0) {
-          master = 'Photo Moderation Master';
+          master = 'PhotoMaster';
         }
         found = $('body').find("td.capsule_field_text:contains('Masters has been granted')");
         if (found.length > 0) {
