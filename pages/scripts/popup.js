@@ -446,7 +446,7 @@ function appendRequester(url) {
 
   if (newbatchs && $.inArray(url['id'], newbatchs) > -1) {
     batchs.innerText = "(" + url['numtask'] + " batchs) updated!";
-    batchs.className = "hint_new  ";
+    batchs.className = "hint_new ";
   } else {
     batchs.innerText = "(" + url['numtask'] + " batchs)";
   }
@@ -690,7 +690,7 @@ function loadUIObjects() {
     $(items.requesters).each(function() {
       obj.requesters.push(this);
       //console.log(this);
-      if (this['numtask']) {
+      if (this['numtask'] && !this['blocked']) {
         appendRequester(this);
         count = count + 1;
         $("#content-msg").hide();
