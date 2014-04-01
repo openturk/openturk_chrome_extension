@@ -149,11 +149,25 @@ function initVariables() {
     });
     indexRequesters();
     // Setup the requester delete action
-    $('.requester-delete').click(function(e) {
+    $('.requester-unsubscribe').click(function(e) {
       e.preventDefault();
       console.log("clicked");
       chrome.runtime.sendMessage({
         deleteRequester: {
+          "name": $(this).attr('data-name'),
+          "id": $(this).attr('data-id'),
+          "numtask": 0
+        }
+      }, function(response) {});
+      var $a = $(this),
+        $li = $a.closest('li');
+      $li.remove();
+    });
+    $('.requester-unblock').click(function(e) {
+      e.preventDefault();
+      console.log("clicked");
+      chrome.runtime.sendMessage({
+        unblockRequester: {
           "name": $(this).attr('data-name'),
           "id": $(this).attr('data-id'),
           "numtask": 0
@@ -216,12 +230,13 @@ var TURKOPTICON_BASE = "http://turkopticon.differenceengines.com/";
 function plusRequester(requester) {
   var rid = requester['id'];
   var rname = requester['name'];
-  var $li = $('<li><img src="http://www.gravatar.com/avatar.php?gravatar_id=' + md5(rid) + '&r=PG&s=15&default=identicon"></img> <span class="requester">' + requester['name'] + '</span> <a href="#" class="requester-delete" data-id="' + rid + '"> <span class="del fa fa-trash-o"></span></a></li>');
+  var $li = $('<li><img src="http://www.gravatar.com/avatar.php?gravatar_id=' + md5(rid) + '&r=PG&s=15&default=identicon"></img> <span class="requester">' + requester['name'] + '</span> <a href="#" class="requester-unsubscribe" data-id="' + rid + '"> <span class="del fa fa-trash-o"></span></a></li>');
+  var $li2 = $('<li><img src="http://www.gravatar.com/avatar.php?gravatar_id=' + md5(rid) + '&r=PG&s=15&default=identicon"></img> <span class="requester">' + requester['name'] + '</span> <a href="#" class="requester-unblock" data-id="' + rid + '"> <span class="del fa fa-trash-o"></span></a></li>');
   var TOEndpoint = 'http://api.turkopticon-devel.differenceengines.com/multi-attrs.php?ids=' + rid;
   if (!requester['blocked']) {
     $('#requesters').append($li);
   } else {
-    $('#requesters_blocked').append($li);
+    $('#requesters_blocked').append($li2);
   }
   var jqxhr = $.getJSON(TOEndpoint).done(rid, rname, function(data) {
     var d = [];

@@ -62,7 +62,7 @@ $.ajax({
 // Functions !
 
 function SetInitialOption(key, value) {
-  if (localStorage[key] == null) {
+  if (localStorage[key] === null) {
     localStorage[key] = value;
   }
 }
@@ -89,11 +89,9 @@ chrome.runtime.onMessage.addListener(
       });
     }
 
-    if (request.captcha == true) {
-      console.log('[msg]captcha detected!');
+    if (request.captcha) {
       captcha = true;
     } else {
-      console.log('[msg]captcha clear!');
       captcha = false;
     }
 
@@ -131,6 +129,10 @@ chrome.runtime.onMessage.addListener(
       console.log('msg: deleting requester' + request.deleteRequester);
       deleteRequester(request.deleteRequester);
     }
+    if (request.unblockRequester) {
+      console.log('msg: unblocking requester' + request.unblockRequester);
+      unblockRequester(request.unblockRequester);
+    }
     if (request.fetch) {
       console.log('msg: reloading data');
       loadSearchTerms();
@@ -142,9 +144,22 @@ chrome.runtime.onMessage.addListener(
 function subscribe(req, unsubscribe) {
   data = {
     requester_id: req.id,
-    name: req.name
+    name: req.name || "undefined"
   };
   var endpoint = 'http://alpha.openturk.com/endpoint/' + (unsubscribe === true ? 'unsubscribe' : 'subscribe');
+  request = $.ajax({
+    url: endpoint,
+    type: "POST",
+    data: data
+  }).always(function(data) {});
+}
+
+function block(req, unblock) {
+  data = {
+    requester_id: req.id,
+    name: req.name || "undefined"
+  };
+  var endpoint = 'http://alpha.openturk.com/endpoint/' + (unblock === true ? 'unblock' : 'block');
   request = $.ajax({
     url: endpoint,
     type: "POST",
@@ -155,13 +170,17 @@ function subscribe(req, unsubscribe) {
 function addRequester(req) {
   console.log('saving');
   if (!obj.requesters) {
-    obj['requesters'] = []
+    obj['requesters'] = [];
   }
   obj.requesters.push(req);
   saveRequesters();
   getNewBatchs();
   indexRequesters();
-  subscribe(req);
+  if(req.blocked) {
+    block(req);
+  } else {
+    subscribe(req);
+  }
 }
 
 function deleteRequester(req) {
@@ -174,12 +193,22 @@ function deleteRequester(req) {
   subscribe(req, true);
 }
 
+function unblockRequester(req) {
+  console.log(req);
+  obj.requesters = obj.requesters.filter(function(el) {
+    return el.id != req.id;
+  });
+  saveRequesters();
+  indexRequesters();
+  block(req, true);
+}
+
 function loadRequesters() {
   storage.get('requesters', function(items) {
     obj.requesters = [];
     $(items.requesters).each(function() {
       obj.requesters.push(this);
-    })
+    });
     indexRequesters();
     getNewBatchs();
   });
@@ -200,7 +229,7 @@ function loadWorkHistory() {
     obj.workhistory = [];
     $(items.workhistory).each(function() {
       obj.workhistory.push(this);
-    })
+    });
   });
 }
 
@@ -277,7 +306,7 @@ function getWorkerStats() {
       // };
       // //obj.workhistory.push(balance);
       // //saveWorkHist();
-      var total_earnings = parseInt($(rewards[2]).html().replace('$', ''));
+      var total_earnings = parseInt($(rewards[2]).html().replace('$', ''), 10);
       if (total_earnings > localStorage.earnings) {
         updateNewMoney();
         localStorage.earnings = total_earnings;
@@ -308,9 +337,10 @@ function scrapForBatchs(url) {
         var spanText = $(result).find("td:contains('Results')").text();
         var resPattern = /of (.*) Results/;
         var res = spanText.match(resPattern);
+        var id;
         if (res) {
           res = res[1];
-          var id = url['id'];
+          id = url['id'];
           var old_res = index[id].numtask;
           console.log('Checking requester : ' + id);
           if (res != old_res) {
@@ -322,7 +352,7 @@ function scrapForBatchs(url) {
                 updates = updates + diff;
               }
               localStorage['batchs'] = "true";
-              var diff = res - old_res;
+              diff = res - old_res;
               console.log('Requester diff: ' + diff);
               updateUnreadCount();
               if (!(id in newbatchs)) {
@@ -334,7 +364,7 @@ function scrapForBatchs(url) {
           }
         } else {
           //TODO: add maxrate case ...
-          var id = url['id'];
+          id = url['id'];
           index[id].numtask = 0;
           saveRequesters();
         }
@@ -418,7 +448,7 @@ function setBadge(text) {
 // Setting an alarm scheduler
 function scheduleRequest() {
   console.log('scheduleRequest');
-  delay = parseInt(localStorage['RequestInterval']);
+  delay = parseInt(localStorage['RequestInterval'], 10);
   console.log('Scheduling for (in minutes): ' + delay);
 
   if (oldChromeVersion) {
@@ -503,7 +533,7 @@ function updateNewMoney() {
   animateFlip();
 }
 
-function updateIcon(money) {
+function updateIcon(isMoney) {
   if (!localStorage.hasOwnProperty('unreadCount')) {
     chrome.browserAction.setIcon({
       path: "icons/browser_action_disabled.png"
@@ -518,7 +548,7 @@ function updateIcon(money) {
     chrome.browserAction.setIcon({
       path: "icons/icon19.png"
     });
-    if (money && money == true) {
+    if (isMoney) {
       chrome.browserAction.setBadgeBackgroundColor({
         color: "#00FF00"
       });
@@ -559,7 +589,7 @@ LoadingAnimation.prototype.paintFrame = function() {
   this.current_++;
   if (this.current_ == this.maxCount_)
     this.current_ = 0;
-}
+};
 
 LoadingAnimation.prototype.start = function() {
   if (this.timerId_)
@@ -569,7 +599,7 @@ LoadingAnimation.prototype.start = function() {
   this.timerId_ = window.setInterval(function() {
     self.paintFrame();
   }, 100);
-}
+};
 
 LoadingAnimation.prototype.stop = function() {
   if (!this.timerId_)
@@ -577,7 +607,7 @@ LoadingAnimation.prototype.stop = function() {
 
   window.clearInterval(this.timerId_);
   this.timerId_ = 0;
-}
+};
 
 // Init stuff (from the gmail extension .. )
 
@@ -613,7 +643,7 @@ function onAlarm(alarm) {
 
 function onWatchdog() {
   getWorkerStats();
-  if (updates == 0) {
+  if (updates === 0) {
     updateUnreadCount();
   }
   chrome.alarms.get('refresh', function(alarm) {
