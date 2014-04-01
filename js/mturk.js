@@ -253,13 +253,18 @@ $(document).ready(function() {
         // Add subscribe button to HIT page
         storage.get('requesters', function(items) {
           var obj = items;
-          var already = {};
+          var alreadyFavd = {};
+          var alreadyBlocked = {};
           if (obj.requesters) {
             for (var j = 0; j < obj.requesters.length; j++) {
-              already[obj.requesters[j].id] = true;
+              if (!obj.requesters[j].blocked) {
+                alreadyFavd[obj.requesters[j].id] = true;
+              } else {
+                alreadyBlocked[obj.requesters[j].id] = true;
+              }
             }
           }
-          if (!(requesterId in already)) {
+          if (!(requesterId in alreadyFavd)) {
             $("#sharehit").parent().after('<td><a class="ot-subscribe" href="#" data-id="' + requesterId + '" data-name="' + requesterName + '"><span class="ot-subscribe-text">subscribe</span></a></td>');
             //bind events
             $('.ot-subscribe').click(function(e) {
@@ -291,10 +296,15 @@ $(document).ready(function() {
     //Add subscribe buttons
     storage.get('requesters', function(items) {
       var obj = items;
-      var already = {};
+      var alreadyFavd = {};
+      var alreadyBlocked = {};
       if (obj.requesters) {
         for (var j = 0; j < obj.requesters.length; j++) {
-          already[obj.requesters[j].id] = true;
+          if (!obj.requesters[j].blocked) {
+            alreadyFavd[obj.requesters[j].id] = true;
+          } else {
+            alreadyBlocked[obj.requesters[j].id] = true;
+          }
         }
       }
       var tasks = $('div > table > tbody > tr > td > table');
@@ -306,7 +316,9 @@ $(document).ready(function() {
         var requesterName = requester.html();
         var insertAfterElt = tr.find('td').eq(1);
 
-        if (!(requesterId in already)) {
+        if (requesterId in alreadyBlocked) {
+          insertAfterElt.parent().parent().parent().parent().parent().parent().parent().parent().parent().parent().parent().parent().parent().css('opacity', '0.3');
+        } else if (!(requesterId in alreadyFavd)) {
           insertAfterElt.after('<a class="ot-subscribe" href="#" data-id="' + requesterId + '" data-name="' + requesterName + '"><span class="ot-subscribe-text">Subscribe</span></a>');
         }
       }

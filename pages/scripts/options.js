@@ -82,6 +82,34 @@ $(function() {
       $(this).val('');
     }
   });
+  $("#blocked_list").autocomplete({
+    source: function(request, response) {
+      jQuery.get("http://alpha.openturk.com/endpoint/requester", {
+        query: request.term
+      }, function(data) {
+        response(data);
+      }, 'json');
+    },
+    minLength: 3,
+    select: function(event, ui) {
+      event.preventDefault();
+      if (!index[ui.item.id]) {
+        var new_req = {
+          "name": ui.item.label,
+          "id": ui.item.id,
+          "numtask": 0,
+          "blocked": true
+        };
+        obj.requesters.push(new_req);
+        plusRequester(new_req);
+        indexRequesters();
+        chrome.runtime.sendMessage({
+          addRequester: new_req
+        }, function(response) {});
+      }
+      $(this).val('');
+    }
+  });
 });
 
 var obj = {};
@@ -112,6 +140,7 @@ function initVariables() {
   // Init the requesters
   chrome.storage.sync.get('requesters', function(items) {
     $('#requesters').empty();
+    $('#requesters_blocked').empty();
     // Loading the requesters.
     obj.requesters = [];
     $(items.requesters).each(function() {
@@ -189,7 +218,11 @@ function plusRequester(requester) {
   var rname = requester['name'];
   var $li = $('<li><img src="http://www.gravatar.com/avatar.php?gravatar_id=' + md5(rid) + '&r=PG&s=15&default=identicon"></img> <span class="requester">' + requester['name'] + '</span> <a href="#" class="requester-delete" data-id="' + rid + '"> <span class="del fa fa-trash-o"></span></a></li>');
   var TOEndpoint = 'http://api.turkopticon-devel.differenceengines.com/multi-attrs.php?ids=' + rid;
-  $('#requesters').append($li);
+  if (!requester['blocked']) {
+    $('#requesters').append($li);
+  } else {
+    $('#requesters_blocked').append($li);
+  }
   var jqxhr = $.getJSON(TOEndpoint).done(rid, rname, function(data) {
     var d = [];
     if (data[rid]) {
