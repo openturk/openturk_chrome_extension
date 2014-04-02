@@ -48,7 +48,7 @@ $.ajax({
     var spanText = $(result).filter("table").find("span:contains('Worker ID')").text();
     var workerIdPattern = /Worker ID: (.*)$/;
     var workerId = spanText.match(workerIdPattern);
-    if (workerId.length) {
+    if (workerId && workerId.length > 0) {
       localStorage.workerId = workerId[1];
     } else {
       localStorage.workerId = 'Not yet set';
@@ -66,12 +66,6 @@ function SetInitialOption(key, value) {
     localStorage[key] = value;
   }
 }
-
-// Some random init for test
-// storage.clear();
-// obj['requesters'] = [{"name":"CrowdSource","id":"A2SUM2D7EOAK1T","numtask":0},{"name":"Philippe Cudre-Mauroux","id":"A28PIN9Y6KHR3H","numtask":0},{"name":"Roman","id":"A165LMPFHNTKFG","numtask":0}];
-// storage.set(obj);
-
 
 // Set the Listeners
 chrome.runtime.onMessage.addListener(
