@@ -395,17 +395,25 @@ var OT = {
   get_worker_stats: function() {
     $.get('https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/dashboard', {}, function(data) {
       var rewards = $(data).find('.reward');
+      var total_approved = $(data).filter("table").find("td.metrics-table-first-value:contains('... Approved')").next().text();
       var approval_rate = $(data).filter("table").find("td.metrics-table-first-value:contains('... Approved')").next().next().text();
       var balance = {
         approved_hits: $(rewards[0]).html(),
         bonuses: $(rewards[1]).html(),
         total_earnings: $(rewards[2]).html(),
-        approval_rate: approval_rate
+        approval_rate: approval_rate,
+        total_approved: total_approved
       };
+      // For storage
       localStorage.setItem('balance', balance);
+      localStorage.setItem('HITTotal', total_approved);
+      localStorage.setItem('HITApproval', approval_rate);
+      // Balance
       $("#approved_hits").html(balance['approved_hits']);
       $("#bonuses").html(balance['bonuses']);
       $("#total_earnings").html(balance['total_earnings']);
+      // metrics
+      $("#total_approved").html(balance['total_approved']); 
       $("#approval_rate").html(balance['approval_rate']);
       OT.switch_balance();
       $('.inlinebar2').sparkline([100, localStorage.TGP, 100, 66, 33], {

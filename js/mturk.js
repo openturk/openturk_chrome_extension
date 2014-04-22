@@ -226,8 +226,11 @@ $(document).ready(function() {
     };
 
     // SHOW THE BUTTON ONLY ON THE FOLLOWING SCREENS: Preview, Accept, PreviewAndAccept
-    if (window.top.location.pathname === "/mturk/preview" || window.top.location.pathname === "/mturk/accept" || window.top.location.pathname === "/mturk/previewandaccept") {
-      // Add shareHit button and modal to HIT pages
+    if (window.top.location.pathname === "/mturk/preview" || window.top.location.pathname === "/mturk/accept" || 
+      window.top.location.pathname === "/mturk/previewandaccept" || window.top.location.pathname === "/mturk/findhits" ||
+      window.top.location.pathname === "/mturk/viewhits") {
+      
+      // 1. Add shareHit button and modal to HIT pages
       if ($('td[class="capsulelink_bold"]').length > 0) {
         var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
           var el = $('div > table > tbody > tr > td > table > tbody > tr').last();
@@ -276,7 +279,7 @@ $(document).ready(function() {
         });
       }
 
-      // Add shareHit button and modal to HIT finished screen
+      // 2. Add shareHit button and modal to HIT finished screen
       $hitFinished = $('#alertboxHeader');
       if ($hitFinished.length > 0) {
         var jqxhr1 = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
@@ -287,7 +290,7 @@ $(document).ready(function() {
         });
       }
 
-      //Add subscribe buttons
+      // 3. Add subscribe buttons
       storage.get('requesters', function(items) {
         var obj = items;
         var alreadyFavd = {};
@@ -329,8 +332,7 @@ $(document).ready(function() {
         });
       });
 
-      // MANUAL RECOMMENDATION HIT
-      // Add Recommendation button
+      // 4. Add The recommend me button
       $('#searchbar').after('<div class="clear"><a id="recommendation-button" href="#" class="ot-schedule"><i id="recommendation-button-i" class="fa fa-heart"></i> Recommend me a HIT</a></div>');
       $('#recommendation-button').click(function(e) {
         e.preventDefault();
