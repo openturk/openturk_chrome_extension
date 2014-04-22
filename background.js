@@ -84,8 +84,9 @@ chrome.runtime.onMessage.addListener(
     }
 
     if (request.checkQualification) {
+      response = workerQualified(request.checkQualification)
       sendResponse({
-        qualified: workerQualified(request.checkQualification)
+        qualified: response
       });
     }
 
@@ -153,6 +154,7 @@ function workerQualified(requiredQualifications) {
       value: localStorage['HITApproval']
     }
   };
+  console.log(workerQualification);
 
   if (requiredQualifications['cat_master'] && workerQualification['cat_master'] === "false") {
     return false;

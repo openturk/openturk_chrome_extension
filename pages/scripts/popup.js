@@ -581,21 +581,28 @@ function validateRecommendation(url, reward, shares, callback) {
       }
       found = $(data).find("td.capsule_field_text:contains('Total approved HITs is')");
       if (found.length > 0) {
-        matchPattern = /is ([a-z ]+) ([0-9]+)/;
+        matchPattern = /Total approved HITs is ([a-z ]+) ([0-9]+)/;
         qualifications['approved_hit']['sign'] = $(found).eq(0).html().match(matchPattern)[1];
         qualifications['approved_hit']['value'] = $(found).eq(0).html().match(matchPattern)[2];
       }
       found = $(data).find("td.capsule_field_text:contains('HIT approval rate (%) is')");
+      console.log(found);
       if (found.length > 0) {
-        matchPattern = /is ([a-z ]+) ([0-9]+)/;
-        qualifications['approved_hit']['sign'] = $(found).eq(0).html().match(matchPattern)[1];
-        qualifications['approved_hit']['value'] = $(found).eq(0).html().match(matchPattern)[2];
+        matchPattern = /HIT approval rate \(\%\) is ([a-z ]+) ([0-9]+)/;
+        qualifications['hit_approval_rate']['sign'] = $(found).eq(0).html().match(matchPattern)[1];
+        qualifications['hit_approval_rate']['value'] = $(found).eq(0).html().match(matchPattern)[2];
       }
       // Checking with BG if worker is qualified.
+      console.log('Now check the qualifications');
+      console.log(qualifications.approved_hit);
+      console.log(qualifications.hit_approval_rate);
       chrome.runtime.sendMessage({
-        checkQualifaction: qualifications
+        checkQualification: qualifications
       }, function(response) {
-          if (response === "true") {
+          console.log("BG ANS");
+          console.log(response.qualified);
+          if (response.qualified === true) {
+            console.log(response.qualified + "Add it!");
             OT.recAppended++;
             insertRecommendation(data, title, reward, shares);
           }
