@@ -751,7 +751,7 @@ function openLink(urlto) {
     if (results.length)
       chrome.tabs.update(results[0].id, {
         url: urlto,
-        active: true
+        active: false
       }, function() {
         window.close();
       });
