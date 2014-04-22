@@ -518,7 +518,7 @@ function fetchRecommendation() {
     //   continue;
     // }
     validateRecommendation(url, reward, shares, function(url) {
-      console.log('DONE CHECKING THIS: ' + url);
+      console.log("DONE CHECKING THIS: " + url);
       console.log("[RECAP] checked: " + OT.recChecked + ' added:' + OT.recAppended + '  .... Not reached 10');
       if (OT.recAppended < 10) {
         if (OT.stars.length > 0) {
@@ -544,59 +544,6 @@ function fetchRecommendation() {
       }
     });
   }
-}
-
-function workerQualified(requiredQualifications) {
-  var workerQualification = {
-    cat_master: localStorage['CatMaster'],
-    photo_master: localStorage['PhotoMaster'],
-    master: localStorage['Master'],
-    approved_hit: {
-      value: localStorage['HITTotal']
-    },
-    hit_approval_rate: {
-      value: localStorage['HITApproval']
-    }
-  };
-
-  if (requiredQualifications['cat_master'] && workerQualification['cat_master'] === "false") {
-    return false;
-  }
-
-  if (requiredQualifications['photo_master'] && workerQualification['photo_master'] === "false") {
-    return false;
-  }
-
-  if (requiredQualifications['master'] && workerQualification['master'] === "false") {
-    return false;
-  }
-
-  if (requiredQualifications['approved_hit']['value'] !== null) {
-    reqVal = requiredQualifications['approved_hit']['value'];
-    reqSign = requiredQualifications['approved_hit']['sign'];
-    workVal = workerQualification['approved_hit']['value'];
-    if (reqSign == "greater than" && workVal <= reqVal) {
-      return false;
-    }
-    if (reqSign == "not less than" && workVal < reqVal) {
-      return false;
-    }
-  }
-
-  if (requiredQualifications['hit_approval_rate']['value'] !== null) {
-    reqVal = requiredQualifications['hit_approval_rate']['value'];
-    reqSign = requiredQualifications['hit_approval_rate']['sign'];
-    workVal = workerQualification['hit_approval_rate']['value'];
-    if (reqSign == "greater than" && workVal <= reqVal) {
-      return false;
-    }
-    if (reqSign == "not less than" && workVal < reqVal) {
-      return false;
-    }
-  }
-  // All comparison done, worker seems qualified
-  return true;
-
 }
 
 function validateRecommendation(url, reward, shares, callback) {
@@ -644,13 +591,19 @@ function validateRecommendation(url, reward, shares, callback) {
         qualifications['approved_hit']['sign'] = $(found).eq(0).html().match(matchPattern)[1];
         qualifications['approved_hit']['value'] = $(found).eq(0).html().match(matchPattern)[2];
       }
-
-      if (workerQualified(qualifications)) {
-        OT.recAppended++;
-        insertRecommendation(data, title, reward, shares);
-      }
+      // Checking with BG if worker is qualified.
+      chrome.runtime.sendMessage({
+        checkQualifaction: qualifications
+      }, function(response) {
+          if (response === "true") {
+            OT.recAppended++;
+            insertRecommendation(data, title, reward, shares);
+          }
+          callback(url);
+      });
+    } else {
+      callback(url);
     }
-    callback(url);
   });
 }
 

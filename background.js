@@ -83,6 +83,12 @@ chrome.runtime.onMessage.addListener(
       });
     }
 
+    if (request.checkQualification) {
+      sendResponse({
+        qualified: workerQualified(request.checkQualification)
+      });
+    }
+
     if (request.captcha) {
       captcha = true;
     } else {
@@ -134,6 +140,58 @@ chrome.runtime.onMessage.addListener(
     }
   }
 );
+
+function workerQualified(requiredQualifications) {
+  var workerQualification = {
+    cat_master: localStorage['CatMaster'],
+    photo_master: localStorage['PhotoMaster'],
+    master: localStorage['Master'],
+    approved_hit: {
+      value: localStorage['HITTotal']
+    },
+    hit_approval_rate: {
+      value: localStorage['HITApproval']
+    }
+  };
+
+  if (requiredQualifications['cat_master'] && workerQualification['cat_master'] === "false") {
+    return false;
+  }
+
+  if (requiredQualifications['photo_master'] && workerQualification['photo_master'] === "false") {
+    return false;
+  }
+
+  if (requiredQualifications['master'] && workerQualification['master'] === "false") {
+    return false;
+  }
+
+  if (requiredQualifications['approved_hit']['value'] !== null) {
+    reqVal = requiredQualifications['approved_hit']['value'];
+    reqSign = requiredQualifications['approved_hit']['sign'];
+    workVal = workerQualification['approved_hit']['value'];
+    if (reqSign == "greater than" && workVal <= reqVal) {
+      return false;
+    }
+    if (reqSign == "not less than" && workVal < reqVal) {
+      return false;
+    }
+  }
+
+  if (requiredQualifications['hit_approval_rate']['value'] !== null) {
+    reqVal = requiredQualifications['hit_approval_rate']['value'];
+    reqSign = requiredQualifications['hit_approval_rate']['sign'];
+    workVal = workerQualification['hit_approval_rate']['value'];
+    if (reqSign == "greater than" && workVal <= reqVal) {
+      return false;
+    }
+    if (reqSign == "not less than" && workVal < reqVal) {
+      return false;
+    }
+  }
+  // All comparison done, worker seems qualified
+  return true;
+}
 
 function subscribe(req, unsubscribe) {
   data = {

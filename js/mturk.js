@@ -363,12 +363,48 @@ $(document).ready(function() {
       $.get(url, {}, function(data) {
         var title = $(data).find('.capsulelink_bold');
         attempt++;
-        if (title.length > 0) {
-          console.log(url + " - success redirect");
-          $('#recommendation-button-i').removeClass("fa-spinner fa-spin");
-          callback(url);
+        if (title.length > 0) { //then user can preview
+          // Now check qualification: 
+          var found, qualif;
+          found = $(data).find("td.capsule_field_text:contains('Categorization Masters has been granted')");
+          if (found.length > 0) {
+            qualifications['cat_master'] = true;
+          }
+          found = $(data).find("td.capsule_field_text:contains('Photo Moderation Masters has been granted')");
+          if (found.length > 0) {
+            qualifications['photo_master'] = true;
+          }
+          found = $(data).find("td.capsule_field_text:contains('Masters has been granted')");
+          if (found.length > 0) {
+            qualifications['master'] = true;
+          }
+          found = $(data).find("td.capsule_field_text:contains('Total approved HITs is')");
+          if (found.length > 0) {
+            matchPattern = /is ([a-z ]+) ([0-9]+)/;
+            qualifications['approved_hit']['sign'] = $(found).eq(0).html().match(matchPattern)[1];
+            qualifications['approved_hit']['value'] = $(found).eq(0).html().match(matchPattern)[2];
+          }
+          found = $(data).find("td.capsule_field_text:contains('HIT approval rate (%) is')");
+          if (found.length > 0) {
+            matchPattern = /is ([a-z ]+) ([0-9]+)/;
+            qualifications['approved_hit']['sign'] = $(found).eq(0).html().match(matchPattern)[1];
+            qualifications['approved_hit']['value'] = $(found).eq(0).html().match(matchPattern)[2];
+          }
+
+          chrome.runtime.sendMessage({
+            checkQualifaction: qualifications
+          }, function(response) {
+              if (response === "true") {
+                console.log(url + " - success redirect");
+                $('#recommendation-button-i').removeClass("fa-spinner fa-spin");
+                callback(url);
+              } else {
+                console.log("[MJS] Unqualified recommendation - Retry" + url);
+                fetchHit();
+              } 
+          });
         } else {
-          console.log(url + " - failure retry");
+          console.log("[MJS] Innaccessible recommendation - Retry" + url);
           fetchHit();
         }
       });
