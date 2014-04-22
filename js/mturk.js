@@ -187,21 +187,13 @@ $(document).ready(function() {
       get_logging: true
     }, function(response) {
       if (response.logging === "true") {
-        if ($('form[name=hitForm]').length > 0) {
-          form = $('form[name=hitForm]')[0];
-          $('input[name="/accept"]').on("click", function(e, hint) {
-            if (typeof hint === "undefined") {
-              e.preventDefault();
-              log(function() {
-                $('input[name="/accept"]').trigger("click", true);
-              }, false, false, false);
-            }
-          });
-
-          //if autoacceptenabled=true
-          if ($('input[name="/accept"]').length === 0 && getUrlParameters()['autoAcceptEnabled'] == 'true') {
-            log(function() {}, false, false, true);
-          }
+        //if accepted
+        if (window.top.location.pathname === "/mturk/accept") {
+          log(function() {}, false, false, false);
+        }
+        //if autoacceptenabled=true
+        if (getUrlParameters()['autoAcceptEnabled'] == 'true') {
+          log(function() {}, false, false, true);
         }
       }
     });
@@ -337,12 +329,14 @@ $(document).ready(function() {
 
     // MANUAL RECOMMENDATION HIT
     // Add Recommendation button
-    $('#searchbar').after('<div class="clear"><a id="recommendation-button" href="#" class="ot-schedule"><i id="recommendation-button-i" class="fa fa-heart"></i> Recommend me a HIT</a></div>');
-    $('#recommendation-button').click(function(e) {
-      e.preventDefault();
-      $('#recommendation-button-i').addClass("fa-spinner fa-spin");
-      fetchHit();
-    });
+    if(window.top.location.pathname === "/mturk/accept" || window.top.location.pathname === "/mturk/dashboard" || getUrlParameters()['autoAcceptEnabled'] == 'true') {
+      $('#searchbar').after('<div class="clear"><a id="recommendation-button" href="#" class="ot-schedule"><i id="recommendation-button-i" class="fa fa-heart"></i> Recommend me a HIT</a></div>');
+      $('#recommendation-button').click(function(e) {
+        e.preventDefault();
+        $('#recommendation-button-i').addClass("fa-spinner fa-spin");
+        fetchHit();
+      });
+    }
     var attempt = 0;
     var max_attempt = 20;
 
