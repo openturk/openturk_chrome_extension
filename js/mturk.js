@@ -225,111 +225,112 @@ $(document).ready(function() {
       });
     };
 
-    // Add shareHit button and modal to HIT pages
-    if ($('td[class="capsulelink_bold"]').length > 0) {
-      var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
-        var el = $('div > table > tbody > tr > td > table > tbody > tr').last();
-        if (typeof result.username !== "undefined") {
-          $(el)
-            .after(shareHitButton)
-            .after(modalTpl('modal', '<h2>Share this HIT for other workers:</h2><textarea id="recommend_message" style="width: 340px; height: 100px">I enjoyed this task!</textarea><br /><input id="modal_submit" type="submit" value="ok"><input id="modal_cancel" type="submit" value="cancel">'));
-        } else {
-          $(el)
-            .after(shareHitButton)
-            .after(modalTpl('modal', '<h2>Please log in on <a href="http://alpha.openturk.com/accounts/login/">OpenTurk.com</a></h2>'));
-        }
-        bindModalEvents('modal');
-        var requesterId = $('input[name=requesterId').val();
-        var requesterName = $('input[name=prevRequester').val();
+    // SHOW THE BUTTON ONLY ON THE FOLLOWING SCREENS: Preview, Accept, PreviewAndAccept
+    if (window.top.location.pathname === "/mturk/preview" || window.top.location.pathname === "/mturk/accept" || window.top.location.pathname === "/mturk/previewandaccept") {
+      // Add shareHit button and modal to HIT pages
+      if ($('td[class="capsulelink_bold"]').length > 0) {
+        var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
+          var el = $('div > table > tbody > tr > td > table > tbody > tr').last();
+          if (typeof result.username !== "undefined") {
+            $(el)
+              .after(shareHitButton)
+              .after(modalTpl('modal', '<h2>Share this HIT for other workers:</h2><textarea id="recommend_message" style="width: 340px; height: 100px">I enjoyed this task!</textarea><br /><input id="modal_submit" type="submit" value="ok"><input id="modal_cancel" type="submit" value="cancel">'));
+          } else {
+            $(el)
+              .after(shareHitButton)
+              .after(modalTpl('modal', '<h2>Please log in on <a href="http://alpha.openturk.com/accounts/login/">OpenTurk.com</a></h2>'));
+          }
+          bindModalEvents('modal');
+          var requesterId = $('input[name=requesterId').val();
+          var requesterName = $('input[name=prevRequester').val();
 
-        // Add subscribe button to HIT page
-        storage.get('requesters', function(items) {
-          var obj = items;
-          var alreadyFavd = {};
-          var alreadyBlocked = {};
-          if (obj.requesters) {
-            for (var j = 0; j < obj.requesters.length; j++) {
-              if (!obj.requesters[j].blocked) {
-                alreadyFavd[obj.requesters[j].id] = true;
-              } else {
-                alreadyBlocked[obj.requesters[j].id] = true;
+          // Add subscribe button to HIT page
+          storage.get('requesters', function(items) {
+            var obj = items;
+            var alreadyFavd = {};
+            var alreadyBlocked = {};
+            if (obj.requesters) {
+              for (var j = 0; j < obj.requesters.length; j++) {
+                if (!obj.requesters[j].blocked) {
+                  alreadyFavd[obj.requesters[j].id] = true;
+                } else {
+                  alreadyBlocked[obj.requesters[j].id] = true;
+                }
               }
             }
+            if (!(requesterId in alreadyFavd)) {
+              $("#sharehit").parent().after('<td><a class="ot-subscribe" href="#" data-id="' + requesterId + '" data-name="' + requesterName + '"><span class="ot-subscribe-text">subscribe</span></a></td>');
+              //bind events
+              $('.ot-subscribe').click(function(e) {
+                chrome.runtime.sendMessage({
+                  addRequester: {
+                    "name": $(this).attr('data-name'),
+                    "id": $(this).attr('data-id'),
+                    "numtask": 0
+                  }
+                }, function(response) {});
+                $('.ot-subscribe[data-id=' + $(this).attr('data-id') + ']').hide();
+              });
+            }
+          });
+        });
+      }
+
+      // Add shareHit button and modal to HIT finished screen
+      $hitFinished = $('#alertboxHeader');
+      if ($hitFinished.length > 0) {
+        var jqxhr1 = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
+          $hitFinished.parent().next()
+            .append('<hr><h6>If you liked this HIT, share it on Openturk. <a href="#" class="ot-share" id="sharedonehit"><span class="ot-subscribe-text">Share HIT</span></a></h6>')
+            .append(modalTpl('modalpublish', '<h2>Share this HIT for other workers:</h2><textarea id="recommend_message" style="width: 340px; height: 100px">I enjoyed this task!</textarea><br /><input id="modalpublish_submit" type="submit" value="ok"><input id="modalpublish_cancel" type="submit" value="cancel">'));
+          bindModalEvents('modalpublish');
+        });
+      }
+
+      //Add subscribe buttons
+      storage.get('requesters', function(items) {
+        var obj = items;
+        var alreadyFavd = {};
+        var alreadyBlocked = {};
+        if (obj.requesters) {
+          for (var j = 0; j < obj.requesters.length; j++) {
+            if (!obj.requesters[j].blocked) {
+              alreadyFavd[obj.requesters[j].id] = true;
+            } else {
+              alreadyBlocked[obj.requesters[j].id] = true;
+            }
           }
-          if (!(requesterId in alreadyFavd)) {
-            $("#sharehit").parent().after('<td><a class="ot-subscribe" href="#" data-id="' + requesterId + '" data-name="' + requesterName + '"><span class="ot-subscribe-text">subscribe</span></a></td>');
-            //bind events
-            $('.ot-subscribe').click(function(e) {
-              chrome.runtime.sendMessage({
-                addRequester: {
-                  "name": $(this).attr('data-name'),
-                  "id": $(this).attr('data-id'),
-                  "numtask": 0
-                }
-              }, function(response) {});
-              $('.ot-subscribe[data-id=' + $(this).attr('data-id') + ']').hide();
-            });
+        }
+        var tasks = $('div > table > tbody > tr > td > table');
+        for (var i = 0; i < tasks.length; i += 2) {
+          var task = $(tasks[i]);
+          var tr = $(task.find('tbody > tr > td > table > tbody > tr > td > table > tbody > tr')[0]);
+          var requester = $(tr.find('td > a')[1]);
+          var requesterId = getUrlParameters('lala?' + requester.attr('href'))['requesterId'];
+          var requesterName = requester.html();
+          var insertAfterElt = tr.find('td').eq(1);
+
+          if (requesterId in alreadyBlocked) {
+            insertAfterElt.parent().parent().parent().parent().parent().parent().parent().parent().parent().parent().parent().parent().parent().css('opacity', '0.3');
+          } else if (!(requesterId in alreadyFavd)) {
+            insertAfterElt.after('<a class="ot-subscribe" href="#" data-id="' + requesterId + '" data-name="' + requesterName + '"><span class="ot-subscribe-text">Subscribe</span></a>');
           }
+        }
+        //bind events
+        $('.ot-subscribe').click(function(e) {
+          chrome.runtime.sendMessage({
+            addRequester: {
+              "name": $(this).attr('data-name'),
+              "id": $(this).attr('data-id'),
+              "numtask": 0
+            }
+          }, function(response) {});
+          $('.ot-subscribe[data-id=' + $(this).attr('data-id') + ']').hide();
         });
       });
-    }
 
-    // Add shareHit button and modal to HIT finished screen
-    $hitFinished = $('#alertboxHeader');
-    if ($hitFinished.length > 0) {
-      var jqxhr1 = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
-        $hitFinished.parent().next()
-          .append('<hr><h6>If you liked this HIT, share it on Openturk. <a href="#" class="ot-share" id="sharedonehit"><span class="ot-subscribe-text">Share HIT</span></a></h6>')
-          .append(modalTpl('modalpublish', '<h2>Share this HIT for other workers:</h2><textarea id="recommend_message" style="width: 340px; height: 100px">I enjoyed this task!</textarea><br /><input id="modalpublish_submit" type="submit" value="ok"><input id="modalpublish_cancel" type="submit" value="cancel">'));
-        bindModalEvents('modalpublish');
-      });
-    }
-
-    //Add subscribe buttons
-    storage.get('requesters', function(items) {
-      var obj = items;
-      var alreadyFavd = {};
-      var alreadyBlocked = {};
-      if (obj.requesters) {
-        for (var j = 0; j < obj.requesters.length; j++) {
-          if (!obj.requesters[j].blocked) {
-            alreadyFavd[obj.requesters[j].id] = true;
-          } else {
-            alreadyBlocked[obj.requesters[j].id] = true;
-          }
-        }
-      }
-      var tasks = $('div > table > tbody > tr > td > table');
-      for (var i = 0; i < tasks.length; i += 2) {
-        var task = $(tasks[i]);
-        var tr = $(task.find('tbody > tr > td > table > tbody > tr > td > table > tbody > tr')[0]);
-        var requester = $(tr.find('td > a')[1]);
-        var requesterId = getUrlParameters('lala?' + requester.attr('href'))['requesterId'];
-        var requesterName = requester.html();
-        var insertAfterElt = tr.find('td').eq(1);
-
-        if (requesterId in alreadyBlocked) {
-          insertAfterElt.parent().parent().parent().parent().parent().parent().parent().parent().parent().parent().parent().parent().parent().css('opacity', '0.3');
-        } else if (!(requesterId in alreadyFavd)) {
-          insertAfterElt.after('<a class="ot-subscribe" href="#" data-id="' + requesterId + '" data-name="' + requesterName + '"><span class="ot-subscribe-text">Subscribe</span></a>');
-        }
-      }
-      //bind events
-      $('.ot-subscribe').click(function(e) {
-        chrome.runtime.sendMessage({
-          addRequester: {
-            "name": $(this).attr('data-name'),
-            "id": $(this).attr('data-id'),
-            "numtask": 0
-          }
-        }, function(response) {});
-        $('.ot-subscribe[data-id=' + $(this).attr('data-id') + ']').hide();
-      });
-    });
-
-    // MANUAL RECOMMENDATION HIT
-    // Add Recommendation button
-    if(window.top.location.pathname === "/mturk/accept" || window.top.location.pathname === "/mturk/dashboard" || getUrlParameters()['autoAcceptEnabled'] == 'true') {
+      // MANUAL RECOMMENDATION HIT
+      // Add Recommendation button
       $('#searchbar').after('<div class="clear"><a id="recommendation-button" href="#" class="ot-schedule"><i id="recommendation-button-i" class="fa fa-heart"></i> Recommend me a HIT</a></div>');
       $('#recommendation-button').click(function(e) {
         e.preventDefault();
