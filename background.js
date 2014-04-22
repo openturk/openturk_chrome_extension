@@ -51,18 +51,18 @@ $.ajax({
     if (workerId && workerId.length > 0) {
       localStorage.workerId = workerId[1];
     } else {
-      localStorage.workerId = 'Not yet set';
+      localStorage.workerId = 'Not set yet';
     }
   },
   error: function(xhr, status) {
-    localStorage.workerId = 'Not yet set';
+    localStorage.workerId = 'Not set yet';
   }
 });
 
 // Functions !
 
 function SetInitialOption(key, value) {
-  if (localStorage[key] === null) {
+  if (localStorage.getItem(key) === null) {
     localStorage[key] = value;
   }
 }
@@ -91,7 +91,7 @@ chrome.runtime.onMessage.addListener(
 
     if (request.get_worker_id) {
       // console.log('id requested');
-      if (localStorage.workerId) {
+      if (localStorage.getItem("workerId")) {
         // console.log('id requested: ' + localStorage.workerId);
         sendResponse({
           workerId: localStorage.workerId
@@ -342,7 +342,7 @@ function scrapForBatchs(url) {
             console.log('REQUESTER. Before: ' + old_res + ' After: ' + res);
             if (res > old_res) {
               var diff = res - old_res;
-              if (localStorage['Reqnotif'] === "true") {
+              if (localStorage.getItem("Reqnotif") === "true") {
                 updates = updates + diff;
               }
               localStorage['batchs'] = "true";
@@ -391,7 +391,7 @@ function scrapForSearch(phrase) {
             modifyCount(phrase['phrase'], res);
             if (res > old_res) {
               var diff = res - old_res;
-              if (localStorage['Termnotif'] === "true") {
+              if (localStorage.getItem("Termnotif") === "true") {
                 updates = updates + diff;
               }
               localStorage['search'] = "true";
