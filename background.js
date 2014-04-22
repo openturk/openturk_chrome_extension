@@ -154,7 +154,9 @@ function workerQualified(requiredQualifications) {
       value: localStorage['HITApproval']
     }
   };
-  console.log(workerQualification);
+  // console.log(workerQualification);
+  // console.log('vs');
+  // console.log(requiredQualifications);
 
   if (requiredQualifications['cat_master'] && workerQualification['cat_master'] === "false") {
     return false;
@@ -368,7 +370,7 @@ function getWorkerStats() {
       }
     });
   } else {
-    console.log('[msg]captach detected! stats request blocked');
+    console.log('[BG]captach detected! stats request blocked');
   }
 }
 
@@ -428,7 +430,7 @@ function scrapForBatchs(url) {
       }
     });
   } else {
-    console.log('[msg]captach detected! requester request blocked');
+    console.log('[BG] Captcha detected! requester request blocked');
   }
 }
 
@@ -475,7 +477,7 @@ function scrapForSearch(phrase) {
       }
     });
   } else {
-    console.log('[msg]captach on! keyword request blocked');
+    console.log('[BG] Captcha on! keyword request blocked');
   }
 }
 

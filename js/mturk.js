@@ -398,20 +398,14 @@ $(document).ready(function() {
             qualifications['approved_hit']['value'] = $(found).eq(0).html().match(matchPattern)[2];
           }
           found = $(data).find("td.capsule_field_text:contains('HIT approval rate (%) is')");
-          console.log(found);
           if (found.length > 0) {
             matchPattern = /HIT approval rate \(\%\) is ([a-z ]+) ([0-9]+)/;
             qualifications['hit_approval_rate']['sign'] = $(found).eq(0).html().match(matchPattern)[1];
             qualifications['hit_approval_rate']['value'] = $(found).eq(0).html().match(matchPattern)[2];
           }
-          console.log('now check the qualifications');
-          console.log(qualifications.approved_hit);
-          console.log(qualifications.hit_approval_rate);
           chrome.runtime.sendMessage({
             checkQualification: qualifications
           }, function(response) {
-              console.log("BG ANS");
-              console.log(response.qualified);
               if (response.qualified === true) {
                 console.log(url + " - success redirect");
                 $('#recommendation-button-i').removeClass("fa-spinner fa-spin");
