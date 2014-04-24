@@ -30,6 +30,7 @@ SetInitialOption("Logging", "true");
 SetInitialOption("Target", 1000);
 SetInitialOption("TGP", 0);
 SetInitialOption("earnings", 0);
+SetInitialOption("newwindow", "true");
 
 localStorage.setItem('workerId', 'undefined');
 

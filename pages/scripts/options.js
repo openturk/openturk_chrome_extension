@@ -37,7 +37,7 @@ $(function() {
   });
 
   restoreOptions();
-  $('.sandbox-tabs-radio, .reqnotif-tabs-radio, .termnotif-tabs-radio, #RequestInterval').change(function() {
+  $('.sandbox-tabs-radio, .reqnotif-tabs-radio, .termnotif-tabs-radio, .winnotif-tabs-radio, #RequestInterval').change(function() {
     saveOptions();
   });
   $('#target, .logging-tabs-radio, .qualif-tabs-radio, #HITTotal, #HITApproval').change(function() {
@@ -210,6 +210,7 @@ function initVariables() {
   radioSandbox = document.getElementsByName("Sandbox");
   radioReq = document.getElementsByName("Reqnotif");
   radioTerm = document.getElementsByName("Termnotif");
+  radioWin = document.getElementsByName("Winnotif");
   radioLog = document.getElementsByName("Logging");
   radioMaster = document.getElementsByName("Master");
   radioCatMaster = document.getElementsByName("CatMaster");
@@ -291,6 +292,12 @@ function restoreOptions() {
       radioTerm[i].checked = "true";
     }
   }
+  var winTabs = localStorage["newwindow"];
+  for (i = 0; i < radioWin.length; i++) {
+    if (radioWin[i].value == winTabs) {
+      radioWin[i].checked = "true";
+    }
+  }
   var logTabs = localStorage["Logging"];
   for (i = 0; i < radioLog.length; i++) {
     if (radioLog[i].value == logTabs) {
@@ -352,6 +359,12 @@ function saveOptions() {
   for (i = 0; i < radioTerm.length; i++) {
     if (radioTerm[i].checked) {
       localStorage["Termnotif"] = radioTerm[i].value;
+      break;
+    }
+  }
+  for (i = 0; i < radioWin.length; i++) {
+    if (radioWin[i].checked) {
+      localStorage["newwindow"] = radioWin[i].value;
       break;
     }
   }

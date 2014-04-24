@@ -65,7 +65,6 @@ var OT = {
       var optionsUrl = chrome.extension.getURL('pages/options.html');
       chrome.tabs.query({
         url: optionsUrl,
-        active: true,
         currentWindow: true
       }, function(results) {
         if (results.length)
@@ -85,7 +84,6 @@ var OT = {
       var optionsUrl = chrome.extension.getURL('pages/options.html');
       chrome.tabs.query({
         url: optionsUrl,
-        active: true,
         currentWindow: true
       }, function(results) {
         if (results.length)
@@ -744,22 +742,28 @@ function openUrl(url, take_focus) {
 function openLink(urlto) {
   console.log("going ", urlto);
   var mturk_pattern = '*://www.mturk.com/*';
-  chrome.tabs.query({
-    url: mturk_pattern,
-    currentWindow: true
-  }, function(results) {
-    if (results.length)
-      chrome.tabs.update(results[0].id, {
-        url: urlto,
-        active: false
-      }, function() {
-        window.close();
-      });
-    else
-      chrome.tabs.create({
-        url: urlto
-      });
-  });
+  if (localStorage.getItem("newwindow") === "true") {
+    chrome.tabs.create({
+      url: urlto
+    });
+  } else {
+    chrome.tabs.query({
+      url: mturk_pattern,
+      currentWindow: true
+    }, function(results) {
+      if (results.length)
+        chrome.tabs.update(results[0].id, {
+          url: urlto,
+          active: true
+        }, function() {
+          window.close();
+        });
+      else
+        chrome.tabs.create({
+          url: urlto
+        });
+    });
+  }
 }
 
 function getStats() {

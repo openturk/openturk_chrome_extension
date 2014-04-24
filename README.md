@@ -11,7 +11,7 @@ It also manages you requesters, search terms, and syncronizes your preferences t
 
 ### Development
 
-1. `git clone https://github.com/openturk/openturk_extension.git`
+1. `git clone https://github.com/openturk/openturk_chrome_extension.git`
 2. Open Chrome, and browse to your extensions list
 3. Check the 'Developer mode' checkbox
 4. Click 'Load unpacked extension'
@@ -26,5 +26,6 @@ It also manages you requesters, search terms, and syncronizes your preferences t
 
 ## Changlog
 
+- 0.4.1: Add the option to open notifications links in new tabs (true by default)
 - 0.4: Initial release
 - < 0.4: Pre Alpha 
