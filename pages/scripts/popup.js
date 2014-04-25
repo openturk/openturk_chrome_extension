@@ -638,6 +638,7 @@ function insertRecommendation(data, title, reward, shares) {
   console.log(row);
 }
 
+var storage = chrome.storage.local;
 var obj = {};
 var index = {};
 
@@ -645,7 +646,7 @@ var earning_hist = [];
 var submitted_hist = [];
 
 function loadUIObjects() {
-  chrome.storage.sync.get('requesters', function(items) {
+  storage.get('requesters', function(items) {
     if (!obj.requesters) {
       obj['requesters'] = [];
     }
@@ -668,7 +669,7 @@ function loadUIObjects() {
       openLink(this.href);
     });
   });
-  chrome.storage.sync.get('searchterms', function(items) {
+  storage.get('searchterms', function(items) {
     if (!obj.searchterms) {
       obj['searchterms'] = [];
     }
@@ -689,7 +690,7 @@ function loadUIObjects() {
       openLink(this.href);
     });
   });
-  // chrome.storage.sync.get('workhistory', function(items) {
+  // storage.get('workhistory', function(items) {
   //   if (!obj.workhistory) {
   //     obj['workhistory'] = [];
   //   }

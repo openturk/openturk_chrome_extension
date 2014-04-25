@@ -10,7 +10,7 @@ $(document).ready(function() {
       captcha: false
     }, function() {});
 
-    var storage = chrome.storage.sync;
+    var storage = chrome.storage.local;
     var form = '';
     var openturk_endpoint = 'http://alpha.openturk.com/endpoint/redirect';
     var autoaccept = true;
@@ -228,7 +228,7 @@ $(document).ready(function() {
     // SHOW THE BUTTON ONLY ON THE FOLLOWING SCREENS: Preview, Accept, PreviewAndAccept
     if (window.top.location.pathname === "/mturk/preview" || window.top.location.pathname === "/mturk/accept" || 
       window.top.location.pathname === "/mturk/previewandaccept" || window.top.location.pathname === "/mturk/findhits" ||
-      window.top.location.pathname === "/mturk/viewhits") {
+      window.top.location.pathname === "/mturk/viewhits" || window.top.location.pathname === "/mturk/searchbar" || window.top.location.pathname === "/mturk/viewsearchbar") {
       
       // 1. Add shareHit button and modal to HIT pages
       if ($('td[class="capsulelink_bold"]').length > 0) {

@@ -1,5 +1,5 @@
 // Variables for the task management
-var storage = chrome.storage.sync;
+var storage = chrome.storage.local;
 var obj = {};
 var index = {};
 var updates = 0;
@@ -306,19 +306,19 @@ function modifyCount(phrase, count) {
 }
 
 function saveSearchTerms() {
-  chrome.storage.sync.set({
+  storage.set({
     'searchterms': obj.searchterms
   });
 }
 
 function saveRequesters() {
-  chrome.storage.sync.set({
+  storage.set({
     'requesters': obj.requesters
   });
 }
 
 function saveWorkHist() {
-  chrome.storage.sync.set({
+  storage.set({
     'workhistory': obj.workhistory
   });
 }

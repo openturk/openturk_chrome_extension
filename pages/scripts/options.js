@@ -112,6 +112,7 @@ $(function() {
   });
 });
 
+var storage = chrome.storage.local;
 var obj = {};
 var index = {};
 
@@ -126,7 +127,7 @@ var HITTotal;
 var HITApproval;
 
 function savesearchterms() {
-  chrome.storage.sync.set({
+  storage.set({
     'searchterms': obj.searchterms
   }, function() {
     // console.log('opt: reload the searchterms');
@@ -138,7 +139,7 @@ function savesearchterms() {
 
 function initVariables() {
   // Init the requesters
-  chrome.storage.sync.get('requesters', function(items) {
+  storage.get('requesters', function(items) {
     $('#requesters').empty();
     $('#requesters_blocked').empty();
     // Loading the requesters.
@@ -179,7 +180,7 @@ function initVariables() {
     });
   });
   // Init the search terms
-  chrome.storage.sync.get('searchterms', function(items) {
+  storage.get('searchterms', function(items) {
     $('#searchterms').empty();
     obj.searchterms = [];
     $(items.searchterms).each(function() {
