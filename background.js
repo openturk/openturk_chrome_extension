@@ -112,7 +112,7 @@ chrome.runtime.onMessage.addListener(
     }
 
     if (request.reset === "resetIcon") {
-      console.log('msg: reset the icon');
+      // console.log('msg: reset the icon');
       updates = 0;
       localStorage['batchs'] = "false";
       localStorage['search'] = "false";
@@ -225,7 +225,7 @@ function block(req, unblock) {
 }
 
 function addRequester(req) {
-  console.log('saving');
+  // console.log('saving');
   if (!obj.requesters) {
     obj['requesters'] = [];
   }
@@ -241,7 +241,7 @@ function addRequester(req) {
 }
 
 function deleteRequester(req) {
-  console.log(req);
+  // console.log(req);
   obj.requesters = obj.requesters.filter(function(el) {
     return el.id != req.id;
   });
@@ -251,7 +251,7 @@ function deleteRequester(req) {
 }
 
 function unblockRequester(req) {
-  console.log(req);
+  // console.log(req);
   obj.requesters = obj.requesters.filter(function(el) {
     return el.id != req.id;
   });
@@ -299,7 +299,7 @@ function indexRequesters() {
 function modifyCount(phrase, count) {
   $(obj.searchterms).each(function() {
     if (this.phrase == phrase) {
-      console.log('changing ..');
+      // console.log('changing ..');
       this.numtask = count;
     }
   });
@@ -399,10 +399,10 @@ function scrapForBatchs(url) {
           res = res[1];
           id = url['id'];
           var old_res = index[id].numtask;
-          console.log('Checking requester : ' + id);
+          // console.log('Checking requester : ' + id);
           if (res != old_res) {
             index[id].numtask = res;
-            console.log('REQUESTER. Before: ' + old_res + ' After: ' + res);
+            // console.log('REQUESTER. Before: ' + old_res + ' After: ' + res);
             if (res > old_res) {
               var diff = res - old_res;
               if (localStorage.getItem("Reqnotif") === "true") {
@@ -410,7 +410,7 @@ function scrapForBatchs(url) {
               }
               localStorage['batchs'] = "true";
               diff = res - old_res;
-              console.log('Requester diff: ' + diff);
+              // console.log('Requester diff: ' + diff);
               updateUnreadCount();
               if (!(id in newbatchs)) {
                 newbatchs.push(id);
@@ -442,14 +442,14 @@ function scrapForSearch(phrase) {
       success: function(result) {
         var spanText = $(result).find("td:contains('Results')").text();
         var resPattern = /of (.*) Results/;
-        console.log('https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&searchWords=' + phrase['phrase']);
+        // console.log('https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&searchWords=' + phrase['phrase']);
         var res = spanText.match(resPattern);
         if (res) {
           res = res[1];
           var old_res = phrase['numtask'];
-          console.log('Checking phrase : ' + phrase['phrase']);
+          // console.log('Checking phrase : ' + phrase['phrase']);
           if (res != old_res) {
-            console.log('SEARCH. Before: ' + old_res + ' After: ' + res);
+            // console.log('SEARCH. Before: ' + old_res + ' After: ' + res);
             phrase['numtask'] = res;
             modifyCount(phrase['phrase'], res);
             if (res > old_res) {
@@ -458,7 +458,7 @@ function scrapForSearch(phrase) {
                 updates = updates + diff;
               }
               localStorage['search'] = "true";
-              console.log('Search diff: ' + diff);
+              // console.log('Search diff: ' + diff);
               updateUnreadCount();
               if (!(phrase in newterms)) {
                 newterms.push(phrase['phrase']);
@@ -474,7 +474,7 @@ function scrapForSearch(phrase) {
         }
       },
       error: function(xhr, status) {
-        console.log('something went wrong ! ' + phrase);
+        // console.log('something went wrong ! ' + phrase);
       }
     });
   } else {
@@ -504,9 +504,9 @@ function setBadge(text) {
 
 // Setting an alarm scheduler
 function scheduleRequest() {
-  console.log('scheduleRequest');
+  // console.log('scheduleRequest');
   delay = parseInt(localStorage['RequestInterval'], 10);
-  console.log('Scheduling for (in minutes): ' + delay);
+  // console.log('Scheduling for (in minutes): ' + delay);
 
   if (oldChromeVersion) {
     if (requestTimerId) {
@@ -514,7 +514,7 @@ function scheduleRequest() {
     }
     requestTimerId = window.setTimeout(onAlarm, delay * 60 * 1000);
   } else {
-    console.log('Creating alarm');
+    // console.log('Creating alarm');
     // Use a repeating alarm so that it fires again if there was a problem
     // setting the next alarm.
     chrome.alarms.create('refresh', {
@@ -669,7 +669,7 @@ LoadingAnimation.prototype.stop = function() {
 // Init stuff (from the gmail extension .. )
 
 function onInit() {
-  console.log('onInit');
+  // console.log('onInit');
   localStorage.requestFailureCount = 0; // used for exponential backoff
   startRequest({
     scheduleRequest: true,
@@ -685,7 +685,7 @@ function onInit() {
 }
 
 function onAlarm(alarm) {
-  console.log('Got alarm', alarm);
+  // console.log('Got alarm', alarm);
   // |alarm| can be undefined because onAlarm also gets called from
   // window.setTimeout on old chrome versions.
   if (alarm && alarm.name == 'watchdog') {
