@@ -323,9 +323,14 @@ function saveWorkHist() {
   });
 }
 
+var version = chrome.app.getDetails().version;
+if (version === "0.4.3") {
+  storage = chrome.storage.sync;
+}
 loadRequesters();
 loadSearchTerms();
 loadWorkHistory();
+storage = chrome.storage.local;
 
 function getNewBatchs() {
   storage.get('requesters', function(items) {
