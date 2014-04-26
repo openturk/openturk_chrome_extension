@@ -225,20 +225,31 @@ function block(req, unblock) {
 }
 
 function addRequester(req) {
-  // console.log('saving');
   if (!obj.requesters) {
     obj['requesters'] = [];
   }
-  obj.requesters.push(req);
-  saveRequesters();
-  getNewBatchs();
-  indexRequesters();
-  if(req.blocked) {
-    block(req);
-  } else {
-    subscribe(req);
+  if(index[req.id] === undefined) {
+    obj.requesters.push(req);
+    saveRequesters();
+    getNewBatchs();
+    indexRequesters();
+    if(req.blocked) {
+      block(req);
+    } else {
+      subscribe(req);
+    }
   }
 }
+
+function quickAddRequester(req) {
+  if (!obj.requesters) {
+    obj['requesters'] = [];
+  }
+  if(index[req.id] === undefined) {
+    obj.requesters.push(req);
+  }
+}
+
 
 function deleteRequester(req) {
   // console.log(req);
@@ -323,14 +334,48 @@ function saveWorkHist() {
   });
 }
 
-var version = chrome.app.getDetails().version;
-if (version === "0.4.3") {
-  storage = chrome.storage.sync;
+function syncOT() {
+  $.getJSON('http://alpha.openturk.com/endpoint/getFavorites').done(function(items) {
+    $(items.requesters).each(function() {
+      var req = {
+          "name": this[1],
+          "id": this[0],
+          "numtask": [2]
+        };
+      quickRequester(req);
+      saveRequesters();
+      indexRequesters();
+    });
+  });
+  $.getJSON('http://alpha.openturk.com/endpoint/getBlocked').done(function(items) {
+    $(items.requesters).each(function() {
+      var req = {
+          "name": this[1],
+          "id": this[0],
+          "numtask": [2],
+          "blocked": true
+        };
+      quickAddRequester(req);
+    });
+    saveRequesters();
+    indexRequesters();
+  });
 }
+function loadFromSync() {
+  chrome.storage.sync.get('requesters', function(items) {
+    $(items.requesters).each(function() {
+      quickAddRequester(req);
+    });
+    saveRequesters();
+    indexRequesters();
+  });
+}
+
 loadRequesters();
+loadFromSync(); // if any ...
+syncOT();
 loadSearchTerms();
 loadWorkHistory();
-storage = chrome.storage.local;
 
 function getNewBatchs() {
   storage.get('requesters', function(items) {
