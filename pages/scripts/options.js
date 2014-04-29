@@ -1,5 +1,14 @@
 $(function() {
 
+  $("#sync").on('click', function(e) {
+    console.log('sync request');
+    chrome.runtime.sendMessage({
+      syncOT: true
+    }, function(response) {
+      location.reload();
+    });
+  });
+
   $('.inlinebar').sparkline([100, localStorage.TGP, 100, 66, 33], {
     type: 'bullet',
     width: '215',
@@ -137,6 +146,16 @@ function savesearchterms() {
   });
 }
 
+function get_openturk_username() {
+    var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
+      if (typeof result.username !== "undefined") {
+        $('#optotuser').html(result.username);
+      } else {
+        $('#optotuser').html('Connect to openturk');
+      }
+    });
+ }
+
 function initVariables() {
   // Init the requesters
   storage.get('requesters', function(items) {
@@ -219,6 +238,8 @@ function initVariables() {
   HITTotal = document.getElementById("HITTotal");
   HITApproval = document.getElementById("HITApproval");
   targetField = $("#target");
+  // get the user
+  get_openturk_username();
 }
 
 function indexRequesters() {

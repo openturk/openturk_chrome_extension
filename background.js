@@ -78,6 +78,13 @@ chrome.runtime.onMessage.addListener(
       });
     }
 
+    if (request.syncOT) {
+      syncOT();
+      sendResponse({
+        updated: true
+      });
+    }
+
     if (request.get_logging) {
       sendResponse({
         logging: localStorage['Logging']
@@ -326,6 +333,7 @@ function saveRequesters() {
   storage.set({
     'requesters': obj.requesters
   });
+=
 }
 
 function saveWorkHist() {
@@ -335,14 +343,16 @@ function saveWorkHist() {
 }
 
 function syncOT() {
+  console.log('[msg] sync with openturk');
   $.getJSON('http://alpha.openturk.com/endpoint/getFavorites').done(function(items) {
     $(items.requesters).each(function() {
+      console.log(this);
       var req = {
           "name": this[1],
           "id": this[0],
           "numtask": [2]
         };
-      quickRequester(req);
+      quickAddRequester(req);
       saveRequesters();
       indexRequesters();
     });
