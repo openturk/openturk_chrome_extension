@@ -345,7 +345,6 @@ function syncOT() {
   console.log('[msg] sync with openturk');
   $.getJSON('http://alpha.openturk.com/endpoint/getFavorites').done(function(items) {
     $(items.requesters).each(function() {
-      console.log(this);
       var req = {
           "name": this[1],
           "id": this[0],
