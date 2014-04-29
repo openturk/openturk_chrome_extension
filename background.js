@@ -333,7 +333,6 @@ function saveRequesters() {
   storage.set({
     'requesters': obj.requesters
   });
-=
 }
 
 function saveWorkHist() {
