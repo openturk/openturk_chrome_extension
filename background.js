@@ -379,6 +379,16 @@ function loadFromSync() {
   });
 }
 
+function syncUp() {
+  $(obj.requesters).each(function() {
+    if(this.blocked) {
+      block(this);
+    } else {
+      subscribe(this);
+    }
+  });
+}
+
 loadRequesters();
 loadFromSync(); // if any ...
 syncOT();
