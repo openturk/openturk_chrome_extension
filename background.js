@@ -391,6 +391,7 @@ function syncUp() {
 
 loadRequesters();
 loadFromSync(); // if any ...
+syncUp();
 syncOT();
 loadSearchTerms();
 loadWorkHistory();
