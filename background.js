@@ -392,7 +392,7 @@ function syncUp() {
 loadRequesters();
 loadFromSync(); // if any ...
 syncUp();
-syncOT();
+syncOT(); // The order should not make a difference as long as we are not duplicating values.
 loadSearchTerms();
 loadWorkHistory();
 
