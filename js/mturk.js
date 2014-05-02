@@ -53,53 +53,56 @@ $(document).ready(function() {
 
     // Log accepted task to the server
     var log = function(callback, hitSkipped, batchSkipped, autoAccepted) {
+      var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
+        if (typeof result.username !== "undefined") {
+          var rewardText = $("table").find("td:contains('Reward')").next().text();
+          var rewardPattern = /([0-9\.]*) per/;
+          var reward = parseFloat(rewardText.match(rewardPattern)[1]);
 
-      var rewardText = $("table").find("td:contains('Reward')").next().text();
-      var rewardPattern = /([0-9\.]*) per/;
-      var reward = parseFloat(rewardText.match(rewardPattern)[1]);
+          var hitsAvailable = parseFloat($.trim($("table").find("td:contains('HITs Available')").next().text()));
 
-      var hitsAvailable = parseFloat($.trim($("table").find("td:contains('HITs Available')").next().text()));
+          var duration = $.trim($("table").find("td:contains('Duration')").next().text());
+          var hit_name = $.trim($(".capsulelink_bold").find('div').html());
 
-      var duration = $.trim($("table").find("td:contains('Duration')").next().text());
-      var hit_name = $.trim($(".capsulelink_bold").find('div').html());
+          var found, master;
+          found = $('body').find("td.capsule_field_text:contains('Categorization Masters has been granted')");
+          if (found.length > 0) {
+            master = 'CatMaster';
+          }
+          found = $('body').find("td.capsule_field_text:contains('Photo Moderation Masters has been granted')");
+          if (found.length > 0) {
+            master = 'PhotoMaster';
+          }
+          found = $('body').find("td.capsule_field_text:contains('Masters has been granted')");
+          if (found.length > 0) {
+            master = 'Master';
+          }
 
-      var found, master;
-      found = $('body').find("td.capsule_field_text:contains('Categorization Masters has been granted')");
-      if (found.length > 0) {
-        master = 'CatMaster';
-      }
-      found = $('body').find("td.capsule_field_text:contains('Photo Moderation Masters has been granted')");
-      if (found.length > 0) {
-        master = 'PhotoMaster';
-      }
-      found = $('body').find("td.capsule_field_text:contains('Masters has been granted')");
-      if (found.length > 0) {
-        master = 'Master';
-      }
+          var groupId = getUrlParameters()['groupId'];
+          if (!groupId) {
+            groupId = $('input[name="groupId"]').val();
+          }
 
-      var groupId = getUrlParameters()['groupId'];
-      if (!groupId) {
-        groupId = $('input[name="groupId"]').val();
-      }
-
-      data = {
-        group_id: groupId,
-        reward: reward,
-        duration: duration,
-        hit_name: hit_name,
-        requester_id: $('input[name=requesterId]').val(),
-        hits_available: hitsAvailable,
-        autoaccepted: autoAccepted,
-        hit_skipped: hitSkipped,
-        batch_skipped: batchSkipped,
-        master: master
-      };
-      request = $.ajax({
-        url: 'http://alpha.openturk.com/endpoint/log',
-        type: "POST",
-        data: data
-      }).always(function() {
-        callback();
+          data = {
+            group_id: groupId,
+            reward: reward,
+            duration: duration,
+            hit_name: hit_name,
+            requester_id: $('input[name=requesterId]').val(),
+            hits_available: hitsAvailable,
+            autoaccepted: autoAccepted,
+            hit_skipped: hitSkipped,
+            batch_skipped: batchSkipped,
+            master: master
+          };
+          request = $.ajax({
+            url: 'http://alpha.openturk.com/endpoint/log',
+            type: "POST",
+            data: data
+          }).always(function() {
+            callback();
+          });
+        }
       });
     };
 
