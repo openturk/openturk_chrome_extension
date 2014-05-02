@@ -23,20 +23,6 @@ $(document).ready(function() {
       document.head.appendChild(fontAwesomeLink);
     }
 
-    // Retrieves worker ID from user's dashboard
-    var getWorkerId = function(callback) {
-      chrome.runtime.sendMessage({
-        get_mturk_host: true
-      }, function(response) {
-        $.get('https://' + response.mturk_host + '/mturk/dashboard', {}, function(data) {
-          var spanText = $(data).filter("table").find("span:contains('Worker ID')").text();
-          var workerIdPattern = /Worker ID: (.*)$/;
-          var workerId = spanText.match(workerIdPattern)[1];
-          callback(workerId);
-        });
-      });
-    };
-
     // Parses the current url or the one passed as argument
     var getUrlParameters = function(link) {
       if (typeof link === 'undefined') {
@@ -67,119 +53,106 @@ $(document).ready(function() {
 
     // Log accepted task to the server
     var log = function(callback, hitSkipped, batchSkipped, autoAccepted) {
-      getWorkerId(function(workerId) {
-        if (typeof workerId === "undefined") {
-          workerId = "undefined";
-        }
 
-        var rewardText = $("table").find("td:contains('Reward')").next().text();
-        var rewardPattern = /([0-9\.]*) per/;
-        var reward = parseFloat(rewardText.match(rewardPattern)[1]);
+      var rewardText = $("table").find("td:contains('Reward')").next().text();
+      var rewardPattern = /([0-9\.]*) per/;
+      var reward = parseFloat(rewardText.match(rewardPattern)[1]);
 
-        var hitsAvailable = parseFloat($.trim($("table").find("td:contains('HITs Available')").next().text()));
+      var hitsAvailable = parseFloat($.trim($("table").find("td:contains('HITs Available')").next().text()));
 
-        var duration = $.trim($("table").find("td:contains('Duration')").next().text());
-        var hit_name = $.trim($(".capsulelink_bold").find('div').html());
+      var duration = $.trim($("table").find("td:contains('Duration')").next().text());
+      var hit_name = $.trim($(".capsulelink_bold").find('div').html());
 
-        var found, master;
-        found = $('body').find("td.capsule_field_text:contains('Categorization Masters has been granted')");
-        if (found.length > 0) {
-          master = 'CatMaster';
-        }
-        found = $('body').find("td.capsule_field_text:contains('Photo Moderation Masters has been granted')");
-        if (found.length > 0) {
-          master = 'PhotoMaster';
-        }
-        found = $('body').find("td.capsule_field_text:contains('Masters has been granted')");
-        if (found.length > 0) {
-          master = 'Master';
-        }
+      var found, master;
+      found = $('body').find("td.capsule_field_text:contains('Categorization Masters has been granted')");
+      if (found.length > 0) {
+        master = 'CatMaster';
+      }
+      found = $('body').find("td.capsule_field_text:contains('Photo Moderation Masters has been granted')");
+      if (found.length > 0) {
+        master = 'PhotoMaster';
+      }
+      found = $('body').find("td.capsule_field_text:contains('Masters has been granted')");
+      if (found.length > 0) {
+        master = 'Master';
+      }
 
-        var groupId = getUrlParameters()['groupId'];
-        if (!groupId) {
-          groupId = $('input[name="groupId"]').val();
-        }
+      var groupId = getUrlParameters()['groupId'];
+      if (!groupId) {
+        groupId = $('input[name="groupId"]').val();
+      }
 
-        data = {
-          worker_id: workerId,
-          group_id: groupId,
-          reward: reward,
-          duration: duration,
-          hit_name: hit_name,
-          requester_id: $('input[name=requesterId]').val(),
-          hits_available: hitsAvailable,
-          autoaccepted: autoAccepted,
-          hit_skipped: hitSkipped,
-          batch_skipped: batchSkipped,
-          master: master
-        };
-        request = $.ajax({
-          url: 'http://alpha.openturk.com/endpoint/log',
-          type: "POST",
-          data: data
-        }).always(function() {
-          callback();
-        });
+      data = {
+        group_id: groupId,
+        reward: reward,
+        duration: duration,
+        hit_name: hit_name,
+        requester_id: $('input[name=requesterId]').val(),
+        hits_available: hitsAvailable,
+        autoaccepted: autoAccepted,
+        hit_skipped: hitSkipped,
+        batch_skipped: batchSkipped,
+        master: master
+      };
+      request = $.ajax({
+        url: 'http://alpha.openturk.com/endpoint/log',
+        type: "POST",
+        data: data
+      }).always(function() {
+        callback();
       });
-    }
+    };
 
     // Send recommendation to the server
     var recommend = function() {
-      getWorkerId(function(workerId) {
-        if (typeof workerId === "undefined") {
-          workerId = "undefined";
-        }
+      var rewardText = $("table").find("td:contains('Reward')").next().text();
+      var rewardPattern = /([0-9\.]*) per/;
+      var reward = parseFloat(rewardText.match(rewardPattern)[1]);
 
-        var rewardText = $("table").find("td:contains('Reward')").next().text();
-        var rewardPattern = /([0-9\.]*) per/;
-        var reward = parseFloat(rewardText.match(rewardPattern)[1]);
+      var hitsAvailable = parseFloat($.trim($("table").find("td:contains('HITs Available')").next().text()));
 
-        var hitsAvailable = parseFloat($.trim($("table").find("td:contains('HITs Available')").next().text()));
+      var duration = $.trim($("table").find("td:contains('Duration')").next().text());
+      var hit_name = $.trim($(".capsulelink_bold").find('div').html());
 
-        var duration = $.trim($("table").find("td:contains('Duration')").next().text());
-        var hit_name = $.trim($(".capsulelink_bold").find('div').html());
+      var groupId = getUrlParameters()['groupId'];
+      if (!groupId) {
+        groupId = $('input[name="groupId"]').val();
+      }
 
-        var groupId = getUrlParameters()['groupId'];
-        if (!groupId) {
-          groupId = $('input[name="groupId"]').val();
-        }
+      var requesterId = $('input[name=requesterId]').val();
+      if (!requesterId) {
+        requesterId = getUrlParameters()['requesterId'];
+      }
 
-        var requesterId = $('input[name=requesterId]').val();
-        if (!requesterId) {
-          requesterId = getUrlParameters()['requesterId'];
-        }
+      var found, master;
+      found = $('body').find("td.capsule_field_text:contains('Categorization Masters has been granted')");
+      if (found.length > 0) {
+        master = 'CatMaster';
+      }
+      found = $('body').find("td.capsule_field_text:contains('Photo Moderation Masters has been granted')");
+      if (found.length > 0) {
+        master = 'PhotoMaster';
+      }
+      found = $('body').find("td.capsule_field_text:contains('Masters has been granted')");
+      if (found.length > 0) {
+        master = 'Master';
+      }
 
-        var found, master;
-        found = $('body').find("td.capsule_field_text:contains('Categorization Masters has been granted')");
-        if (found.length > 0) {
-          master = 'CatMaster';
-        }
-        found = $('body').find("td.capsule_field_text:contains('Photo Moderation Masters has been granted')");
-        if (found.length > 0) {
-          master = 'PhotoMaster';
-        }
-        found = $('body').find("td.capsule_field_text:contains('Masters has been granted')");
-        if (found.length > 0) {
-          master = 'Master';
-        }
+      var data = {
+        group_id: groupId,
+        reward: reward,
+        duration: duration,
+        hit_name: hit_name,
+        requester_id: requesterId,
+        hits_available: hitsAvailable,
+        master: master,
+        message: $('#recommend_message').val()
+      };
 
-        var data = {
-          worker_id: workerId,
-          group_id: groupId,
-          reward: reward,
-          duration: duration,
-          hit_name: hit_name,
-          requester_id: requesterId,
-          hits_available: hitsAvailable,
-          master: master,
-          message: $('#recommend_message').val()
-        };
-
-        var request = $.ajax({
-          url: 'http://alpha.openturk.com/endpoint/recommend',
-          type: "POST",
-          data: data
-        });
+      var request = $.ajax({
+        url: 'http://alpha.openturk.com/endpoint/recommend',
+        type: "POST",
+        data: data
       });
     };
 
@@ -226,10 +199,10 @@ $(document).ready(function() {
     };
 
     // SHOW THE BUTTON ONLY ON THE FOLLOWING SCREENS: Preview, Accept, PreviewAndAccept
-    if (window.top.location.pathname === "/mturk/preview" || window.top.location.pathname === "/mturk/accept" || 
+    if (window.top.location.pathname === "/mturk/preview" || window.top.location.pathname === "/mturk/accept" ||
       window.top.location.pathname === "/mturk/previewandaccept" || window.top.location.pathname === "/mturk/findhits" ||
       window.top.location.pathname === "/mturk/viewhits" || window.top.location.pathname === "/mturk/searchbar" || window.top.location.pathname === "/mturk/viewsearchbar") {
-      
+
       // 1. Add shareHit button and modal to HIT pages
       if ($('td[class="capsulelink_bold"]').length > 0) {
         var jqxhr = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
@@ -377,7 +350,7 @@ $(document).ready(function() {
         var title = $(data).find('.capsulelink_bold');
         attempt++;
         if (title.length > 0) { //then user can preview
-          // Now check qualification: 
+          // Now check qualification:
           var found, qualif;
           found = $(data).find("td.capsule_field_text:contains('Categorization Masters has been granted')");
           if (found.length > 0) {
@@ -413,7 +386,7 @@ $(document).ready(function() {
               } else {
                 console.log("[MJS] Unqualified recommendation - Retry" + url);
                 fetchHit();
-              } 
+              }
           });
         } else {
           console.log("[MJS] Innaccessible recommendation - Retry" + url);

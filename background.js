@@ -92,7 +92,7 @@ chrome.runtime.onMessage.addListener(
     }
 
     if (request.checkQualification) {
-      response = workerQualified(request.checkQualification)
+      response = workerQualified(request.checkQualification);
       sendResponse({
         qualified: response
       });
