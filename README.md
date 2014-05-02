@@ -26,6 +26,7 @@ It also manages you requesters, search terms, and syncronizes your preferences t
 
 ## Changlog
 
+- 0.4.3-0.4.8: Progress on fixing the favorites synchronization issue.
 - 0.4.2: Temporarily switch to chrome.storage.local the sync function of Chrome seems buggy.
 - 0.4.1: Add the option to open notifications links in new tabs (true by default)
 - 0.4: Initial release
