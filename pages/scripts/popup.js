@@ -4,10 +4,10 @@ var OT = {
 
     if (localStorage.getItem("Sandbox") === "true") {
       $('#login_mturk').attr('href', 'https://workersandbox.mturk.com/');
-      $('#signout').attr('href', 'https://workersandbox.mturk.com/mturk/beginsignout');
+      $('#signout').attr('href', 'https://workersandbox.mturk.com/');
     } else {
       $('#login_mturk').attr('href', 'https://www.mturk.com/');
-      $('#signout').attr('href', 'https://www.mturk.com/mturk/beginsignout');
+      $('#signout').attr('href', 'https://www.mturk.com/');
     }
     if (localStorage.getItem("batchs") === "true") {
       $('#favorites-notification').show();
@@ -22,6 +22,8 @@ var OT = {
 
     OT.get_worker_id();
     OT.get_openturk_username();
+    getStats();
+    getProjection();
 
     $('#save').click(function(e) {
       e.preventDefault();
@@ -282,7 +284,6 @@ var OT = {
     }
     if (getCookie('wid') !== undefined && getCookie('wid') !== "0") {
       var workerId = getCookie('wid');
-      console.log(workerId);
       OT.status.workerId = workerId;
       $('#mturkusername').html(workerId);
       $('#mturkuser').html(workerId);
@@ -294,8 +295,9 @@ var OT = {
       }
     } else {
       // Else, go get the cookie
+      var dashboard_url = 'https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox" : "www") + '.mturk.com/mturk/dashboard';
       $.ajax({
-        url: 'https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/dashboard',
+        url: dashboard_url,
         success: function(result) {
           var spanText = $(result).filter("table").find("span:contains('Worker ID')").text();
           var workerIdPattern = /Worker ID: (.*)$/;
@@ -317,9 +319,10 @@ var OT = {
           }
         },
         error: function(xhr, status) {
-          console.log('you are not logged in MTURK');
+          console.log('You are not logged in MTURK');
+          setCookie('wid',0,1);
           localStorage.removeItem('workerId');
-          localStorage.setItem('validated', false);
+          //localStorage.setItem('validated', false);
           OT.switch_sign();
         }
       });
@@ -391,36 +394,54 @@ var OT = {
   },
 
   get_worker_stats: function() {
-    $.get('https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/dashboard', {}, function(data) {
-      var rewards = $(data).find('.reward');
-      var total_approved = $(data).filter("table").find("td.metrics-table-first-value:contains('... Approved')").next().text();
-      var approval_rate = $(data).filter("table").find("td.metrics-table-first-value:contains('... Approved')").next().next().text();
-      var balance = {
-        approved_hits: $(rewards[0]).html(),
-        bonuses: $(rewards[1]).html(),
-        total_earnings: $(rewards[2]).html(),
-        approval_rate: approval_rate,
-        total_approved: total_approved
-      };
-      // For storage
-      localStorage.setItem('balance', balance);
-      localStorage.setItem('HITTotal', total_approved);
-      localStorage.setItem('HITApproval', approval_rate);
-      // Balance
-      $("#approved_hits").html(balance['approved_hits']);
-      $("#bonuses").html(balance['bonuses']);
-      $("#total_earnings").html(balance['total_earnings']);
-      // metrics
-      $("#total_approved").html(balance['total_approved']); 
-      $("#approval_rate").html(balance['approval_rate']);
-      OT.switch_balance();
-      $('.inlinebar2').sparkline([100, localStorage.TGP, 100, 66, 33], {
-        type: 'bullet',
-        width: '50',
-        performanceColor: 'green',
-        tooltipContainer: 'body.moneytooltip'
+    var dashboard_url = 'https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox" : "www") + '.mturk.com/mturk/dashboard';
+    $.ajax({url: dashboard_url, 
+      success: function(data) {
+        var rewards = $(data).find('.reward');
+        if(rewards.length > 0) {
+          var total_approved = $(data).filter("table").find("td.metrics-table-first-value:contains('... Approved')").next().text();
+          var approval_rate = $(data).filter("table").find("td.metrics-table-first-value:contains('... Approved')").next().next().text();
+          var balance = {
+            approved_hits: $(rewards[0]).html(),
+            bonuses: $(rewards[1]).html(),
+            total_earnings: $(rewards[2]).html(),
+            approval_rate: approval_rate,
+            total_approved: total_approved
+          };
+          // For storage
+          localStorage.setItem('balance', balance);
+          localStorage.setItem('HITTotal', total_approved);
+          localStorage.setItem('HITApproval', approval_rate);
+          // Balance
+          $("#approved_hits").html(balance['approved_hits']);
+          $("#bonuses").html(balance['bonuses']);
+          $("#total_earnings").html(balance['total_earnings']);
+          // metrics
+          $("#total_approved").html(balance['total_approved']); 
+          $("#approval_rate").html(balance['approval_rate']);
+          OT.switch_balance();
+          $('.inlinebar2').sparkline([100, localStorage.TGP, 100, 66, 33], {
+            type: 'bullet',
+            width: '50',
+            performanceColor: 'green',
+            tooltipContainer: 'body.moneytooltip'
+          });
+        } else {
+          // not logged in
+          console.log('You are not logged in MTURK');
+          localStorage.removeItem('workerId');
+          localStorage.setItem('validated', false);
+          setCookie('wid',0,1);
+          OT.switch_sign();
+        }
+      },
+      error: function(xhr, status) {
+          console.log('you are not logged in MTURK');
+          localStorage.removeItem('workerId');
+          setCookie('wid',0,1);
+          OT.switch_sign();
+        }
       });
-    });
   },
 
   status: {
@@ -454,10 +475,18 @@ function appendRequester(url) {
   batchs.className = "hint";
 
   if (newbatchs && $.inArray(url['id'], newbatchs) > -1) {
-    batchs.innerText = "(" + url['numtask'] + " batchs) updated!";
+    if(url['numtask'] > 1) {
+      batchs.innerText = "(" + url['numtask'] + " batches) updated!";
+    } else {
+      batchs.innerText = "(" + url['numtask'] + " batch) updated!";
+    }
     batchs.className = "hint_new ";
   } else {
-    batchs.innerText = "(" + url['numtask'] + " batchs)";
+    if(url['numtask'] > 1) {
+      batchs.innerText = "(" + url['numtask'] + " batches)";
+    } else {
+      batchs.innerText = "(" + url['numtask'] + " batch)";
+    }
   }
   identicon.appendChild(im);
   link_col.appendChild(title);
@@ -487,10 +516,18 @@ function appendSearch(url) {
   batchs.className = "hint";
 
   if (newterms && $.inArray(url['phrase'], newterms) > -1) {
-    batchs.innerText = "(" + url['numtask'] + " batchs) some new!";
+    if(url['numtask'] > 1) {
+      batchs.innerText = "(" + url['numtask'] + " batches) some new!";
+    } else {
+      batchs.innerText = "(" + url['numtask'] + " batch) new!";
+    }
     batchs.className = "hint_new";
   } else {
-    batchs.innerText = "(" + url['numtask'] + " batchs)";
+    if(url['numtask'] > 1) {
+      batchs.innerText = "(" + url['numtask'] + " batches)";
+    } else {
+      batchs.innerText = "(" + url['numtask'] + " batch)";
+    }
   }
 
   // batchs.href = url['numtask'];
@@ -620,8 +657,11 @@ function insertRecommendation(data, title, reward, shares) {
 
   var rewardSpan = document.createElement("span");
   rewardSpan.className = "hint";
-  rewardSpan.innerText = "($" + reward + ") [" + shares + " shares]";
-
+  if (shares > 1) {
+    rewardSpan.innerText = "($" + reward + ") [" + shares + " shares]";
+  } else {
+    rewardSpan.innerText = "($" + reward + ") [" + shares + " share]";
+  }
   // Make as a like button
   var heart = document.createElement("td");
   var im = document.createElement("img");
@@ -757,7 +797,7 @@ function openLink(urlto) {
           url: urlto,
           active: true
         }, function() {
-          window.close();
+          //window.close(); // I think It's better not to close.
         });
       else
         chrome.tabs.create({
@@ -768,78 +808,87 @@ function openLink(urlto) {
 }
 
 function getStats() {
-  $.get('https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/status', {}, function(data) {
-    var rows = $(data).find('tr');
+  var status_url = 'https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox" : "www") + '.mturk.com/mturk/status';
+  $.ajax({url: status_url, 
+    success: function(data) {
+      var rows = $(data).find('tr');
 
-    var submitted_data = [];
-    var pending_data = [];
-    var rejected_data = [];
-    var approved_data = [];
-    var dollar_data = [];
-    var dates_data = [];
+      var submitted_data = [];
+      var pending_data = [];
+      var rejected_data = [];
+      var approved_data = [];
+      var dollar_data = [];
+      var dates_data = [];
 
-    for (var i = 0; i < rows.length; i++) {
-      var row = rows[i];
+      for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
 
-      if (row.cells.length != 6)
-        continue;
-      if (row.className.match('grayHead')) {
-        continue;
+        if (row.cells.length != 6)
+          continue;
+        if (row.className.match('grayHead')) {
+          continue;
+        }
+        if (row.className.match('odd|even') === null) {
+          continue;
+        }
+
+        var odd = row.className.match('odd');
+        var submitted = parseInt(row.cells[1].innerHTML, 10);
+        var approved = parseInt(row.cells[2].innerHTML, 10);
+        var rejected = parseInt(row.cells[3].innerHTML, 10);
+        var pending = parseInt(row.cells[4].innerHTML, 10);
+        var earnings = row.cells[5].childNodes[0].innerHTML;
+        var dollars = parseFloat(earnings.slice(earnings.search('\\$') + 1));
+        var date = row.cells[0].childNodes[1].href.substr(53);
+
+        submitted_data.unshift(submitted);
+        pending_data.unshift(pending);
+        rejected_data.unshift(rejected);
+        approved_data.unshift(approved);
+        dollar_data.unshift(dollars);
+
+        dates_data.unshift($.trim(row.cells[0].textContent.replace(/, 20../, "")));
+
       }
-      if (row.className.match('odd|even') === null) {
-        continue;
-      }
 
-      var odd = row.className.match('odd');
-      var submitted = parseInt(row.cells[1].innerHTML, 10);
-      var approved = parseInt(row.cells[2].innerHTML, 10);
-      var rejected = parseInt(row.cells[3].innerHTML, 10);
-      var pending = parseInt(row.cells[4].innerHTML, 10);
-      var earnings = row.cells[5].childNodes[0].innerHTML;
-      var dollars = parseFloat(earnings.slice(earnings.search('\\$') + 1));
-      var date = row.cells[0].childNodes[1].href.substr(53);
-
-      submitted_data.unshift(submitted);
-      pending_data.unshift(pending);
-      rejected_data.unshift(rejected);
-      approved_data.unshift(approved);
-      dollar_data.unshift(dollars);
-
-      dates_data.unshift($.trim(row.cells[0].textContent.replace(/, 20../, "")));
-
+      data = {
+        labels: dates_data,
+        datasets: [{
+          fillColor: "rgba(220,220,220,0.5)",
+          strokeColor: "rgba(220,220,220,1)",
+          pointColor: "rgba(220,220,220,1)",
+          pointStrokeColor: "#fff",
+          data: submitted_data,
+          title: 'Submitted'
+        }, {
+          fillColor: "rgba(163, 191, 63,0.5)",
+          strokeColor: "rgba(163, 191, 63,1)",
+          pointColor: "rgba(163, 191, 63,1)",
+          pointStrokeColor: "#fff",
+          data: approved_data,
+          title: 'Approved'
+        }, {
+          fillColor: "rgba(237, 124, 60, 0.5)",
+          strokeColor: "rgba(237, 124, 60, 1)",
+          pointColor: "rgba(237, 124, 60, 1)",
+          pointStrokeColor: "#fff",
+          data: pending_data,
+          title: 'Pendings'
+        }]
+      };
+      var options = {
+        animation: false
+      };
+      var ctx = document.getElementById("stats").getContext("2d");
+      var myNewChart = new Chart(ctx).Line(data, options);
+      legend(document.getElementById("lineLegend"), data);
+    },
+    error: function(xhr, status) {
+      console.log('You are not logged in MTURK');
+      setCookie('wid',0,1);
+      localStorage.removeItem('workerId');
+      OT.switch_sign();
     }
-
-    data = {
-      labels: dates_data,
-      datasets: [{
-        fillColor: "rgba(220,220,220,0.5)",
-        strokeColor: "rgba(220,220,220,1)",
-        pointColor: "rgba(220,220,220,1)",
-        pointStrokeColor: "#fff",
-        data: submitted_data,
-        title: 'Submitted'
-      }, {
-        fillColor: "rgba(163, 191, 63,0.5)",
-        strokeColor: "rgba(163, 191, 63,1)",
-        pointColor: "rgba(163, 191, 63,1)",
-        pointStrokeColor: "#fff",
-        data: approved_data,
-        title: 'Approved'
-      }, {
-        fillColor: "rgba(237, 124, 60, 0.5)",
-        strokeColor: "rgba(237, 124, 60, 1)",
-        pointColor: "rgba(237, 124, 60, 1)",
-        pointStrokeColor: "#fff",
-        data: pending_data,
-        title: 'Pendings'
-      }]
-    };
-    var options = {
-      animation: false
-    };
-    var ctx = document.getElementById("stats").getContext("2d");
-    var myNewChart = new Chart(ctx).Line(data, options);
-    legend(document.getElementById("lineLegend"), data);
   });
 }
 
@@ -892,8 +941,6 @@ $(document).ready(function() {
   chrome.extension.sendMessage({
     reset: "resetIcon"
   });
-  getStats();
-  getProjection();
   $('.inlinebar').sparkline([100, localStorage.TGP, 100, 66, 33], {
     type: 'bullet',
     width: '50',

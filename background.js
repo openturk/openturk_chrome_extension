@@ -34,6 +34,7 @@ SetInitialOption("newwindow", "true");
 
 localStorage.setItem('workerId', 'undefined');
 
+localStorage['validated'] = "false"; // Is the extension freshly installed
 localStorage['batchs'] = "false";
 localStorage['search'] = "false";
 localStorage['money'] = "false";
