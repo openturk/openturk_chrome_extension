@@ -7,6 +7,7 @@ var captcha = false;
 
 // Legacy support for pre-event-pages.
 var oldChromeVersion = !chrome.runtime;
+var requestTimerId;
 
 // More Vars
 var animationFrames = 36;
@@ -21,6 +22,7 @@ var rotation = 0;
 var loadingAnimation = new LoadingAnimation();
 
 
+SetInitialOption("RequestInterval", 5);
 SetInitialOption("Sandbox", "false");
 SetInitialOption("Reqnotif", "true");
 SetInitialOption("Termnotif", "true");
@@ -395,7 +397,6 @@ loadSearchTerms();
 loadWorkHistory();
 
 function getNewBatchs() {
-  console.log('getNewBatchs');
   storage.get('requesters', function(items) {
     if (typeof items.requesters !== "undefined") {
       timeOut(items.requesters, scrapForBatchs);
@@ -455,7 +456,6 @@ function printTasks() {
 //TODO: pop the term from the notification list.
 
 function scrapForBatchs(url) {
-  console.log('scrapForBatchs');
   if (!captcha) {
     $.ajax({
       url: 'https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/searchbar' + '?selectedSearchType=hitgroups' + '&qualifiedFor=on' + '&requesterId=' + url['id'],
@@ -571,12 +571,33 @@ function setBadge(text) {
   });
 }
 
+// Setting an alarm scheduler
+function scheduleRequest() {
+  // console.log('scheduleRequest');
+  delay = parseInt(localStorage['RequestInterval'], 10);
+  // console.log('Scheduling for (in minutes): ' + delay);
+
+  if (oldChromeVersion) {
+    if (requestTimerId) {
+      window.clearTimeout(requestTimerId);
+    }
+    requestTimerId = window.setTimeout(onAlarm, delay * 60 * 1000);
+  } else {
+    // console.log('Creating alarm');
+    // Use a repeating alarm so that it fires again if there was a problem
+    // setting the next alarm.
+    chrome.alarms.create('refresh', {
+      periodInMinutes: delay
+    });
+  }
+}
+
 // ajax stuff
 function startRequest(params) {
-  console.log('startRequest');
   // Schedule request immediately. We want to be sure to reschedule, even in the
   // case where the extension process shuts down while this request is
   // outstanding.
+  if (params && params.scheduleRequest) scheduleRequest();
 
   function stopLoadingAnimation() {
     if (params && params.showLoadingAnimation) loadingAnimation.stop();
@@ -765,7 +786,6 @@ function onWatchdog() {
   });
   // re-init the random watchdog
   var delay = Math.floor(Math.random() * 6) + 1;
-  console.log('Reinit watchdog to ' + delay)
   chrome.alarms.create('watchdog', {
     periodInMinutes: delay
   });

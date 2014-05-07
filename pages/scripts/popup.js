@@ -282,6 +282,7 @@ var OT = {
     }
     if (getCookie('wid') !== undefined && getCookie('wid') !== "0") {
       var workerId = getCookie('wid');
+      console.log(workerId);
       OT.status.workerId = workerId;
       $('#mturkusername').html(workerId);
       $('#mturkuser').html(workerId);
@@ -410,7 +411,7 @@ var OT = {
       $("#bonuses").html(balance['bonuses']);
       $("#total_earnings").html(balance['total_earnings']);
       // metrics
-      $("#total_approved").html(balance['total_approved']);
+      $("#total_approved").html(balance['total_approved']); 
       $("#approval_rate").html(balance['approval_rate']);
       OT.switch_balance();
       $('.inlinebar2').sparkline([100, localStorage.TGP, 100, 66, 33], {
