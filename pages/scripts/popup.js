@@ -357,13 +357,13 @@ var OT = {
         var recommendationUrl = 'http://alpha.openturk.com/endpoint/recommendations';
         var jqxhr = $.getJSON(recommendationUrl + '?page=' + OT.recCurrentPage + '&master=' + master).done(function(results) {
           console.log('Loading recommendation page #' + OT.recCurrentPage);
-          if (results.recommendations) {
-            console.log('recommendations returned something: ' + results + ' ' + results.recommendations.length);
-            if (results.recommendations.length > 0) {
+          if (results.stars) {
+            console.log('recommendations returned something: ' + results + ' ' + results.stars.length);
+            if (results.stars.length > 0) {
               console.log('recommendations returned something');
               $('#recspin').show();
               OT.recCount = results.count;
-              OT.recommendations = results.recommendations.reverse();
+              OT.recommendations = results.stars.reverse();
               storage.set({
                 'recommendations': OT.recommendations
               });
