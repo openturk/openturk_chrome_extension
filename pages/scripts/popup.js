@@ -37,12 +37,32 @@ var OT = {
       e.preventDefault();
       $('#recommendation-feed').empty();
       $('#recMore').prop('disabled', true).html('Loading ...');
-      OT.recChecked = 0;
-      OT.recAppended = 0;
-      OT.recCount = 0;
-      OT.recCurrentPage = 0;
+
+      if(false) {
+        localStorage['recChecked'] = 0;
+        localStorage['recAppended'] = 0;
+        localStorage['recCount'] = 0;
+        localStorage['recCurrentPage'] = 0;
+        storage.set({
+          'historicalrecommendations': []
+        });
+      }
+
       OT.switch_spinner();
-      OT.get_recommendation();
+
+      var items = [];
+      storage.get('historicalrecommendations', function(item) {
+        items = item.historicalrecommendations;
+        if(items.length > 0) {
+          console.log('Got historical data!');
+          OT.switch_recommendation();
+          for(var i = 0; i < items.length; i++) {
+            insertRecommendation(items[i]['gid'], items[i]['title'], items[i]['reward'], items[i]['shares']);
+          }
+        } else {
+          OT.get_recommendation();
+        }
+      });
     });
     $('#balance').click(function(e) {
       e.preventDefault();
@@ -122,10 +142,10 @@ var OT = {
     $('#title').focus();
 
     $('#recMore').click(function() {
-      if (OT.recChecked < OT.recCount) {
+      if (localStorage['recChecked'] < localStorage['recCount']) {
         console.log('Loading ...');
-        OT.recAppended = 0;
-        OT.get_recommendation(OT.recCurrentPage);
+        localStorage['recAppended'] = 0;
+        OT.get_recommendation(localStorage['recCurrentPage']);
         $('#recMore').prop('disabled', true).html('Loading ...');
       } else {
         $('#recMore').prop('disabled', true).html('no more recommendations');
@@ -329,19 +349,15 @@ var OT = {
     }
   },
 
-  recCurrentPage: 0, // it's incremented just in time
-  recCount: 0,
-  recAppended: 0,
-  recChecked: 0,
-  stars: [],
+  recommendations: [],
 
   get_recommendation: function() {
     if (OT.status.openturk_username) {
-      if (OT.stars && OT.stars.length > 0) {
+      if (OT.recommendations && OT.recommendations.length > 0) {
         console.log('continue with previous set ..');
         fetchRecommendation();
       } else {
-        OT.recCurrentPage++;
+        localStorage['recCurrentPage']++;
         var master = [];
         if(localStorage['Master'] == "true") {
           master.push('Master');
@@ -355,15 +371,15 @@ var OT = {
         master = master.join(',');
         console.log(master);
         var recommendationUrl = 'http://alpha.openturk.com/endpoint/recommendations';
-        var jqxhr = $.getJSON(recommendationUrl + '?page=' + OT.recCurrentPage + '&master=' + master).done(function(results) {
-          console.log('Loading recommendation page #' + OT.recCurrentPage);
+        var jqxhr = $.getJSON(recommendationUrl + '?page=' + localStorage['recCurrentPage'] + '&master=' + master).done(function(results) {
+          console.log('Loading recommendation page #' + localStorage['recCurrentPage']);
           if (results.stars) {
-            console.log('stars returned something: ' + results + ' ' + results.stars.length);
+            console.log('recommendations returned something: ' + results + ' ' + results.stars.length);
             if (results.stars.length > 0) {
-              console.log('stars returned something');
+              console.log('recommendations returned something');
               $('#recspin').show();
-              OT.recCount = results.count;
-              OT.stars = results.stars.reverse();
+              localStorage['recCount'] = results.count;
+              OT.recommendations = results.stars.reverse();
               fetchRecommendation();
             } else {
               $('#recspin').hide();
@@ -395,7 +411,7 @@ var OT = {
 
   get_worker_stats: function() {
     var dashboard_url = 'https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox" : "www") + '.mturk.com/mturk/dashboard';
-    $.ajax({url: dashboard_url, 
+    $.ajax({url: dashboard_url,
       success: function(data) {
         var rewards = $(data).find('.reward');
         if(rewards.length > 0) {
@@ -417,7 +433,7 @@ var OT = {
           $("#bonuses").html(balance['bonuses']);
           $("#total_earnings").html(balance['total_earnings']);
           // metrics
-          $("#total_approved").html(balance['total_approved']); 
+          $("#total_approved").html(balance['total_approved']);
           $("#approval_rate").html(balance['approval_rate']);
           OT.switch_balance();
           $('.inlinebar2').sparkline([100, localStorage.TGP, 100, 66, 33], {
@@ -540,29 +556,29 @@ function appendSearch(url) {
 }
 
 function fetchRecommendation() {
-  console.log(OT.stars);
-  console.log(OT.stars.length);
-  var recommendation = OT.stars.pop();
+  console.log(OT.recommendations);
+  console.log(OT.recommendations.length);
+  var recommendation = OT.recommendations.pop();
   if (recommendation) {
     var group_id = recommendation[0];
     var reward = recommendation[1];
     var shares = recommendation[2];
     var url = 'https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/preview?groupId=' + group_id;
     // FIXME
-    // if (results.stars[i][0] == "undefined" || results.stars[i][1] == "undefined") {
+    // if (results.recommendations[i][0] == "undefined" || results.recommendations[i][1] == "undefined") {
     //   continue;
     // }
     validateRecommendation(url, reward, shares, function(url) {
-      console.log("DONE CHECKING THIS: " + url);
-      console.log("[RECAP] checked: " + OT.recChecked + ' added:' + OT.recAppended + '  .... Not reached 10');
-      if (OT.recAppended < 10) {
-        if (OT.stars.length > 0) {
+      //console.log("DONE CHECKING THIS: " + url);
+      //console.log("[RECAP] checked: " + localStorage['recChecked'] + ' added:' + localStorage['recAppended'] + '  .... Not reached 10');
+      if (localStorage['recAppended'] < 10) {
+        if (OT.recommendations.length > 0) {
           setTimeout(function() {
             fetchRecommendation();
           }, 1000);
-        } else if (OT.recChecked <= OT.recCount) {
+        } else if (localStorage['recChecked'] <= localStorage['recCount']) {
           console.log('Loading next page');
-          OT.get_recommendation(OT.recCurrentPage);
+          OT.get_recommendation(localStorage['recCurrentPage']);
         } else {
           console.log('Reached last page');
           $('#recspin').hide();
@@ -597,9 +613,9 @@ function validateRecommendation(url, reward, shares, callback) {
   };
 
   $.get(url, {}, function(data) {
-    var title = $(data).find('.capsulelink_bold');
+    var title = $(data).find('.capsulelink_bold').text().trim();
     var matchPattern;
-    OT.recChecked++;
+    localStorage['recChecked']++;
     if (title.length > 0) { //then user can preview
       var found, qualif;
       found = $(data).find("td.capsule_field_text:contains('Categorization Masters has been granted')");
@@ -626,14 +642,29 @@ function validateRecommendation(url, reward, shares, callback) {
         qualifications['hit_approval_rate']['sign'] = $(found).eq(0).html().match(matchPattern)[1];
         qualifications['hit_approval_rate']['value'] = $(found).eq(0).html().match(matchPattern)[2];
       }
+      var gid = $(data).find('input[name=groupId]').val();
       // Checking with BG if worker is qualified.
       chrome.runtime.sendMessage({
         checkQualification: qualifications
       }, function(response) {
           if (response.qualified === true) {
             console.log(response.qualified + "Add it!");
-            OT.recAppended++;
-            insertRecommendation(data, title, reward, shares);
+            localStorage['recAppended']++;
+            var items;
+            storage.get('historicalrecommendations', function(item) {
+              items = item['historicalrecommendations'];
+              items.push({
+                'gid': gid,
+                'title': title,
+                'reward': reward,
+                'shares': shares
+              });
+              storage.set({
+                'historicalrecommendations': items
+              });
+            });
+
+            insertRecommendation(gid, title, reward, shares);
           }
           callback(url);
       });
@@ -643,16 +674,15 @@ function validateRecommendation(url, reward, shares, callback) {
   });
 }
 
-function insertRecommendation(data, title, reward, shares) {
+function insertRecommendation(gid, title, reward, shares) {
   var feed = document.getElementById("recommendation-feed");
-  var gid = $(data).find('input[name=groupId]').val();
   var row = document.createElement("tr");
   row.className = "link";
   var link_col = document.createElement("td");
   var task = document.createElement("a");
   task.id = "recommendation_link";
   task.className = "link_title";
-  task.innerText = $(title).text().trim();
+  task.innerText = title;
   task.href = 'https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/preview?groupId=' + gid;
 
   var rewardSpan = document.createElement("span");
@@ -809,7 +839,7 @@ function openLink(urlto) {
 
 function getStats() {
   var status_url = 'https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox" : "www") + '.mturk.com/mturk/status';
-  $.ajax({url: status_url, 
+  $.ajax({url: status_url,
     success: function(data) {
       var rows = $(data).find('tr');
 
