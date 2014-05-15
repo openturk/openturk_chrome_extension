@@ -333,11 +333,11 @@ var OT = {
   recCount: 0,
   recAppended: 0,
   recChecked: 0,
-  stars: [],
+  recommendations: [],
 
   get_recommendation: function() {
     if (OT.status.openturk_username) {
-      if (OT.stars && OT.stars.length > 0) {
+      if (OT.recommendations && OT.recommendations.length > 0) {
         console.log('continue with previous set ..');
         fetchRecommendation();
       } else {
@@ -357,13 +357,16 @@ var OT = {
         var recommendationUrl = 'http://alpha.openturk.com/endpoint/recommendations';
         var jqxhr = $.getJSON(recommendationUrl + '?page=' + OT.recCurrentPage + '&master=' + master).done(function(results) {
           console.log('Loading recommendation page #' + OT.recCurrentPage);
-          if (results.stars) {
-            console.log('stars returned something: ' + results + ' ' + results.stars.length);
-            if (results.stars.length > 0) {
-              console.log('stars returned something');
+          if (results.recommendations) {
+            console.log('recommendations returned something: ' + results + ' ' + results.recommendations.length);
+            if (results.recommendations.length > 0) {
+              console.log('recommendations returned something');
               $('#recspin').show();
               OT.recCount = results.count;
-              OT.stars = results.stars.reverse();
+              OT.recommendations = results.recommendations.reverse();
+              storage.set({
+                'recommendations': OT.recommendations
+              });
               fetchRecommendation();
             } else {
               $('#recspin').hide();
@@ -395,7 +398,7 @@ var OT = {
 
   get_worker_stats: function() {
     var dashboard_url = 'https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox" : "www") + '.mturk.com/mturk/dashboard';
-    $.ajax({url: dashboard_url, 
+    $.ajax({url: dashboard_url,
       success: function(data) {
         var rewards = $(data).find('.reward');
         if(rewards.length > 0) {
@@ -417,7 +420,7 @@ var OT = {
           $("#bonuses").html(balance['bonuses']);
           $("#total_earnings").html(balance['total_earnings']);
           // metrics
-          $("#total_approved").html(balance['total_approved']); 
+          $("#total_approved").html(balance['total_approved']);
           $("#approval_rate").html(balance['approval_rate']);
           OT.switch_balance();
           $('.inlinebar2').sparkline([100, localStorage.TGP, 100, 66, 33], {
@@ -540,23 +543,23 @@ function appendSearch(url) {
 }
 
 function fetchRecommendation() {
-  console.log(OT.stars);
-  console.log(OT.stars.length);
-  var recommendation = OT.stars.pop();
+  console.log(OT.recommendations);
+  console.log(OT.recommendations.length);
+  var recommendation = OT.recommendations.pop();
   if (recommendation) {
     var group_id = recommendation[0];
     var reward = recommendation[1];
     var shares = recommendation[2];
     var url = 'https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox.mturk.com" : "www.mturk.com") + '/mturk/preview?groupId=' + group_id;
     // FIXME
-    // if (results.stars[i][0] == "undefined" || results.stars[i][1] == "undefined") {
+    // if (results.recommendations[i][0] == "undefined" || results.recommendations[i][1] == "undefined") {
     //   continue;
     // }
     validateRecommendation(url, reward, shares, function(url) {
       console.log("DONE CHECKING THIS: " + url);
       console.log("[RECAP] checked: " + OT.recChecked + ' added:' + OT.recAppended + '  .... Not reached 10');
       if (OT.recAppended < 10) {
-        if (OT.stars.length > 0) {
+        if (OT.recommendations.length > 0) {
           setTimeout(function() {
             fetchRecommendation();
           }, 1000);
@@ -809,7 +812,7 @@ function openLink(urlto) {
 
 function getStats() {
   var status_url = 'https://' + ((localStorage['Sandbox'] === "true") ? "workersandbox" : "www") + '.mturk.com/mturk/status';
-  $.ajax({url: status_url, 
+  $.ajax({url: status_url,
     success: function(data) {
       var rows = $(data).find('tr');
 
