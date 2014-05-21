@@ -36,9 +36,8 @@ var OT = {
     $('#recos').click(function(e) {
       e.preventDefault();
       $('#recommendation-feed').empty();
-      $('#recMore').prop('disabled', true).html('Loading ...');
 
-      if(false) {
+      if(getCookie('rec') != 1) {
         localStorage['recChecked'] = 0;
         localStorage['recAppended'] = 0;
         localStorage['recCount'] = 0;
@@ -46,6 +45,7 @@ var OT = {
         storage.set({
           'historicalrecommendations': []
         });
+        setCookie('rec', 1, 1);
       }
 
       OT.switch_spinner();
@@ -60,6 +60,7 @@ var OT = {
             insertRecommendation(items[i]['gid'], items[i]['title'], items[i]['reward'], items[i]['shares']);
           }
         } else {
+          $('#recMore').prop('disabled', true).html('Loading ...');
           OT.get_recommendation();
         }
       });
