@@ -49,7 +49,7 @@ $(function() {
   $('.sandbox-tabs-radio, .reqnotif-tabs-radio, .termnotif-tabs-radio, .winnotif-tabs-radio, #RequestInterval').change(function() {
     saveOptions();
   });
-  $('#target, .logging-tabs-radio, .qualif-tabs-radio, #HITTotal, #HITApproval').change(function() {
+  $('#target2, #target, .logging-tabs-radio, .qualif-tabs-radio, #HITTotal, #HITApproval').change(function() {
     saveOptions();
   });
 
@@ -238,6 +238,7 @@ function initVariables() {
   HITTotal = document.getElementById("HITTotal");
   HITApproval = document.getElementById("HITApproval");
   targetField = $("#target");
+  target2Field = $("#target2");
   // get the user
   get_openturk_username();
 }
@@ -353,6 +354,10 @@ function restoreOptions() {
   var num = localStorage["Target"];
   targetField.val(num / 100);
   $("#price").html("$" + num / 100);
+
+  var num = localStorage["Target2"];
+  target2Field.val(num*100);
+  $("#price2").html("$" + num);
 }
 
 
@@ -418,6 +423,9 @@ function saveOptions() {
   localStorage["HITTotal"] = HITTotal.value;
   localStorage["HITApproval"] = HITApproval.value;
 
-  localStorage["Target"] = parseInt(targetField.val()) * 100;
+  localStorage["Target"] = parseInt(targetField.val(), 10) * 100;
   $("#price").html("$" + targetField.val());
+
+  localStorage["Target2"] = parseInt(target2Field.val(), 10) / 100;
+  $("#price2").html("$" + parseInt(target2Field.val(), 10) / 100);
 }

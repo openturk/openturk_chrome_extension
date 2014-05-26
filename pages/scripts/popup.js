@@ -57,7 +57,9 @@ var OT = {
           console.log('Got historical data!');
           OT.switch_recommendation();
           for(var i = 0; i < items.length; i++) {
-            insertRecommendation(items[i]['gid'], items[i]['title'], items[i]['reward'], items[i]['shares']);
+            if(items[i]['reward'] > localStorage['Target2']) {
+              insertRecommendation(items[i]['gid'], items[i]['title'], items[i]['reward'], items[i]['shares']);
+            }
           }
         } else {
           $('#recMore').prop('disabled', true).html('Loading ...');
@@ -665,7 +667,9 @@ function validateRecommendation(url, reward, shares, callback) {
               });
             });
 
-            insertRecommendation(gid, title, reward, shares);
+            if(reward > localStorage['Target2']) {
+              insertRecommendation(gid, title, reward, shares);
+            }
           }
           callback(url);
       });
