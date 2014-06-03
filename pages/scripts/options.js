@@ -356,6 +356,7 @@ function restoreOptions() {
   $("#price").html("$" + num / 100);
 
   var num = localStorage["Target2"];
+  if(!num) num = 0.01;
   target2Field.val(num*100);
   $("#price2").html("$" + num);
 }
