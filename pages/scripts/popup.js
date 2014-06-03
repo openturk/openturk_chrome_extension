@@ -38,13 +38,7 @@ var OT = {
       $('#recommendation-feed').empty();
 
       if(getCookie('rec') != 1) {
-        localStorage['recChecked'] = 0;
-        localStorage['recAppended'] = 0;
-        localStorage['recCount'] = 0;
-        localStorage['recCurrentPage'] = 0;
-        storage.set({
-          'historicalrecommendations': []
-        });
+        clearRecommendations();
         setCookie('rec', 1, 1);
       }
 
@@ -713,6 +707,17 @@ function insertRecommendation(gid, title, reward, shares) {
   console.log(row);
 }
 
+function clearRecommendations() {
+  localStorage['recChecked'] = 0;
+  localStorage['recAppended'] = 0;
+  localStorage['recCount'] = 0;
+  localStorage['recCurrentPage'] = 0;
+  storage.set({
+    'historicalrecommendations': []
+  });
+  $('#recommendation-feed').html('');
+}
+
 var storage = chrome.storage.local;
 var obj = {};
 var index = {};
@@ -763,6 +768,9 @@ function loadUIObjects() {
     $('a#search_link').click(function(e) {
       e.preventDefault();
       openLink(this.href);
+    });
+    $('#clearrec').on('click', function() {
+      clearRecommendations();
     });
   });
   // storage.get('workhistory', function(items) {
