@@ -297,7 +297,7 @@ var OT = {
 
   get_worker_id: function() {
     if(localStorage.workerId === "Not yet set" ) {
-      setCookie('wid',0,1);
+      setCookie('wid',0,24);
     }
     if (getCookie('wid') !== undefined && getCookie('wid') !== "0") {
       var workerId = getCookie('wid');
@@ -326,7 +326,7 @@ var OT = {
             OT.status.workerId = workerId;
             $('#mturkusername').html(workerId);
             $('#mturkuser').html(workerId);
-            setCookie('wid', workerId, 1);
+            setCookie('wid', workerId, 24);
             localStorage.workerId = workerId;
             if (localStorage.getItem('validated') === "true") {
               OT.switch_content();
@@ -337,7 +337,7 @@ var OT = {
         },
         error: function(xhr, status) {
           console.log('You are not logged in MTURK');
-          setCookie('wid',0,1);
+          setCookie('wid',0,24);
           localStorage.removeItem('workerId');
           //localStorage.setItem('validated', false);
           OT.switch_sign();
@@ -444,14 +444,14 @@ var OT = {
           console.log('You are not logged in MTURK');
           localStorage.removeItem('workerId');
           localStorage.setItem('validated', false);
-          setCookie('wid',0,1);
+          setCookie('wid',0,24);
           OT.switch_sign();
         }
       },
       error: function(xhr, status) {
           console.log('you are not logged in MTURK');
           localStorage.removeItem('workerId');
-          setCookie('wid',0,1);
+          setCookie('wid',0,24);
           OT.switch_sign();
         }
       });
@@ -928,7 +928,7 @@ function getStats() {
     },
     error: function(xhr, status) {
       console.log('You are not logged in MTURK');
-      setCookie('wid',0,1);
+      setCookie('wid',0,24);
       localStorage.removeItem('workerId');
       OT.switch_sign();
     }
@@ -955,10 +955,13 @@ function legend(parent, data) {
 //  Cookie functions from http://www.w3schools.com/JS/js_cookies.asp
 //
 
-function setCookie(c_name, value, exdays) {
-  var exdate = new Date();
-  exdate.setDate(exdate.getDate() + exdays);
-  var c_value = escape(value) + ((exdays === null) ? '' : '; expires=' + exdate.toUTCString());
+function setCookie(c_name, value, exhours) {
+  var now = new Date();
+  var time = now.getTime();
+  time += exhours * 3600 * 1000;
+  now.setTime(time);
+
+  var c_value = escape(value) + ((exhours === null) ? '' : '; expires=' + now.toUTCString());
   document.cookie = c_name + '=' + c_value;
 }
 
