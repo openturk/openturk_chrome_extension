@@ -31,10 +31,10 @@ SetInitialOption("Target", 1000);
 SetInitialOption("TGP", 0);
 SetInitialOption("earnings", 0);
 SetInitialOption("newwindow", "true");
+SetInitialOption("validated", "true");
 
 localStorage.setItem('workerId', 'undefined');
 
-localStorage['validated'] = "false"; // Is the extension freshly installed
 localStorage['batchs'] = "false";
 localStorage['search'] = "false";
 localStorage['money'] = "false";
