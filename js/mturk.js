@@ -106,6 +106,10 @@ $(document).ready(function() {
       });
     };
 
+    $(document).on('keyup', '#recommend_message', function() {
+      $('#recommend_message').val($(this).val());
+    });
+
     // Send recommendation to the server
     var recommend = function() {
       var rewardText = $("table").find("td:contains('Reward')").next().text();
@@ -151,12 +155,13 @@ $(document).ready(function() {
         master: master,
         message: $('#recommend_message').val()
       };
+      console.log(data);
 
-      var request = $.ajax({
-        url: 'http://alpha.openturk.com/endpoint/recommend',
-        type: "POST",
-        data: data
-      });
+      // var request = $.ajax({
+      //   url: 'http://alpha.openturk.com/endpoint/recommend',
+      //   type: "POST",
+      //   data: data
+      // });
     };
 
     chrome.runtime.sendMessage({
@@ -213,7 +218,7 @@ $(document).ready(function() {
           if (typeof result.username !== "undefined") {
             $(el)
               .after(shareHitButton)
-              .after(modalTpl('modal', '<h2>Share this HIT for other workers:</h2><textarea id="recommend_message" style="width: 340px; height: 100px">I enjoyed this task!</textarea><br /><input id="modal_submit" type="submit" value="ok"><input id="modal_cancel" type="submit" value="cancel">'));
+              .after(modalTpl('modal', '<h2>Share this HIT for other workers:</h2><input id="recommend_message" style="width: 340px;" value="I enjoyed this task!"><br /><input id="modal_submit" type="submit" value="ok"><input id="modal_cancel" type="submit" value="cancel">'));
           } else {
             $(el)
               .after(shareHitButton)
