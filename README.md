@@ -26,6 +26,7 @@ It also manages you requesters, search terms, and syncronizes your preferences t
 
 ## Changlog
 
+- 0.5.0: Better recommendations page.
 - 0.4.9: Enhancing the login/logout mturk detection.
 - 0.4.3-0.4.8: Progress on fixing the favorites synchronization issue.
 - 0.4.2: Temporarily switch to chrome.storage.local the sync function of Chrome seems buggy.
