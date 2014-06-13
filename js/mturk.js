@@ -155,13 +155,12 @@ $(document).ready(function() {
         master: master,
         message: $('#recommend_message').val()
       };
-      console.log(data);
 
-      // var request = $.ajax({
-      //   url: 'http://alpha.openturk.com/endpoint/recommend',
-      //   type: "POST",
-      //   data: data
-      // });
+      var request = $.ajax({
+        url: 'http://alpha.openturk.com/endpoint/recommend',
+        type: "POST",
+        data: data
+      });
     };
 
     chrome.runtime.sendMessage({
