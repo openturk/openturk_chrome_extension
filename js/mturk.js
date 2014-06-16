@@ -106,7 +106,7 @@ $(document).ready(function() {
       });
     };
 
-    $(document).on('keyup', '#recommend_message', function() {
+    $(document).on('change', '#recommend_message', function() {
       $('#recommend_message').val($(this).val());
     });
 
@@ -160,6 +160,9 @@ $(document).ready(function() {
         url: 'http://alpha.openturk.com/endpoint/recommend',
         type: "POST",
         data: data
+      }).fail(function(jqXHR, textStatus) {
+         console.log(textStatus);
+         console.log(jqXHR);
       });
     };
 
@@ -178,7 +181,7 @@ $(document).ready(function() {
       }
     });
 
-    var shareHitButton = '<tr><td><a href="#" class="ot-share" id="sharehit"><span class="ot-subscribe-text">Share HIT</span></a></td></tr>';
+    var shareHitButton = '<tr><td><a href="#" class="ot-share" id="sharemodalhit"><span class="ot-subscribe-text">Share HIT</span></a></td></tr>';
 
     var modalTpl = function(id, content) {
       return '<div id="' + id + '" style="display:none;z-index:10;position:absolute;background-color:#fff;width:350px;padding:15px;text-align:left;border:2px solid #333;opacity:1;-moz-border-radius:6px;-webkit-border-radius:6px;-moz-box-shadow: 0 0 50px #ccc;-webkit-box-shadow: 0 0 50px #ccc;">' + content + '</div>';
@@ -186,7 +189,7 @@ $(document).ready(function() {
 
     var bindModalEvents = function(modal) {
       var $modal = $('#' + modal);
-      $('#sharehit').click(function(e) {
+      $('#share' + modal).click(function(e) {
         e.preventDefault();
         var left = Math.max($(window).width() - $modal.outerWidth(), 0) / 2;
         $modal.css({
@@ -217,13 +220,13 @@ $(document).ready(function() {
           if (typeof result.username !== "undefined") {
             $(el)
               .after(shareHitButton)
-              .after(modalTpl('modal', '<h2>Share this HIT for other workers:</h2><input id="recommend_message" style="width: 340px;" value="I enjoyed this task!"><br /><input id="modal_submit" type="submit" value="ok"><input id="modal_cancel" type="submit" value="cancel">'));
+              .after(modalTpl('modalhit', '<h2>Share this HIT for other workers:</h2><input id="recommend_message" style="width: 340px;" value="I enjoyed this task!"><br /><input id="modalhit_submit" type="submit" value="ok"><input id="modalhit_cancel" type="submit" value="cancel">'));
           } else {
             $(el)
               .after(shareHitButton)
-              .after(modalTpl('modal', '<h2>Please log in on <a href="http://alpha.openturk.com/accounts/login/">OpenTurk.com</a></h2>'));
+              .after(modalTpl('modalhit', '<h2>Please log in on <a href="http://alpha.openturk.com/accounts/login/">OpenTurk.com</a></h2>'));
           }
-          bindModalEvents('modal');
+          bindModalEvents('modalhit');
           var requesterId = $('input[name=requesterId').val();
           var requesterName = $('input[name=prevRequester').val();
 
@@ -242,7 +245,7 @@ $(document).ready(function() {
               }
             }
             if (!(requesterId in alreadyFavd)) {
-              $("#sharehit").parent().after('<td><a class="ot-subscribe" href="#" data-id="' + requesterId + '" data-name="' + requesterName + '"><span class="ot-subscribe-text">subscribe</span></a></td>');
+              $("#sharemodalhit").parent().after('<td><a class="ot-subscribe" href="#" data-id="' + requesterId + '" data-name="' + requesterName + '"><span class="ot-subscribe-text">subscribe</span></a></td>');
               //bind events
               $('.ot-subscribe').click(function(e) {
                 chrome.runtime.sendMessage({
@@ -264,9 +267,9 @@ $(document).ready(function() {
       if ($hitFinished.length > 0) {
         var jqxhr1 = $.getJSON('http://alpha.openturk.com/endpoint/username').done(function(result) {
           $hitFinished.parent().next()
-            .append('<hr><h6>If you liked this HIT, share it on Openturk. <a href="#" class="ot-share" id="sharedonehit"><span class="ot-subscribe-text">Share HIT</span></a></h6>')
-            .append(modalTpl('modalpublish', '<h2>Share this HIT for other workers:</h2><textarea id="recommend_message" style="width: 340px; height: 100px">I enjoyed this task!</textarea><br /><input id="modalpublish_submit" type="submit" value="ok"><input id="modalpublish_cancel" type="submit" value="cancel">'));
-          bindModalEvents('modalpublish');
+            .append('<hr><h6>If you liked this HIT, share it on Openturk. <a href="#" class="ot-share" id="sharemodalhitdone"><span class="ot-subscribe-text">Share HIT</span></a></h6>')
+            .append(modalTpl('modalhitdone', '<h2>Share this HIT for other workers:</h2><input id="recommend_message" style="width: 340px;" value="I enjoyed this task!"><br /><input id="modalhitdone_submit" type="submit" value="ok"><input id="modalhitdone_cancel" type="submit" value="cancel">'));
+          bindModalEvents('modalhitdone');
         });
       }
 
