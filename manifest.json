@@ -1,7 +1,7 @@
 {
    "name": "Openturk",
    "description": "The Definitive Toolbox for Amazon Mechanical Turk",
-   "version": "0.5.0",
+   "version": "0.5.1",
    "permissions": [ "*://*.mturk.com/*", "*://*.openturk.com/*", "*://*.amazon.com/*", "storage","unlimitedStorage", "contextMenus", "alarms", "tabs"],
    "manifest_version": 2,
    "background": {

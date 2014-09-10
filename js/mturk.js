@@ -293,7 +293,7 @@ $(document).ready(function() {
           var tr = $(task.find('tbody > tr > td > table > tbody > tr > td > table > tbody > tr')[0]);
           var requester = $(tr.find('td > a')[1]);
           var requesterId = getUrlParameters('lala?' + requester.attr('href'))['requesterId'];
-          var requesterName = requester.html();
+          var requesterName = $(tr.find('td > a > span')).html();
           var insertAfterElt = tr.find('td').eq(1);
 
           if (requesterId in alreadyBlocked) {
