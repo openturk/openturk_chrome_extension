@@ -1,6 +1,8 @@
 # Openturk Chrome Extension
-Your personal mturk assistant for HIT recommendation
+Your personal MTurk assistant for HIT recommendation
 It also manages you requesters, search terms, and syncronizes your preferences to openturk.com
+
+March 2017: We are aware of the technical difficulties some Openturk users currently have. This is bacause of changes in the Facebook API and MTurk page structure. We will provide an update to fix these issues and add new HIT recommendation functionalities soon.
 
 ## Installation
 
@@ -33,3 +35,9 @@ It also manages you requesters, search terms, and syncronizes your preferences t
 - 0.4.1: Add the option to open notifications links in new tabs (true by default)
 - 0.4: Initial release
 - < 0.4: Pre Alpha 
+
+## Roadmap (updated March 2017)
+- Fix broken Facebook signin/signup
+- Fix HIT recommendation tab ('Hot') in the extension
+- Fix the 'Recommend me a HIT' button on the MTurk HIT page
+- Add HIT recommendation based on collaborative filtering algorithms
