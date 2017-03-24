@@ -41,3 +41,5 @@ March 2017: We are aware of the technical difficulties some Openturk users curre
 - Fix HIT recommendation tab ('Hot') in the extension
 - Fix the 'Recommend me a HIT' button on the MTurk HIT page
 - Add HIT recommendation based on collaborative filtering algorithms
+- Add new HIT recommendation algorithms based on requester reputation data
+- Add a worker visual analytics dashboard to present personal historical activities and break it down by task type over time
